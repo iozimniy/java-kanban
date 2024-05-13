@@ -1,4 +1,8 @@
-package ru.practicum.javakanban;
+package ru.practicum.javakanban.manager;
+
+import ru.practicum.javakanban.model.Epic;
+import ru.practicum.javakanban.model.Subtask;
+import ru.practicum.javakanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;

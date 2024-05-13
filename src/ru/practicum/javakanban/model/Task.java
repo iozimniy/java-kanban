@@ -1,4 +1,4 @@
-package ru.practicum.javakanban;
+package ru.practicum.javakanban.model;
 
 import java.util.Objects;
 
@@ -40,7 +40,7 @@ public class Task {
         return id;
     }
 
-    void setId(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class Task {
         return status;
     }
 
-    void setStatus(Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
