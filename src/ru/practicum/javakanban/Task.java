@@ -8,10 +8,10 @@ public class Task {
     protected int id;
     protected Status status;
 
-    public Task(String name, String description) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
-        this.status = Status.NEW;
+        this.status = status;
     }
 
     public String getName() {
