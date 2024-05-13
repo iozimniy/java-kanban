@@ -2,18 +2,18 @@ package ru.practicum.javakanban;
 
 public class Subtask extends Task {
 
-    int epic_id;
+    private int epicId;
 
     public Subtask(String name, String description, Status status) {
         super(name, description, status);
     }
 
-    public Integer getEpic_id() {
-        return epic_id;
+    public Integer getEpicId() {
+        return epicId;
     }
 
-    void setEpic_id(Integer epic_id) {
-        this.epic_id = epic_id;
+    void setEpicId(Integer epicId) {
+        this.epicId = epicId;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class Subtask extends Task {
         return "Subtask{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", epic_id=" + epic_id +
+                ", epic_id=" + epicId +
                 ", status=" + status +
                 '}';
     }

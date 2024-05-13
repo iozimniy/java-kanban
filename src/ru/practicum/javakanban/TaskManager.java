@@ -26,7 +26,7 @@ public class TaskManager {
           ArrayList<Subtask> epicSubtasks = epic.getSubtasks();
           epicSubtasks.add(subtask);
 
-          subtask.setEpic_id(epic.getId());
+          subtask.setEpicId(epic.getId());
           subtasks.put(subtask.getId(), subtask);
 
           epic.updateStatus();
@@ -43,7 +43,7 @@ public class TaskManager {
 
      public void updateSubtask(Subtask subtask) {
           subtasks.put(subtask.getId(), subtask);
-          Epic epic = epics.get(subtask.getEpic_id());
+          Epic epic = epics.get(subtask.getEpicId());
 
           epic.updateStatus();
           updateEpic(epic);
@@ -132,7 +132,7 @@ public class TaskManager {
      public void deleteSubtask(int id) {
           if (subtasks.containsKey(id)) {
                Subtask subtask = subtasks.get(id);
-               Epic epic = epics.get(subtask.getEpic_id());
+               Epic epic = epics.get(subtask.getEpicId());
 
                epic.removeSubtask(subtask);
                epic.updateStatus();
