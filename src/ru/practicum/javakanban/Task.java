@@ -14,11 +14,17 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        status = Status.NEW;
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
@@ -26,7 +32,7 @@ public class Task {
         return description;
     }
 
-    public void setDescription(String description) {
+    void setDescription(String description) {
         this.description = description;
     }
 
@@ -34,7 +40,7 @@ public class Task {
         return id;
     }
 
-    public void setId(Integer id) {
+    void setId(Integer id) {
         this.id = id;
     }
 
@@ -42,7 +48,7 @@ public class Task {
         return status;
     }
 
-    public void setStatus(Status status) {
+    void setStatus(Status status) {
         this.status = status;
     }
 
