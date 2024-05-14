@@ -1,8 +1,5 @@
 package ru.practicum.javakanban.model;
 
-import ru.practicum.javakanban.model.Status;
-import ru.practicum.javakanban.model.Task;
-
 public class Subtask extends Task {
 
     private int epicId;

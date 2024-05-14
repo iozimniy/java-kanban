@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Epic extends Task {
     private ArrayList<Subtask> subtasks = new ArrayList<>();
@@ -36,15 +37,13 @@ public class Epic extends Task {
 
         for (Subtask epicSubtask : subtasks) statuses.add(epicSubtask.getStatus());
 
-        if (statuses.contains(Status.IN_PROGRESS) || statuses.contains(Status.NEW) && statuses.contains(Status.DONE)) {
-            setStatus(Status.IN_PROGRESS);
-            return;
-        } else if (!(statuses.contains(Status.NEW))) {
-            setStatus(Status.DONE);
-            return;
-        }
+        Collections.sort(statuses);
 
-        setStatus(Status.NEW);
+        if (statuses.getFirst() == statuses.getLast()) {
+            setStatus(statuses.getLast());
+        } else {
+            setStatus(Status.IN_PROGRESS);
+        }
     }
 
     public void removeSubtask(Subtask subtask) {
