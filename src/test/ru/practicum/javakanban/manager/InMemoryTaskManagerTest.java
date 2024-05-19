@@ -92,6 +92,7 @@ class InMemoryTaskManagerTest {
         task.setStatus(Status.IN_PROGRESS);
         task.setName("Новое название задачи");
         task.setDescription("Новое описание задачи");
+        inMemoryTaskManager.updateTask(task);
         var tasks = inMemoryTaskManager.getTasks();
 
         assertAll(
@@ -121,7 +122,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void updateSubtaskSubtaskChangesInSabtasks() {
+    public void updateSubtaskSubtaskChangesInSubtasks() {
         createTestEpic();
         createTestSubtask();
 
