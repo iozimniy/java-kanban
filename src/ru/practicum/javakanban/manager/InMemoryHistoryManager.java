@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.model.Task;
+
 import java.util.ArrayList;
 
 public class InMemoryHistoryManager implements HistoryManager {
@@ -10,7 +11,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (historyList.size() == 10) {
-            historyList.remove(0);
+            historyList.removeFirst();
         }
 
         historyList.add(task);

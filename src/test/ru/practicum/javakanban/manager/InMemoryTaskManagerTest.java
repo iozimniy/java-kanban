@@ -7,6 +7,8 @@ import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -156,6 +158,35 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void getAllTasksReturnArrayListTasks() {
+        createTestTask();
+
+        ArrayList<Task> allTasks = new ArrayList<>(inMemoryTaskManager.getTasks().values());
+
+        assertEquals(allTasks, inMemoryTaskManager.getAllTasks(), "getAllTasks не возвращает список задач");
+    }
+
+    @Test
+    public void getAllEpicsReturnArrayListEpics() {
+        createTestEpic();
+
+        ArrayList<Epic> allEpics = new ArrayList<>(inMemoryTaskManager.getEpics().values());
+
+        assertEquals(allEpics, inMemoryTaskManager.getAllEpics(), "getAllEpics не возвращает список эпиков");
+    }
+
+    @Test
+    public void getAllSubtasksReturnArrayListSubtasks() {
+        createTestEpic();
+        createTestSubtask();
+
+        ArrayList<Subtask> allSubtasks = new ArrayList<>(inMemoryTaskManager.getSubtasks().values());
+
+        assertEquals(allSubtasks, inMemoryTaskManager.getAllSubtasks(),
+                "getAllSubtasks не возвращает список подзадач");
+    }
+
+    @Test
     public void getEpicSubtasksCorrectIdReturnEpicSubtask() {
         createTestEpic();
         createTestSubtask();
@@ -220,7 +251,6 @@ class InMemoryTaskManagerTest {
 
         inMemoryTaskManager.getTask(task.getId());
 
-        System.out.println(inMemoryTaskManager.getHistory());
         assertTrue(inMemoryTaskManager.getHistory().contains(task));
     }
 
@@ -361,4 +391,6 @@ class InMemoryTaskManagerTest {
         subtask = new Subtask("Подзадача", "Описание подзадачи");
         inMemoryTaskManager.createSubtask(subtask, epic.getId());
     }
+
+
 }

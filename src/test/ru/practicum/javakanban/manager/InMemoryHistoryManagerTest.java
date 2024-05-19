@@ -5,9 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
-
-import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
@@ -32,7 +29,7 @@ class InMemoryHistoryManagerTest {
     @Test
     void addTaskItShouldBeInHistoryList() {
         inMemoryHistoryManager.add(task);
-        ArrayList historyTasks = inMemoryHistoryManager.getHistory();
+        var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
                 () -> assertEquals(1, historyTasks.size(), "При добавлении задачи historyList пуст"),
                 () -> assertEquals(task, historyTasks.getFirst(), "Задача не добавилась в historyList")
@@ -42,7 +39,7 @@ class InMemoryHistoryManagerTest {
     @Test
     void addEpicItShouldBeInHistoryList() {
         inMemoryHistoryManager.add(epic);
-        ArrayList historyTasks = inMemoryHistoryManager.getHistory();
+        var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
                 () -> assertEquals(1, historyTasks.size(), "При добавлении эпика historyList пуст"),
                 () -> assertEquals(epic, historyTasks.getFirst(), "Эпик не добавился в historyList")
@@ -52,7 +49,7 @@ class InMemoryHistoryManagerTest {
     @Test
     void addSubtaskItShouldBeInHistoryList() {
         inMemoryHistoryManager.add(subtask);
-        ArrayList historyTasks = inMemoryHistoryManager.getHistory();
+        var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
                 () -> assertEquals(1, historyTasks.size(), "При добавлении подзадачи historyList пуст"),
                 () -> assertEquals(subtask, historyTasks.getFirst(), "Подзадача не добавилась в historyList")
@@ -67,7 +64,7 @@ class InMemoryHistoryManagerTest {
         }
 
         inMemoryHistoryManager.add(epic);
-        ArrayList historyTasks = inMemoryHistoryManager.getHistory();
+        var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
                 () -> assertEquals(10, historyTasks.size(), "historyList распух"),
                 () -> assertEquals(epic, historyTasks.get(9), "Последняя задача не добавилась в конец")
