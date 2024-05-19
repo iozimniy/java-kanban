@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
-    InMemoryHistoryManager inMemoryHistoryManager;
+    HistoryManager inMemoryHistoryManager;
     Task task;
     Epic epic;
     Subtask subtask;
@@ -34,8 +34,8 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(task);
         ArrayList historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertTrue(historyTasks.size() == 1, "При добавлении задачи historyList пуст"),
-                () -> assertEquals(task, historyTasks.get(0), "Задача не добавилась в historyList")
+                () -> assertEquals(1, historyTasks.size(), "При добавлении задачи historyList пуст"),
+                () -> assertEquals(task, historyTasks.getFirst(), "Задача не добавилась в historyList")
         );
     }
 
@@ -44,8 +44,8 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(epic);
         ArrayList historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertTrue(historyTasks.size() == 1, "При добавлении эпика historyList пуст"),
-                () -> assertEquals(epic, historyTasks.get(0), "Эпик не добавился в historyList")
+                () -> assertEquals(1, historyTasks.size(), "При добавлении эпика historyList пуст"),
+                () -> assertEquals(epic, historyTasks.getFirst(), "Эпик не добавился в historyList")
         );
     }
 
@@ -53,10 +53,9 @@ class InMemoryHistoryManagerTest {
     void addSubtaskItShouldBeInHistoryList() {
         inMemoryHistoryManager.add(subtask);
         ArrayList historyTasks = inMemoryHistoryManager.getHistory();
-        ;
         assertAll(
-                () -> assertTrue(historyTasks.size() == 1, "При добавлении подзадачи historyList пуст"),
-                () -> assertEquals(subtask, historyTasks.get(0), "Подзадача не добавилась в historyList")
+                () -> assertEquals(1, historyTasks.size(), "При добавлении подзадачи historyList пуст"),
+                () -> assertEquals(subtask, historyTasks.getFirst(), "Подзадача не добавилась в historyList")
         );
     }
 
@@ -70,7 +69,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(epic);
         ArrayList historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertTrue(historyTasks.size() == 10, "historyList распух"),
+                () -> assertEquals(10, historyTasks.size(), "historyList распух"),
                 () -> assertEquals(epic, historyTasks.get(9), "Последняя задача не добавилась в конец")
         );
     }

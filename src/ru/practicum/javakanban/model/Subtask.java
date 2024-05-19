@@ -2,7 +2,7 @@ package ru.practicum.javakanban.model;
 
 public class Subtask extends Task {
 
-    private int epicId;
+    private Integer epicId;
 
     public Subtask(String name, String description, Status status) {
         super(name, description, status);
