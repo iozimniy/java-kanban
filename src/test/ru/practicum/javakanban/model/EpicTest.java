@@ -1,6 +1,5 @@
 package ru.practicum.javakanban.model;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.manager.Managers;
