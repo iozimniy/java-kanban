@@ -1,25 +1,21 @@
 package ru.practicum.javakanban.manager;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
     private InMemoryTaskManager inMemoryTaskManager;
-    private HistoryManager historyManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
+    private final Integer incorrectId = 1001;
 
     @BeforeEach
     public void createTaskManager() {
@@ -28,8 +24,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void createTaskTaskAddedToInMemoryManagerTasks() {
-        task = new Task("Задача", "Описание задачи");
-        inMemoryTaskManager.createTask(task);
+        createTestTask();
 
         var tasks = inMemoryTaskManager.getTasks();
 
@@ -40,10 +35,11 @@ class InMemoryTaskManagerTest {
         );
     }
 
+
+
     @Test
     public void createEpicAddedToInMemoryManagerEpics() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        createTestEpic();
 
         var epics = inMemoryTaskManager.getEpics();
 
@@ -54,12 +50,12 @@ class InMemoryTaskManagerTest {
         );
     }
 
+
+
     @Test
     public void createSubtaskAddedToInMemoryManagerSubtask() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         var subtasks = inMemoryTaskManager.getSubtasks();
 
@@ -72,12 +68,12 @@ class InMemoryTaskManagerTest {
         );
     }
 
+
+
     @Test
     public void createSubtaskAddEpicSubtasks() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         var epicSubtasks = epic.getSubtasks();
 
@@ -91,8 +87,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void updateTaskTaskChangesInTasks() {
-        task = new Task("Задача", "Описание задачи");
-        inMemoryTaskManager.createTask(task);
+        createTestTask();
 
         task.setStatus(Status.IN_PROGRESS);
         task.setName("Новое название задачи");
@@ -111,8 +106,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void updateEpicEpicChangesInEpics() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        createTestEpic();
 
         epic.setName("Новое название эпика");
         epic.setDescription("Новое описание эпика");
@@ -128,10 +122,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void updateSubtaskSubtaskChangesInSabtasks() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         subtask.setName("Новое имя подзадачи");
         subtask.setDescription("Новое описание подзадачи");
@@ -151,10 +143,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void updateSubtaskStatusChangeEpicStatus() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         subtask.setStatus(Status.IN_PROGRESS);
         inMemoryTaskManager.updateSubtask(subtask);
@@ -166,10 +156,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void getEpicSubtasksCorrectIdReturnEpicSubtask() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         var epicSubtask = epic.getSubtasks();
         assertEquals(epicSubtask, inMemoryTaskManager.getEpicSubtasks(epic.getId()),
@@ -184,8 +172,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteAllTasksTaskIsEmpty() {
-        task = new Task("Задача", "Описание задачи");
-        inMemoryTaskManager.createTask(task);
+        createTestTask();
 
         inMemoryTaskManager.deleteAllTasks();
         assertTrue(inMemoryTaskManager.getTasks().isEmpty(), "Задачи не очистились");
@@ -193,8 +180,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteAllEpicsSubtasksAndEpicsIsEmpty() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        createTestEpic();
 
         inMemoryTaskManager.deleteAllEpics();
         assertAll(
@@ -205,10 +191,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteAllSubtasksSubtasksIsEmptyAndEpicHasNoSubtasks() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         inMemoryTaskManager.deleteAllSubtasks();
         assertAll(
@@ -219,8 +203,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void getTaskCorrectIdReturnTask() {
-        task = new Task("Задача", "Описание задачи");
-        inMemoryTaskManager.createTask(task);
+        createTestTask();
 
         assertEquals(task, inMemoryTaskManager.getTask(task.getId()), "Задача не вернулась по id");
     }
@@ -231,11 +214,28 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void getTaskAddTaskInHistory() {
+        createTestTask();
+
+        inMemoryTaskManager.getTask(task.getId());
+
+        System.out.println(inMemoryTaskManager.getHistory());
+        assertTrue(inMemoryTaskManager.getHistory().contains(task));
+    }
+
+    @Test
     public void getEpicCorrectIdReturnEpic() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        createTestEpic();
 
         assertEquals(epic, inMemoryTaskManager.getEpic(epic.getId()), "Эпик не вернулся по id");
+    }
+
+    @Test
+    public void getEpicAddEpicInHistory() {
+        createTestEpic();
+
+        inMemoryTaskManager.getEpic(epic.getId());
+        assertTrue(inMemoryTaskManager.getHistory().contains(epic));
     }
 
     @Test
@@ -245,13 +245,20 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void getSubtaskCorrectIdReturnSubtask() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         assertEquals(subtask, inMemoryTaskManager.getSubtask(subtask.getId()),
                 "Подзадача не возвращается по id");
+    }
+
+    @Test
+    public void getSubtaskAddInHistory() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getSubtask(subtask.getId());
+
+        assertTrue(inMemoryTaskManager.getHistory().contains(subtask));
     }
 
     @Test
@@ -261,8 +268,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteTaskCorrectIdTaskRemoveFromTasks() {
-        task = new Task("Задача", "Описание задачи");
-        inMemoryTaskManager.createTask(task);
+        createTestTask();
 
         inMemoryTaskManager.deleteTask(task.getId());
         assertFalse(inMemoryTaskManager.getTasks().containsKey(task.getId()),
@@ -271,19 +277,17 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteTaskIncorrectIdTasksSizeIsTheSame() {
-        task = new Task("Задача", "Описание задачи");
-        inMemoryTaskManager.createTask(task);
+        createTestTask();
         int tasksSize = inMemoryTaskManager.getTasks().size();
 
-        inMemoryTaskManager.deleteTask(123);
+        inMemoryTaskManager.deleteTask(incorrectId);
         assertTrue(tasksSize == inMemoryTaskManager.getTasks().size(),
                 "Что-то удалилось из tasks, хотя удалять нечего");
     }
 
     @Test
     public void deleteEpicCorrectIdEpicRemoveFromEpics() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        createTestEpic();
 
         inMemoryTaskManager.deleteEpic(epic.getId());
 
@@ -293,10 +297,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteEpicCorrectIdEpicSubtasksRemoveFromSubtask() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
         var epicSubtasks = epic.getSubtasks();
 
         inMemoryTaskManager.deleteEpic(epic.getId());
@@ -308,21 +310,18 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteEpicIncorrectIdEpicsSizeIsTheSame() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        createTestEpic();
         int epicsSize = inMemoryTaskManager.getEpics().size();
 
-        inMemoryTaskManager.deleteEpic(123);
+        inMemoryTaskManager.deleteEpic(incorrectId);
         assertTrue(epicsSize == inMemoryTaskManager.getEpics().size(),
                 "Что-то удалилось из epics, хотя удалять нечего");
     }
 
     @Test
     public void deleteSubtaskCorrectIdSubtaskRemoveFromSubtask() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         inMemoryTaskManager.deleteSubtask(subtask.getId());
 
@@ -336,19 +335,29 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteSubtaskIncorrectIdSubtasksIsTheSame() {
-        epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        createTestEpic();
+        createTestSubtask();
 
         int subtasksSize = inMemoryTaskManager.getSubtasks().size();
-        inMemoryTaskManager.deleteSubtask(123);
+        inMemoryTaskManager.deleteSubtask(incorrectId);
 
         assertTrue(subtasksSize == inMemoryTaskManager.getSubtasks().size(),
                 "Что-то удалилось из subtasks, хотя удалять нечего");
     }
 
     //вспомогательные методы
+    private void createTestTask() {
+        task = new Task("Задача", "Описание задачи");
+        inMemoryTaskManager.createTask(task);
+    }
 
+    private void createTestEpic() {
+        epic = new Epic("Эпик", "Описание эпика");
+        inMemoryTaskManager.createEpic(epic);
+    }
 
+    private void createTestSubtask() {
+        subtask = new Subtask("Подзадача", "Описание подзадачи");
+        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+    }
 }
