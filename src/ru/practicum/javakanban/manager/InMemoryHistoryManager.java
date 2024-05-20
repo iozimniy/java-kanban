@@ -3,10 +3,11 @@ package ru.practicum.javakanban.manager;
 import ru.practicum.javakanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final ArrayList<Task> historyList = new ArrayList<>();
+    private final LinkedList<Task> historyList = new LinkedList<>();
     private static final int HISTORY_SIZE = 10;
 
     @Override
@@ -19,7 +20,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public LinkedList<Task> getHistory() {
         return historyList;
     }
 

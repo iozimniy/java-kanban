@@ -13,7 +13,7 @@ class InMemoryHistoryManagerTest {
     private Task task;
     private Epic epic;
     private Subtask subtask;
-    private int historySize = InMemoryHistoryManager.getHistorySize();
+    private final int historySize = InMemoryHistoryManager.getHistorySize();
 
     @BeforeEach
     public void createInMemoryHistoryManager() {
