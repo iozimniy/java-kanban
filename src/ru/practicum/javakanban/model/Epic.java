@@ -2,16 +2,17 @@ package ru.practicum.javakanban.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Epic extends Task {
-    private final ArrayList<Subtask> subtasks = new ArrayList<>();
+    private final List<Subtask> subtasks = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
         status = Status.NEW;
     }
 
-    public ArrayList<Subtask> getSubtasks() {
+    public List<Subtask> getSubtasks() {
         return subtasks;
     }
 
@@ -33,7 +34,7 @@ public class Epic extends Task {
             return;
         }
 
-        ArrayList<Status> statuses = new ArrayList<>();
+        List<Status> statuses = new ArrayList<>();
 
         for (Subtask epicSubtask : subtasks) statuses.add(epicSubtask.getStatus());
 

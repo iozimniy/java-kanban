@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
 
-    private Integer commonId = 2;
+    private final Integer commonId = 2;
 
     @Test
     public void equalsTasksPerId() {
