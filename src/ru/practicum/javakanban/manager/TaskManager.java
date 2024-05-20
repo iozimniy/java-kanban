@@ -5,7 +5,7 @@ import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -47,5 +47,5 @@ public interface TaskManager {
 
     void deleteSubtask(int id);
 
-    LinkedList<Task> getHistory();
+    List<Task> getHistory();
 }
