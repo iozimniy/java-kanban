@@ -12,7 +12,7 @@ class ManagersTest {
     }
 
     @Test
-    void getDefaultHistoryRetunsObjectHistoryManager() {
+    void getDefaultHistoryReturnsObjectHistoryManager() {
         assertInstanceOf(HistoryManager.class, Managers.getDefaultHistory(), "Объект должен иметь тип HistoryManager");
     }
 }
