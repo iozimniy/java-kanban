@@ -9,10 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
-    HistoryManager inMemoryHistoryManager;
-    Task task;
-    Epic epic;
-    Subtask subtask;
+    private HistoryManager inMemoryHistoryManager;
+    private Task task;
+    private Epic epic;
+    private Subtask subtask;
+    private int historySize = InMemoryHistoryManager.getHistorySize();
 
     @BeforeEach
     public void createInMemoryHistoryManager() {
@@ -59,15 +60,15 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void add11thTaskItShouldBe10th() {
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 0; i <= (historySize - 1); i++) {
             inMemoryHistoryManager.add(task);
         }
 
         inMemoryHistoryManager.add(epic);
         var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertEquals(10, historyTasks.size(), "historyList распух"),
-                () -> assertEquals(epic, historyTasks.get(9), "Последняя задача не добавилась в конец")
+                () -> assertEquals(historySize, historyTasks.size(), "historyList распух"),
+                () -> assertEquals(epic, historyTasks.get(historySize - 1), "Последняя задача не добавилась в конец")
         );
     }
 }
