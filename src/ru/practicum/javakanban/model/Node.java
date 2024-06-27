@@ -7,8 +7,8 @@ public class Node<T> {
 
     public Node(Node<Task> prev, Task task, Node<Task> next) {
         this.task = task;
-        this.next = prev;
-        this.prev = next;
+        this.next = next;
+        this.prev = prev;
     }
 
     public Task getTask() {

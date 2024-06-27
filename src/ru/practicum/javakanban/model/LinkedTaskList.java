@@ -2,6 +2,7 @@ package ru.practicum.javakanban.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class LinkedTaskList<T> {
     HashMap<Integer, Node> linkedTaskMap = new HashMap<>();
@@ -27,7 +28,6 @@ public class LinkedTaskList<T> {
         } else {
             oldTail.setNext(node);
         }
-
         linkedTaskMap.put(task.getId(), node);
     }
 
