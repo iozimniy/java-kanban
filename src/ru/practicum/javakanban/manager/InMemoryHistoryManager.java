@@ -1,30 +1,27 @@
 package ru.practicum.javakanban.manager;
 
+import ru.practicum.javakanban.model.LinkedTaskList;
 import ru.practicum.javakanban.model.Task;
+import ru.practicum.javakanban.model.Node;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final List<Task> historyList = new LinkedList<>();
-    private static final int HISTORY_SIZE = 10;
+    private final LinkedTaskList<Task> historyList = new LinkedTaskList<>();
 
     @Override
     public void add(Task task) {
-        if (historyList.size() == HISTORY_SIZE) {
-            historyList.removeFirst();
-        }
-
-        historyList.add(task);
+        historyList.linkLast(task);
     }
 
     @Override
     public List<Task> getHistory() {
-        return historyList;
+        return historyList.getTasks();
     }
 
-    public static int getHistorySize() {
-        return HISTORY_SIZE;
+    @Override
+    public void remove(int id) {
+        historyList.remove(id);
     }
 }

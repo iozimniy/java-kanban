@@ -83,7 +83,4 @@ class EpicTest {
 
         assertTrue(epic.getStatus() == Status.DONE);
     }
-
-    //вспомогательный метод
-
 }

@@ -9,15 +9,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
+    private TaskManager inMemoryTaskManager;
     private HistoryManager inMemoryHistoryManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
-    private final int historySize = InMemoryHistoryManager.getHistorySize();
 
     @BeforeEach
     public void createInMemoryHistoryManager() {
-        inMemoryHistoryManager = new InMemoryHistoryManager();
+        inMemoryHistoryManager = Managers.getDefaultHistory();
+        inMemoryTaskManager = Managers.getDefault();
     }
 
     @BeforeEach
@@ -25,7 +26,7 @@ class InMemoryHistoryManagerTest {
         task = new Task("Задача № 1", "Описание задачи № 1");
         epic = new Epic("Эпик № 1", "Описание эпика № 1");
         subtask = new Subtask("Подзадача № 1", "Описание подзадачи № 1");
-    }
+  }
 
     @Test
     void addTaskItShouldBeInHistoryList() {
@@ -57,18 +58,33 @@ class InMemoryHistoryManagerTest {
         );
     }
 
+    @Test
+    void removeTaskItShouldNotBeInHistoryList() {
+        inMemoryTaskManager.createTask(task);
+        inMemoryHistoryManager.add(task);
+        inMemoryHistoryManager.remove(task.getId());
+        var historyTasks = inMemoryHistoryManager.getHistory();
+        assertTrue(historyTasks.isEmpty(), "Задача не удалилась из historyList");
+    }
 
     @Test
-    void add11thTaskItShouldBe10th() {
-        for (int i = 0; i <= (historySize - 1); i++) {
-            inMemoryHistoryManager.add(task);
-        }
-
+    void removeEpicItShouldNotBeInHistoryList() {
+        inMemoryTaskManager.createEpic(epic);
         inMemoryHistoryManager.add(epic);
+        inMemoryHistoryManager.remove(epic.getId());
         var historyTasks = inMemoryHistoryManager.getHistory();
-        assertAll(
-                () -> assertEquals(historySize, historyTasks.size(), "historyList распух"),
-                () -> assertEquals(epic, historyTasks.get(historySize - 1), "Последняя задача не добавилась в конец")
-        );
+        assertTrue(historyTasks.isEmpty(), "Эпик не удалился из historyList");
     }
+
+    @Test
+    void removeSubtaskItShouldNotBeInHistoryList() {
+        inMemoryTaskManager.createEpic(epic);
+        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        inMemoryHistoryManager.add(subtask);
+        inMemoryHistoryManager.remove(subtask.getId());
+        var historyTasks = inMemoryHistoryManager.getHistory();
+        assertTrue(historyTasks.isEmpty(), "Подзадача не удалилась из historyList");
+    }
+
+
 }
