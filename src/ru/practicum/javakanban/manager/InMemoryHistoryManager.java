@@ -2,9 +2,8 @@ package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.model.LinkedTaskList;
 import ru.practicum.javakanban.model.Task;
-import ru.practicum.javakanban.model.Node;
 
-import java.util.*;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 

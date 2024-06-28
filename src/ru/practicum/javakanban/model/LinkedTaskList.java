@@ -2,12 +2,11 @@ package ru.practicum.javakanban.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class LinkedTaskList<T> {
-    HashMap<Integer, Node> linkedTaskMap = new HashMap<>();
     public Node<Task> head;
     public Node<Task> tail;
+    HashMap<Integer, Node> linkedTaskMap = new HashMap<>();
 
     public LinkedTaskList() {
         head = null;

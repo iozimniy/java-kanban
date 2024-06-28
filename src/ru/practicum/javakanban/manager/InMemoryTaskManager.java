@@ -195,7 +195,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.removeSubtask(subtask);
             epic.updateStatus();
 
-            if (historyManager.getHistory().contains(subtask)){
+            if (historyManager.getHistory().contains(subtask)) {
                 historyManager.remove(id);
             }
 
