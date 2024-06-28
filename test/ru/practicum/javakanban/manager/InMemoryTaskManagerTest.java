@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
+    private final Integer incorrectId = 1001;
     private InMemoryTaskManager inMemoryTaskManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
-    private final Integer incorrectId = 1001;
 
     @BeforeEach
     public void createTaskManager() {
@@ -38,7 +38,6 @@ class InMemoryTaskManagerTest {
     }
 
 
-
     @Test
     public void createEpicAddedToInMemoryManagerEpics() {
         createTestEpic();
@@ -51,7 +50,6 @@ class InMemoryTaskManagerTest {
                 () -> assertEquals(epic, epics.get(epic.getId()), "Эпик не ищется в epics по id")
         );
     }
-
 
 
     @Test
@@ -69,7 +67,6 @@ class InMemoryTaskManagerTest {
 
         );
     }
-
 
 
     @Test
