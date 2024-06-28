@@ -93,13 +93,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        for (Task task : tasks.values()) {
+            deleteTask(task.getId());
+        }
+
         tasks.clear();
     }
 
     @Override
     public void deleteAllEpics() {
-        subtasks.clear();
-        epics.clear();
+
+        for (Epic epic : epics.values()) {
+            deleteEpic(epic.getId());
+        }
     }
 
     @Override
@@ -111,7 +117,9 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpic(epic);
         }
 
-        subtasks.clear();
+        for (Subtask subtask : subtasks.values()) {
+            deleteSubtask(subtask.getId());
+        }
     }
 
     @Override
@@ -146,17 +154,32 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTask(int id) {
+        Task task = tasks.get(id);
+
+        if (historyManager.getHistory().contains(task)) {
+            historyManager.remove(id);
+        }
+
         tasks.remove(id);
     }
 
     @Override
     public void deleteEpic(int id) {
+
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
             List<Subtask> epicSubtasks = epic.getSubtasks();
 
             for (Subtask subtask : epicSubtasks) {
+                if (historyManager.getHistory().contains(subtask)) {
+                    historyManager.remove(subtask.getId());
+                }
+
                 subtasks.remove(subtask.getId());
+            }
+
+            if (historyManager.getHistory().contains(epic)) {
+                historyManager.remove(id);
             }
 
             epics.remove(id);
@@ -171,6 +194,11 @@ public class InMemoryTaskManager implements TaskManager {
 
             epic.removeSubtask(subtask);
             epic.updateStatus();
+
+            if (historyManager.getHistory().contains(subtask)){
+                historyManager.remove(id);
+            }
+
             subtasks.remove(id);
             updateEpic(epic);
         }

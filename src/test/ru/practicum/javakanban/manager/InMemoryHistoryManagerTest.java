@@ -22,7 +22,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addTaskItShouldBeInHistoryList() {
+    public void addTaskItShouldBeInHistoryList() {
         createTestTask();
         inMemoryHistoryManager.add(task);
         var historyTasks = inMemoryHistoryManager.getHistory();
@@ -33,7 +33,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addEpicItShouldBeInHistoryList() {
+    public void addEpicItShouldBeInHistoryList() {
         createTestEpic();
         inMemoryHistoryManager.add(epic);
         var historyTasks = inMemoryHistoryManager.getHistory();
@@ -44,7 +44,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addSubtaskItShouldBeInHistoryList() {
+    public void addSubtaskItShouldBeInHistoryList() {
         createTestSubtask();
         inMemoryHistoryManager.add(subtask);
         var historyTasks = inMemoryHistoryManager.getHistory();
@@ -55,7 +55,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void removeTaskItShouldNotBeInHistoryList() {
+    public void removeTaskItShouldNotBeInHistoryList() {
         createTestTask();
         inMemoryHistoryManager.add(task);
         inMemoryHistoryManager.remove(task.getId());
@@ -64,7 +64,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void removeEpicItShouldNotBeInHistoryList() {
+    public void removeEpicItShouldNotBeInHistoryList() {
         createTestEpic();
         inMemoryHistoryManager.add(epic);
         inMemoryHistoryManager.remove(epic.getId());
@@ -72,8 +72,9 @@ class InMemoryHistoryManagerTest {
         assertTrue(historyTasks.isEmpty(), "Эпик не удалился из historyList");
     }
 
+
     @Test
-    void removeSubtaskItShouldNotBeInHistoryList() {
+    public void removeSubtaskItShouldNotBeInHistoryList() {
         createTestSubtask();
         inMemoryHistoryManager.add(subtask);
         inMemoryHistoryManager.remove(subtask.getId());
@@ -81,8 +82,9 @@ class InMemoryHistoryManagerTest {
         assertTrue(historyTasks.isEmpty(), "Подзадача не удалилась из historyList");
     }
 
+
     @Test
-    void addTwoTheSameTasksFirstShouldBeRemoved() {
+    public void addTwoTheSameTasksFirstShouldBeRemoved() {
         createTestTask();
         inMemoryHistoryManager.add(task);
         inMemoryHistoryManager.add(task);
@@ -95,22 +97,22 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void addEpicAndTwoTheSameHisSubtaskEpicAndOneSubtaskInHistory() {
+    public void addTwoTheSameSubtasksEpicAndSubtaskInHistory() {
         createTestSubtask();
         inMemoryHistoryManager.add(epic);
         inMemoryHistoryManager.add(subtask);
         inMemoryHistoryManager.add(subtask);
         var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertTrue(historyTasks.size() == 2, "В historyList не хватает эпика или " +
-                        "подзадачи"),
+                () -> assertTrue(historyTasks.size() == 2, "В historyList неожиданное количество " +
+                        "объектов"),
                 () -> assertTrue(historyTasks.contains(epic), "В historyList не хватает эпика"),
                 () -> assertTrue(historyTasks.contains(subtask), "В historyList не хватает подзадачи")
         );
     }
 
     @Test
-    void addEpicSubtaskAndTaskAndTheSameSubtaskItShouldBeFirstInHistory() {
+    public void addEpicSubtaskAndTaskAndTheSameSubtaskIsFirstInHistory() {
         createTestSubtask();
         createTestTask();
         inMemoryHistoryManager.add(epic);
