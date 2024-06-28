@@ -121,7 +121,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(subtask);
         var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertEquals(subtask, historyTasks.get(0), "Последняя просмотренная задача не в " +
+                () -> assertEquals(subtask, historyTasks.getFirst(), "Последняя просмотренная задача не в " +
                         "начале списка"),
                 () -> assertTrue(historyTasks.size() == 3, "Список имеет неожиданный размер")
         );

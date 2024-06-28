@@ -63,7 +63,7 @@ public class LinkedTaskList<T> {
             node.setNext(null);
         }
 
-        linkedTaskMap.remove(node.getTask().getId());
+        linkedTaskMap.remove(node.getTaskId());
         node.setTask(null);
     }
 

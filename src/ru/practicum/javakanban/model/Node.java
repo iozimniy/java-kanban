@@ -34,4 +34,8 @@ public class Node<T> {
     public void setPrev(Node<Task> prev) {
         this.prev = prev;
     }
+
+    public int getTaskId() {
+        return task.getId();
+    }
 }
