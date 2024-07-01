@@ -1,11 +1,11 @@
 package ru.practicum.javakanban.model;
 
-public class Node<T> {
+public class Node {
     private Task task;
-    private Node<Task> next;
-    private Node<Task> prev;
+    private Node next;
+    private Node prev;
 
-    public Node(Node<Task> prev, Task task, Node<Task> next) {
+    public Node(Node prev, Task task, Node next) {
         this.task = task;
         this.next = next;
         this.prev = prev;
@@ -19,19 +19,19 @@ public class Node<T> {
         this.task = task;
     }
 
-    public Node<Task> getNext() {
+    public Node getNext() {
         return next;
     }
 
-    public void setNext(Node<Task> next) {
+    public void setNext(Node next) {
         this.next = next;
     }
 
-    public Node<Task> getPrev() {
+    public Node getPrev() {
         return prev;
     }
 
-    public void setPrev(Node<Task> prev) {
+    public void setPrev(Node prev) {
         this.prev = prev;
     }
 

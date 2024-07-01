@@ -3,9 +3,9 @@ package ru.practicum.javakanban.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LinkedTaskList<T> {
-    public Node<Task> head;
-    public Node<Task> tail;
+public class LinkedTaskList {
+    public Node head;
+    public Node tail;
     HashMap<Integer, Node> linkedTaskMap = new HashMap<>();
 
     public LinkedTaskList() {
@@ -18,8 +18,8 @@ public class LinkedTaskList<T> {
             removeNode(linkedTaskMap.get(task.getId()));
         }
 
-        final Node<Task> oldTail = tail;
-        final Node<Task> node = new Node<>(oldTail, task, null);
+        final Node oldTail = tail;
+        final Node node = new Node(oldTail, task, null);
         tail = node;
 
         if (oldTail == null) {
@@ -33,8 +33,8 @@ public class LinkedTaskList<T> {
     public ArrayList<Task> getTasks() {
         ArrayList<Task> historyTasks = new ArrayList<>();
 
-        Node<Task> currentNode;
-        Node<Task> nextNode = tail;
+        Node currentNode;
+        Node nextNode = tail;
         while (nextNode != null) {
             currentNode = nextNode;
             nextNode = currentNode.getPrev();
@@ -45,8 +45,8 @@ public class LinkedTaskList<T> {
     }
 
     public void removeNode(Node node) {
-        final Node<Task> next = node.getNext();
-        final Node<Task> prev = node.getPrev();
+        final Node next = node.getNext();
+        final Node prev = node.getPrev();
 
         if (prev == null) {
             head = next;
