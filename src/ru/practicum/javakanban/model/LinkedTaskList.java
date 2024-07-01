@@ -67,6 +67,9 @@ public class LinkedTaskList<T> {
     }
 
     public void remove(int id) {
-        removeNode(linkedTaskMap.get(id));
+        if (linkedTaskMap.containsKey(id)) {
+            removeNode(linkedTaskMap.get(id));
+        }
     }
+
 }
