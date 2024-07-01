@@ -2,6 +2,7 @@ package ru.practicum.javakanban.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class LinkedTaskList {
     public Node head;
@@ -30,8 +31,8 @@ public class LinkedTaskList {
         linkedTaskMap.put(task.getId(), node);
     }
 
-    public ArrayList<Task> getTasks() {
-        ArrayList<Task> historyTasks = new ArrayList<>();
+    public List<Task> getTasks() {
+        List<Task> historyTasks = new ArrayList<>();
 
         Node currentNode;
         Node nextNode = tail;
