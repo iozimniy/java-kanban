@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
+    private final Integer incorrectId = 1001;
     private InMemoryTaskManager inMemoryTaskManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
-    private final Integer incorrectId = 1001;
 
     @BeforeEach
     public void createTaskManager() {
@@ -38,7 +38,6 @@ class InMemoryTaskManagerTest {
     }
 
 
-
     @Test
     public void createEpicAddedToInMemoryManagerEpics() {
         createTestEpic();
@@ -51,7 +50,6 @@ class InMemoryTaskManagerTest {
                 () -> assertEquals(epic, epics.get(epic.getId()), "Эпик не ищется в epics по id")
         );
     }
-
 
 
     @Test
@@ -69,7 +67,6 @@ class InMemoryTaskManagerTest {
 
         );
     }
-
 
 
     @Test
@@ -374,6 +371,113 @@ class InMemoryTaskManagerTest {
 
         assertTrue(subtasksSize == inMemoryTaskManager.getSubtasks().size(),
                 "Что-то удалилось из subtasks, хотя удалять нечего");
+    }
+
+    @Test
+    public void deleteTaskItShouldNotBeInHistory() {
+        createTestTask();
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.deleteTask(task.getId());
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "Удалённая задача не удалилась из истории");
+    }
+
+    @Test
+    public void deleteEpicItShouldNotBeInHistory() {
+        createTestEpic();
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.deleteEpic(epic.getId());
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "Удалённый эпик не удалилась из истории");
+    }
+
+    @Test
+    public void deleteEpicWithSubtaskSubtaskDeleteFromHistory() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubtask(subtask.getId());
+        inMemoryTaskManager.deleteEpic(epic.getId());
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+    }
+
+    @Test
+    public void deleteSubtaskItShouldNotBeInHistory() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getSubtask(subtask.getId());
+        inMemoryTaskManager.deleteSubtask(subtask.getId());
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "Подзадача не удалилась из истории");
+    }
+
+    @Test
+    public void deleteSubtaskEpicIsInHistory() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubtask(subtask.getId());
+        inMemoryTaskManager.deleteSubtask(subtask.getId());
+
+        assertAll(
+                () -> assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик удалился из истории"),
+                () -> assertTrue(inMemoryTaskManager.getHistory().size() == 1, "Неожиданный размер " +
+                        "истории")
+        );
+    }
+
+    @Test
+    public void deleteAllTasksHistoryIsEmpty() {
+        createTestTask();
+        inMemoryTaskManager.getTask(task.getId());
+        inMemoryTaskManager.deleteAllTasks();
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+    }
+
+    @Test
+    public void deleteAllEpicsHistoryIsEmpty() {
+        createTestEpic();
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.deleteAllEpics();
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+    }
+
+    @Test
+    public void deleteAllEpicsWithSubtaskHistoryIsEmpty() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubtask(subtask.getId());
+        inMemoryTaskManager.deleteAllEpics();
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+    }
+
+    @Test
+    public void deleteAllSubtasksHistoryIsEmpty() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getSubtask(subtask.getId());
+        inMemoryTaskManager.deleteAllSubtasks();
+
+        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+    }
+
+    @Test
+    public void deleteAllSubtasksEpicIsInHistory() {
+        createTestEpic();
+        createTestSubtask();
+        inMemoryTaskManager.getEpic(epic.getId());
+        inMemoryTaskManager.getSubtask(subtask.getId());
+        inMemoryTaskManager.deleteAllSubtasks();
+
+        assertAll(
+                () -> assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик удалился из истории"),
+                () -> assertTrue(inMemoryTaskManager.getHistory().size() == 1, "Неожиданный размер " +
+                        "истории")
+        );
     }
 
     //вспомогательные методы

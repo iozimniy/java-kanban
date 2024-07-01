@@ -1,7 +1,8 @@
 package ru.practicum.javakanban.model;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskTest {
 
@@ -9,7 +10,7 @@ class TaskTest {
 
     @Test
     public void equalsTasksPerId() {
-        Task task = new Task("Задача","Описание задачи");
+        Task task = new Task("Задача", "Описание задачи");
         task.setId(commonId);
         Task task1 = new Task("Какая-то задача", "Какое-то описание");
         task1.setId(commonId);
