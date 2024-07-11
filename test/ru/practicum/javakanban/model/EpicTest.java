@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.manager.Managers;
 import ru.practicum.javakanban.manager.TaskManager;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EpicTest {
 
@@ -83,7 +83,4 @@ class EpicTest {
 
         assertTrue(epic.getStatus() == Status.DONE);
     }
-
-    //вспомогательный метод
-
 }
