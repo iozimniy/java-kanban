@@ -12,5 +12,8 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static TaskManager getFileBacked(File file) { return new FileBackedTaskManager(getDefaultHistory(), file); };
+    public static TaskManager getFileBacked(File file) {
+        return new FileBackedTaskManager(getDefaultHistory(), file);
+    }
+
 }

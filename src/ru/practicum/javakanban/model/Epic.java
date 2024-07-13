@@ -7,7 +7,7 @@ import java.util.List;
 public class Epic extends Task {
     private final List<Subtask> subtasks = new ArrayList<>();
 
-    private TaskType type = TaskType.EPIC;
+    private final TaskType type = TaskType.EPIC;
 
     public Epic(String name, String description) {
         super(name, description);

@@ -5,7 +5,7 @@ public enum Status {
     IN_PROGRESS("IN_PROGRESS"),
     DONE("DONE");
 
-    private String stringValue;
+    private final String stringValue;
 
     Status(String stringValue) {
         this.stringValue = stringValue;

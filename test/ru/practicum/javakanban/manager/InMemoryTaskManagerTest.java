@@ -150,8 +150,7 @@ class InMemoryTaskManagerTest {
         inMemoryTaskManager.updateSubtask(subtask);
         var epics = inMemoryTaskManager.getEpics();
 
-        assertTrue(epics.get(epic.getId()).getStatus() == Status.IN_PROGRESS,
-                "У эпика не изменился статус");
+        assertSame(epics.get(epic.getId()).getStatus(), Status.IN_PROGRESS, "У эпика не изменился статус");
     }
 
     @Test
@@ -202,6 +201,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void deleteAllTasksTaskIsEmpty() {
         createTestTask();
+        createTestTask();
 
         inMemoryTaskManager.deleteAllTasks();
         assertTrue(inMemoryTaskManager.getTasks().isEmpty(), "Задачи не очистились");
@@ -209,6 +209,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void deleteAllEpicsSubtasksAndEpicsIsEmpty() {
+        createTestEpic();
         createTestEpic();
 
         inMemoryTaskManager.deleteAllEpics();
@@ -221,6 +222,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void deleteAllSubtasksSubtasksIsEmptyAndEpicHasNoSubtasks() {
         createTestEpic();
+        createTestSubtask();
         createTestSubtask();
 
         inMemoryTaskManager.deleteAllSubtasks();
@@ -309,8 +311,7 @@ class InMemoryTaskManagerTest {
         int tasksSize = inMemoryTaskManager.getTasks().size();
 
         inMemoryTaskManager.deleteTask(incorrectId);
-        assertTrue(tasksSize == inMemoryTaskManager.getTasks().size(),
-                "Что-то удалилось из tasks, хотя удалять нечего");
+        assertEquals(tasksSize, inMemoryTaskManager.getTasks().size(), "Что-то удалилось из tasks, хотя удалять нечего");
     }
 
     @Test
@@ -342,8 +343,7 @@ class InMemoryTaskManagerTest {
         int epicsSize = inMemoryTaskManager.getEpics().size();
 
         inMemoryTaskManager.deleteEpic(incorrectId);
-        assertTrue(epicsSize == inMemoryTaskManager.getEpics().size(),
-                "Что-то удалилось из epics, хотя удалять нечего");
+        assertEquals(epicsSize, inMemoryTaskManager.getEpics().size(), "Что-то удалилось из epics, хотя удалять нечего");
     }
 
     @Test
@@ -369,8 +369,7 @@ class InMemoryTaskManagerTest {
         int subtasksSize = inMemoryTaskManager.getSubtasks().size();
         inMemoryTaskManager.deleteSubtask(incorrectId);
 
-        assertTrue(subtasksSize == inMemoryTaskManager.getSubtasks().size(),
-                "Что-то удалилось из subtasks, хотя удалять нечего");
+        assertEquals(subtasksSize, inMemoryTaskManager.getSubtasks().size(), "Что-то удалилось из subtasks, хотя удалять нечего");
     }
 
     @Test
@@ -421,7 +420,7 @@ class InMemoryTaskManagerTest {
 
         assertAll(
                 () -> assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик удалился из истории"),
-                () -> assertTrue(inMemoryTaskManager.getHistory().size() == 1, "Неожиданный размер " +
+                () -> assertEquals(1, inMemoryTaskManager.getHistory().size(), "Неожиданный размер " +
                         "истории")
         );
     }
@@ -475,7 +474,7 @@ class InMemoryTaskManagerTest {
 
         assertAll(
                 () -> assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик удалился из истории"),
-                () -> assertTrue(inMemoryTaskManager.getHistory().size() == 1, "Неожиданный размер " +
+                () -> assertEquals(1, inMemoryTaskManager.getHistory().size(), "Неожиданный размер " +
                         "истории")
         );
     }

@@ -91,7 +91,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(task);
         var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertTrue(historyTasks.size() == 1, "В historyList лишние задачи"),
+                () -> assertEquals(1, historyTasks.size(), "В historyList лишние задачи"),
                 () -> assertTrue(historyTasks.contains(task), "Задача куда-то подевалась после двойного " +
                         "добавления")
         );
@@ -105,7 +105,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(subtask);
         var historyTasks = inMemoryHistoryManager.getHistory();
         assertAll(
-                () -> assertTrue(historyTasks.size() == 2, "В historyList неожиданное количество " +
+                () -> assertEquals(2, historyTasks.size(), "В historyList неожиданное количество " +
                         "объектов"),
                 () -> assertTrue(historyTasks.contains(epic), "В historyList не хватает эпика"),
                 () -> assertTrue(historyTasks.contains(subtask), "В historyList не хватает подзадачи")
@@ -124,7 +124,7 @@ class InMemoryHistoryManagerTest {
         assertAll(
                 () -> assertEquals(subtask, historyTasks.getFirst(), "Последняя просмотренная задача не в " +
                         "начале списка"),
-                () -> assertTrue(historyTasks.size() == 3, "Список имеет неожиданный размер")
+                () -> assertEquals(3, historyTasks.size(), "Список имеет неожиданный размер")
         );
 
     }

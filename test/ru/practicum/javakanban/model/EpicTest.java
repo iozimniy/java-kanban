@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.manager.Managers;
 import ru.practicum.javakanban.manager.TaskManager;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EpicTest {
@@ -33,7 +34,7 @@ class EpicTest {
         subtask2.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask2);
 
-        assertTrue(epic.getStatus() == Status.DONE);
+        assertSame(epic.getStatus(), Status.DONE);
     }
 
     @Test
@@ -43,7 +44,7 @@ class EpicTest {
         subtask2.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask2);
 
-        assertTrue(epic.getStatus() == Status.IN_PROGRESS);
+        assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
@@ -53,7 +54,7 @@ class EpicTest {
         subtask2.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask2);
 
-        assertTrue(epic.getStatus() == Status.IN_PROGRESS);
+        assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
@@ -63,7 +64,7 @@ class EpicTest {
         subtask2.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask2);
 
-        assertTrue(epic.getStatus() == Status.IN_PROGRESS);
+        assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
@@ -73,7 +74,7 @@ class EpicTest {
         subtask2.setStatus(Status.IN_PROGRESS);
         taskManager.updateSubtask(subtask2);
 
-        assertTrue(epic.getStatus() == Status.IN_PROGRESS);
+        assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
@@ -81,6 +82,6 @@ class EpicTest {
         taskManager.deleteSubtask(subtask1.getId());
         taskManager.deleteSubtask(subtask2.getId());
 
-        assertTrue(epic.getStatus() == Status.DONE);
+        assertSame(epic.getStatus(), Status.DONE);
     }
 }

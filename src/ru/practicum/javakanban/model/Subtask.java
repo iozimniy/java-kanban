@@ -4,7 +4,7 @@ public class Subtask extends Task {
 
     private Integer epicId;
 
-    private TaskType type = TaskType.SUBTASK;
+    private final TaskType type = TaskType.SUBTASK;
 
     public Subtask(String name, String description, Status status) {
         super(name, description, status);
