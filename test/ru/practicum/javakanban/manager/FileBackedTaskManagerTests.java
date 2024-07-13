@@ -26,7 +26,7 @@ class FileBackedTaskManagerTest {
     public void createFileBackedTaskManager() {
         /*здесь также можно использовать метод createFile(), который создаст файл в папке resources, что может быть
         удобнее для отладки*/
-        fileBackedTaskManager = new FileBackedTaskManager(Managers.getDefaultHistory(), createTempFile());
+        fileBackedTaskManager = Managers.getFileBacked(createTempFile());
     }
 
     @Test
