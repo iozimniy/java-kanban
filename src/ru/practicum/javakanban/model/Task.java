@@ -7,6 +7,7 @@ public class Task {
     protected String description;
     protected Integer id;
     protected Status status;
+    protected TaskType type = TaskType.TASK;
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -18,6 +19,14 @@ public class Task {
         this.name = name;
         this.description = description;
         status = Status.NEW;
+    }
+
+    public Task(String name, String description, Integer id, Status status, TaskType type) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.type = type;
     }
 
     public String getName() {
@@ -52,6 +61,14 @@ public class Task {
         this.status = status;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,12 +84,15 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return getType() + "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 '}';
     }
 
-
+    public String convertToString() {
+        return getId().toString() + "," + getType().toString() + "," + getName() + "," +
+                getStatus().toString() + "," + getDescription();
+    }
 }

@@ -4,10 +4,7 @@ import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
@@ -93,7 +90,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+
+        List<Task> tasksForDelete = new ArrayList<>();
+
         for (Task task : tasks.values()) {
+            tasksForDelete.add(task);
+        }
+
+        for (Task task : tasksForDelete) {
             deleteTask(task.getId());
         }
 
@@ -103,7 +107,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
 
+        List<Epic> epicsForDelete = new ArrayList<>();
+
         for (Epic epic : epics.values()) {
+            epicsForDelete.add(epic);
+        }
+
+        for (Epic epic : epicsForDelete) {
             deleteEpic(epic.getId());
         }
     }
@@ -117,7 +127,13 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpic(epic);
         }
 
+        List<Subtask> subtasksForDelete = new ArrayList<>();
+
         for (Subtask subtask : subtasks.values()) {
+            subtasksForDelete.add(subtask);
+        }
+
+        for (Subtask subtask : subtasksForDelete) {
             deleteSubtask(subtask.getId());
         }
     }
