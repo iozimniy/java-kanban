@@ -9,7 +9,6 @@ import ru.practicum.javakanban.model.Task;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -21,6 +20,50 @@ class FileBackedTaskManagerTest {
     private Task task;
     private Epic epic;
     private Subtask subtask;
+
+    private static String getFirsNote(String file) {
+        String taskFromFile = null;
+
+        try (Reader reader = new FileReader(file, UTF_8)) {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); //пропускаем шапку csv
+            taskFromFile = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать строку из файла.");
+        }
+        return taskFromFile;
+    }
+
+    private static String getSecondNote(String file) {
+        String secondNote = null;
+
+        try (Reader reader = new FileReader(file, UTF_8)) {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); //пропускаем шапку csv
+            bufferedReader.readLine(); //пропускаем первую запись
+            secondNote = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать строку из файла.");
+        }
+
+        return secondNote;
+    }
+
+    private static String getThirdNote(String file) {
+        String thirdNote = null;
+
+        try (Reader reader = new FileReader(file, UTF_8)) {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); //пропускаем шапку csv
+            bufferedReader.readLine(); //пропускаем первую запись
+            bufferedReader.readLine(); //пропускаем вторую запись
+            thirdNote = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать строку из файла.");
+        }
+
+        return thirdNote;
+    }
 
     @BeforeEach
     public void createFileBackedTaskManager() {
@@ -49,29 +92,20 @@ class FileBackedTaskManagerTest {
     public void createTaskFileWithTask() {
         createTestTask();
 
-        String taskString = null;
-        try {
-            taskString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String taskFromFile = getFirsNote(file);
 
-        assertEquals(taskString, task.convertToString(), "Задача не записалась в файл");
+        assertEquals(task.convertToString(), taskFromFile, "Задача не записалась в файл");
     }
 
     @Test
     public void createEpicFileWithEpic() {
         createTestEpic();
 
-        String epicString = null;
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String taskFromFile = getFirsNote(file);
 
-        try {
-            epicString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
-
-        assertEquals(epicString, epic.convertToString(), "Эпик не записался в файл");
+        assertEquals(epic.convertToString(), taskFromFile, "Эпик не записался в файл");
     }
 
     @Test
@@ -79,16 +113,9 @@ class FileBackedTaskManagerTest {
         createTestSubtask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
-        String epicString = null;
-        String subtaskString = null;
 
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            epicString = bufferedReader.readLine();
-            subtaskString = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
+        String epicString = getFirsNote(file);
+        String subtaskString = getSecondNote(file);
 
         assertEquals(epicString, epic.convertToString(), "Эпик не записался в файл");
         assertEquals(subtaskString, subtask.convertToString(), "Подзадача не записался в файл");
@@ -99,7 +126,8 @@ class FileBackedTaskManagerTest {
         createTestTask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
-        assertEquals(newFileBackedTaskManager.getTask(task.getId()), task, "Задачу не удалось восстановить " +
+
+        assertEquals(task, newFileBackedTaskManager.getTask(task.getId()), "Задачу не удалось восстановить " +
                 "из файла");
     }
 
@@ -108,6 +136,7 @@ class FileBackedTaskManagerTest {
         createTestEpic();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
+
         assertEquals(newFileBackedTaskManager.getEpic(epic.getId()), epic, "Эпик не удалось восстановить " +
                 "из файла");
     }
@@ -117,6 +146,7 @@ class FileBackedTaskManagerTest {
         createTestSubtask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
+
         assertAll(
                 () -> assertEquals(newFileBackedTaskManager.getSubtask(subtask.getId()), subtask, "Подзадачу не " +
                         "удалось восстановить из файла"),
@@ -130,13 +160,9 @@ class FileBackedTaskManagerTest {
         createTestTask();
         task.setName("Новое название задачи");
         fileBackedTaskManager.updateTask(task);
-        String taskString = null;
 
-        try {
-            taskString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String taskString = getFirsNote(file);
 
         assertEquals(task.convertToString(), taskString, "Задача не обновилась в файле");
     }
@@ -146,15 +172,11 @@ class FileBackedTaskManagerTest {
         createTestEpic();
         epic.setName("Новое название эпика");
         fileBackedTaskManager.updateEpic(epic);
-        String epicString = null;
 
-        try {
-            epicString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String taskString = getFirsNote(file);
 
-        assertEquals(epic.convertToString(), epicString, "Эпик не обновился в файле");
+        assertEquals(epic.convertToString(), taskString, "Задача не обновилась в файле");
     }
 
     @Test
@@ -164,18 +186,10 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.updateSubtask(subtask);
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
-        String epicString = null;
-        String subtaskString = null;
+        String epicString = getFirsNote(file);
+        String subtaskString = getSecondNote(file);
 
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            epicString = bufferedReader.readLine();
-            subtaskString = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла!");
-        }
-
-        assertEquals(epicString, epic.convertToString(), "Эпик не записался в файл");
+        assertEquals(epic.convertToString(), epicString, "Эпик не записался в файл");
         assertEquals(subtask.convertToString(), subtaskString, "Подзадача не обновилась в файле");
     }
 
@@ -184,15 +198,10 @@ class FileBackedTaskManagerTest {
         createTestTask();
         fileBackedTaskManager.deleteTask(task.getId());
 
-        String emptyString = null;
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String nullString = getFirsNote(file);
 
-        try {
-            emptyString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
-
-        assertTrue(emptyString.isEmpty(), "Строка не пустая после удаления задачи");
+        assertNull(nullString, "Есть вторая строка после удаления задачи");
     }
 
     @Test
@@ -200,15 +209,10 @@ class FileBackedTaskManagerTest {
         createTestEpic();
         fileBackedTaskManager.deleteEpic(epic.getId());
 
-        String emptyString = null;
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String nullString = getFirsNote(file);
 
-        try {
-            emptyString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
-
-        assertTrue(emptyString.isEmpty(), "Строка не пустая после удаления эпика");
+        assertNull(nullString, "Есть вторая строка после удаления эпика");
     }
 
     @Test
@@ -217,19 +221,14 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.deleteSubtask(subtask.getId());
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
-        String epicString = null;
-        String subtaskString = null;
+        String epicString = getFirsNote(file);
+        String subtaskString = getSecondNote(file);
 
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            epicString = bufferedReader.readLine();
-            subtaskString = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Ну удалось прочитать строку из файла");
-        }
+        assertAll(
+                () -> assertEquals(epic.convertToString(), epicString, "Нет эпика после удаления подзадачи"),
+                () -> assertNull(subtaskString, "Подзадача после удаления не удалилась из файла")
+        );
 
-        assertEquals(epicString, epic.convertToString(), "Эпик не записался в файл");
-        assertNull(subtaskString, "Подзадача после удаления не удалилась из файла");
     }
 
     @Test
@@ -238,15 +237,10 @@ class FileBackedTaskManagerTest {
         createTestTask();
         fileBackedTaskManager.deleteAllTasks();
 
-        String emptyString = null;
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String nullString = getFirsNote(file);
 
-        try {
-            emptyString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
-
-        assertTrue(emptyString.isEmpty(), "Строка не пустая после удаления задач");
+        assertNull(nullString, "В файле есть какие-то задачи после удаления всех задач");
     }
 
     @Test
@@ -255,15 +249,10 @@ class FileBackedTaskManagerTest {
         createTestEpic();
         fileBackedTaskManager.deleteAllEpics();
 
-        String emptyString = null;
+        String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
+        String nullString = getFirsNote(file);
 
-        try {
-            emptyString = Files.readString(fileBackedTaskManager.getTaskManagerCsv().toPath()).trim();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
-
-        assertTrue(emptyString.isEmpty(), "Строка не пустая после удаления задач");
+        assertNull(nullString, "В файле есть какие-то задачи после удаления всех эпиков");
     }
 
     @Test
@@ -274,24 +263,20 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.deleteAllSubtasks();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
-        List<String> stringTasksFromFile = new ArrayList<>();
-
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            while (bufferedReader.ready()) {
-                String str = bufferedReader.readLine();
-                stringTasksFromFile.add(str);
-            }
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла");
-        }
+        String epicString = getFirsNote(file);
+        String subtaskString = getSecondNote(file);
+        String otherSubtaskString = getThirdNote(file);
 
         assertAll(
-                () -> assertEquals(stringTasksFromFile.getFirst(), epic.convertToString()),
-                () -> assertEquals(1, stringTasksFromFile.size())
+                () -> assertEquals(epic.convertToString(), epicString, "Эпик удалилс после " +
+                        "удаления всех подзадач"),
+                () -> assertNull(subtaskString, "Подзадача не удалилась из файла после удаления всех подзадач"),
+                () -> assertNull(otherSubtaskString, "Вторая подзадача не удалилась из файла после удаления " +
+                        "всех подзадач")
         );
     }
 
+    //вспомогательные методы
     public File createFile() {
         File taskManagerCsvFile = null;
         try {
@@ -321,7 +306,6 @@ class FileBackedTaskManagerTest {
         return file;
     }
 
-    //вспомогательные методы
     private void createTestTask() {
         task = new Task("Задача", "Описание задачи");
         fileBackedTaskManager.createTask(task);

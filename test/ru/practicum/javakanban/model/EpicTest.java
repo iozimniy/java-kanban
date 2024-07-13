@@ -6,7 +6,6 @@ import ru.practicum.javakanban.manager.Managers;
 import ru.practicum.javakanban.manager.TaskManager;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EpicTest {
 

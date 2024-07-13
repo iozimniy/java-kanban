@@ -2,9 +2,8 @@ package ru.practicum.javakanban.model;
 
 public class Subtask extends Task {
 
-    private Integer epicId;
-
     private final TaskType type = TaskType.SUBTASK;
+    private Integer epicId;
 
     public Subtask(String name, String description, Status status) {
         super(name, description, status);

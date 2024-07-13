@@ -10,6 +10,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
+    public static final String HEADER = "id,type,name,status,description,epicId\n";
     private final File taskManagerCsv;
 
     public FileBackedTaskManager(HistoryManager historyManager, File taskManagerCsv) {
@@ -36,8 +37,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (Reader reader = new FileReader(file.getAbsolutePath(), StandardCharsets.UTF_8)) {
             BufferedReader bufferedReader = new BufferedReader(reader);
+            boolean firstString = true;
 
             while (bufferedReader.ready()) {
+                if (firstString) {
+                    bufferedReader.readLine();
+                    firstString = false;
+                    continue;
+                }
                 String taskStr = bufferedReader.readLine();
                 stringTasks.add(taskStr);
             }
@@ -143,6 +150,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         List<Subtask> subtasks = getAllSubtasks();
 
         try (Writer writer = new FileWriter(taskManagerCsv, StandardCharsets.UTF_8)) {
+
+            writer.write(HEADER);
 
             for (Task task : tasks) {
                 writer.write(task.convertToString() + "\n");
