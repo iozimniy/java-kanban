@@ -21,50 +21,6 @@ class FileBackedTaskManagerTest {
     private Epic epic;
     private Subtask subtask;
 
-    private static String getFirsNote(String file) {
-        String taskFromFile = null;
-
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            bufferedReader.readLine(); //пропускаем шапку csv
-            taskFromFile = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
-        return taskFromFile;
-    }
-
-    private static String getSecondNote(String file) {
-        String secondNote = null;
-
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            bufferedReader.readLine(); //пропускаем шапку csv
-            bufferedReader.readLine(); //пропускаем первую запись
-            secondNote = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
-
-        return secondNote;
-    }
-
-    private static String getThirdNote(String file) {
-        String thirdNote = null;
-
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            bufferedReader.readLine(); //пропускаем шапку csv
-            bufferedReader.readLine(); //пропускаем первую запись
-            bufferedReader.readLine(); //пропускаем вторую запись
-            thirdNote = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
-
-        return thirdNote;
-    }
-
     @BeforeEach
     public void createFileBackedTaskManager() {
         /*здесь также можно использовать метод createFile(), который создаст файл в папке resources, что может быть
@@ -321,5 +277,49 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createEpic(epic);
         subtask = new Subtask("Подзадача", "Описание подзадачи");
         fileBackedTaskManager.createSubtask(subtask, epic.getId());
+    }
+
+    private static String getFirsNote(String file) {
+        String taskFromFile = null;
+
+        try (Reader reader = new FileReader(file, UTF_8)) {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); //пропускаем шапку csv
+            taskFromFile = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать строку из файла.");
+        }
+        return taskFromFile;
+    }
+
+    private static String getSecondNote(String file) {
+        String secondNote = null;
+
+        try (Reader reader = new FileReader(file, UTF_8)) {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); //пропускаем шапку csv
+            bufferedReader.readLine(); //пропускаем первую запись
+            secondNote = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать строку из файла.");
+        }
+
+        return secondNote;
+    }
+
+    private static String getThirdNote(String file) {
+        String thirdNote = null;
+
+        try (Reader reader = new FileReader(file, UTF_8)) {
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine(); //пропускаем шапку csv
+            bufferedReader.readLine(); //пропускаем первую запись
+            bufferedReader.readLine(); //пропускаем вторую запись
+            thirdNote = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Не удалось прочитать строку из файла.");
+        }
+
+        return thirdNote;
     }
 }
