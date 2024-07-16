@@ -1,5 +1,6 @@
 package ru.practicum.javakanban.manager;
 
+import ru.practicum.javakanban.exeptions.ManagerLoadException;
 import ru.practicum.javakanban.exeptions.ManagerSaveException;
 import ru.practicum.javakanban.model.*;
 
@@ -83,7 +84,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 stringTasks.add(taskStr);
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Внимание: рак на горе свистнул!");
+            throw new ManagerLoadException("Внимание: рак на горе свистнул!");
         }
 
         return stringTasks;
