@@ -22,14 +22,14 @@ class FileBackedTaskManagerTest {
     private Subtask subtask;
 
     @BeforeEach
-    public void createFileBackedTaskManager() {
+    public void createFileBackedTaskManager() throws IOException {
         /*здесь также можно использовать метод createFile(), который создаст файл в папке resources, что может быть
         удобнее для отладки*/
         fileBackedTaskManager = Managers.getFileBacked(createTempFile());
     }
 
     @Test
-    public void saveEmptyFileManagerHasNoTasks() {
+    public void saveEmptyFileManagerHasNoTasks() throws IOException {
         File file = createTempFile();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
 
@@ -45,7 +45,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void createTaskFileWithTask() {
+    public void createTaskFileWithTask() throws IOException {
         createTestTask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -55,7 +55,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void createEpicFileWithEpic() {
+    public void createEpicFileWithEpic() throws IOException {
         createTestEpic();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -65,7 +65,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void createSubtaskFileWithEpicAndSubtask() {
+    public void createSubtaskFileWithEpicAndSubtask() throws IOException {
         createTestSubtask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -112,7 +112,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void updateTaskUpdateInFile() {
+    public void updateTaskUpdateInFile() throws IOException {
         createTestTask();
         task.setName("Новое название задачи");
         fileBackedTaskManager.updateTask(task);
@@ -124,7 +124,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void updateEpicUpdateInFile() {
+    public void updateEpicUpdateInFile() throws IOException {
         createTestEpic();
         epic.setName("Новое название эпика");
         fileBackedTaskManager.updateEpic(epic);
@@ -136,7 +136,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void updateSubtaskUpdateInFile() {
+    public void updateSubtaskUpdateInFile() throws IOException {
         createTestSubtask();
         subtask.setName("Новое название подзадачи");
         fileBackedTaskManager.updateSubtask(subtask);
@@ -150,7 +150,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void deleteTaskFileIsEmpty() {
+    public void deleteTaskFileIsEmpty() throws IOException {
         createTestTask();
         fileBackedTaskManager.deleteTask(task.getId());
 
@@ -161,7 +161,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void deleteEpicFileIsEmpty() {
+    public void deleteEpicFileIsEmpty() throws IOException {
         createTestEpic();
         fileBackedTaskManager.deleteEpic(epic.getId());
 
@@ -172,7 +172,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void deleteSubtaskEpicInFile() {
+    public void deleteSubtaskEpicInFile() throws IOException {
         createTestSubtask();
         fileBackedTaskManager.deleteSubtask(subtask.getId());
 
@@ -188,7 +188,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void deleteAllTasksFileIsEmpty() {
+    public void deleteAllTasksFileIsEmpty() throws IOException {
         createTestTask();
         createTestTask();
         fileBackedTaskManager.deleteAllTasks();
@@ -200,7 +200,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void deleteAllEpicsFileIsEmpty() {
+    public void deleteAllEpicsFileIsEmpty() throws IOException {
         createTestEpic();
         createTestEpic();
         fileBackedTaskManager.deleteAllEpics();
@@ -212,7 +212,7 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void deleteAllSubtasksEpicInFile() {
+    public void deleteAllSubtasksEpicInFile() throws IOException {
         createTestSubtask();
         Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи");
         fileBackedTaskManager.createSubtask(subtask1, epic.getId());
@@ -233,33 +233,18 @@ class FileBackedTaskManagerTest {
     }
 
     //вспомогательные методы
-    public File createFile() {
-        File taskManagerCsvFile = null;
-        try {
-            if (!Files.exists(Paths.get(resources, "taskManagerCsv.csv"))) {
-                Files.createDirectory(Paths.get(resources));
-                Files.createFile(Paths.get(resources, "taskManagerCsv.csv"));
-            }
-
-            taskManagerCsvFile = Paths.get(resources, "taskManagerCsv.csv").toFile();
-
-        } catch (IOException e) {
-            System.out.println("Не удалось создать файл.");
+    public File createFile() throws IOException {
+        if (!Files.exists(Paths.get(resources, "taskManagerCsv.csv"))) {
+            Files.createDirectory(Paths.get(resources));
+            Files.createFile(Paths.get(resources, "taskManagerCsv.csv"));
         }
 
-        return taskManagerCsvFile;
+        return Paths.get(resources, "taskManagerCsv.csv").toFile();
     }
 
-    public File createTempFile() {
-        File file = null;
+    public File createTempFile() throws IOException {
 
-        try {
-            file = File.createTempFile("taskManagerCsv", ".csv");
-        } catch (IOException e) {
-            System.out.println("Не удалось создать файл.");
-        }
-
-        return file;
+        return File.createTempFile("taskManagerCsv", ".csv");
     }
 
     private void createTestTask() {
@@ -279,47 +264,30 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createSubtask(subtask, epic.getId());
     }
 
-    private static String getFirsNote(String file) {
-        String taskFromFile = null;
+    private static String getFirsNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
 
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            bufferedReader.readLine(); //пропускаем шапку csv
-            taskFromFile = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
-        return taskFromFile;
+        return bufferedReader.readLine();
     }
 
-    private static String getSecondNote(String file) {
-        String secondNote = null;
+    private static String getSecondNote(String file) throws IOException  {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+        bufferedReader.readLine(); //пропускаем первую запись
 
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            bufferedReader.readLine(); //пропускаем шапку csv
-            bufferedReader.readLine(); //пропускаем первую запись
-            secondNote = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
-
-        return secondNote;
+        return bufferedReader.readLine();
     }
 
-    private static String getThirdNote(String file) {
-        String thirdNote = null;
+    private static String getThirdNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+        bufferedReader.readLine(); //пропускаем первую запись
+        bufferedReader.readLine(); //пропускаем вторую запись
 
-        try (Reader reader = new FileReader(file, UTF_8)) {
-            BufferedReader bufferedReader = new BufferedReader(reader);
-            bufferedReader.readLine(); //пропускаем шапку csv
-            bufferedReader.readLine(); //пропускаем первую запись
-            bufferedReader.readLine(); //пропускаем вторую запись
-            thirdNote = bufferedReader.readLine();
-        } catch (IOException e) {
-            System.out.println("Не удалось прочитать строку из файла.");
-        }
-
-        return thirdNote;
+        return bufferedReader.readLine();
     }
 }
