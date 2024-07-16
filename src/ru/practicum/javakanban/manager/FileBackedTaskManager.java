@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    public static final String HEADER = "id,type,name,status,description,epicId\n";
+    public static final String HEADER = "id,type,name,status,description,epicId";
     private final File taskManagerCsv;
 
     public FileBackedTaskManager(HistoryManager historyManager, File taskManagerCsv) {
@@ -19,15 +19,49 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private static Task fromString(String value) {
+        String[] headers = HEADER.split(",");
+
+        int idInt = 0;
+        int typeInt = 0;
+        int nameInt = 0;
+        int statusInt = 0;
+        int descriptionInt = 0;
+        int epicIdInt = 0;
+
+        for (int i = 0; i < headers.length; i++) {
+            switch (headers[i]) {
+                case "id":
+                    idInt = i;
+                    break;
+                case "type":
+                    typeInt = i;
+                    break;
+                case "name":
+                    nameInt = i;
+                    break;
+                case "status":
+                    statusInt = i;
+                    break;
+                case "description":
+                    descriptionInt = i;
+                    break;
+                case "epicId":
+                    epicIdInt = i;
+                    break;
+                default:
+                    System.out.println("Неизвестное поле!");
+            }
+        }
+
         String[] parameters = value.split(",");
 
-        return switch (parameters[1]) {
-            case "TASK" -> new Task(parameters[2], parameters[4], Integer.parseInt(parameters[0]),
-                    Status.fromString(parameters[3]), TaskType.TASK);
-            case "SUBTASK" -> new Subtask(parameters[2], parameters[4], Integer.parseInt(parameters[0]),
-                    Status.fromString(parameters[3]), TaskType.SUBTASK, Integer.parseInt(parameters[5]));
-            case "EPIC" -> new Epic(parameters[2], parameters[4], Integer.parseInt(parameters[0]),
-                    Status.fromString(parameters[3]), TaskType.EPIC);
+        return switch (parameters[typeInt]) {
+            case "TASK" -> new Task(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
+                    Status.fromString(parameters[statusInt]), TaskType.TASK);
+            case "SUBTASK" -> new Subtask(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
+                    Status.fromString(parameters[statusInt]), TaskType.SUBTASK, Integer.parseInt(parameters[epicIdInt]));
+            case "EPIC" -> new Epic(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
+                    Status.fromString(parameters[statusInt]), TaskType.EPIC);
             default -> throw new IllegalArgumentException("Невалидная строка.");
         };
     }
@@ -151,7 +185,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (Writer writer = new FileWriter(taskManagerCsv, StandardCharsets.UTF_8)) {
 
-            writer.write(HEADER);
+            writer.write(HEADER + "\n");
 
             for (Task task : tasks) {
                 writer.write(task.convertToString() + "\n");
