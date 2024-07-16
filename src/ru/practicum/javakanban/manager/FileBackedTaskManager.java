@@ -58,11 +58,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         return switch (parameters[typeInt]) {
             case "TASK" -> new Task(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
-                    Status.fromString(parameters[statusInt]), TaskType.TASK);
+                    Status.fromString(parameters[statusInt]));
             case "SUBTASK" -> new Subtask(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
-                    Status.fromString(parameters[statusInt]), TaskType.SUBTASK, Integer.parseInt(parameters[epicIdInt]));
+                    Status.fromString(parameters[statusInt]), Integer.parseInt(parameters[epicIdInt]));
             case "EPIC" -> new Epic(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
-                    Status.fromString(parameters[statusInt]), TaskType.EPIC);
+                    Status.fromString(parameters[statusInt]));
             default -> throw new IllegalArgumentException("Невалидная строка.");
         };
     }

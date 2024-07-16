@@ -7,7 +7,6 @@ public class Task {
     protected String description;
     protected Integer id;
     protected Status status;
-    protected TaskType type = TaskType.TASK;
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -21,12 +20,11 @@ public class Task {
         status = Status.NEW;
     }
 
-    public Task(String name, String description, Integer id, Status status, TaskType type) {
+    public Task(String name, String description, Integer id, Status status) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
-        this.type = type;
     }
 
     public String getName() {
@@ -62,11 +60,7 @@ public class Task {
     }
 
     public TaskType getType() {
-        return type;
-    }
-
-    public void setType(TaskType type) {
-        this.type = type;
+        return TaskType.TASK;
     }
 
     @Override

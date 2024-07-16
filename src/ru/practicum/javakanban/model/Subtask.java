@@ -2,7 +2,6 @@ package ru.practicum.javakanban.model;
 
 public class Subtask extends Task {
 
-    private final TaskType type = TaskType.SUBTASK;
     private Integer epicId;
 
     public Subtask(String name, String description, Status status) {
@@ -14,8 +13,8 @@ public class Subtask extends Task {
         status = Status.NEW;
     }
 
-    public Subtask(String name, String description, Integer id, Status status, TaskType type, Integer epicId) {
-        super(name, description, id, status, type);
+    public Subtask(String name, String description, Integer id, Status status, Integer epicId) {
+        super(name, description, id, status);
         this.epicId = epicId;
     }
 
@@ -29,7 +28,7 @@ public class Subtask extends Task {
 
     @Override
     public TaskType getType() {
-        return type;
+        return TaskType.SUBTASK;
     }
 
     @Override
