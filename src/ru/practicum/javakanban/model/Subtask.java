@@ -13,6 +13,11 @@ public class Subtask extends Task {
         status = Status.NEW;
     }
 
+    public Subtask(String name, String description, Integer id, Status status, Integer epicId) {
+        super(name, description, id, status);
+        this.epicId = epicId;
+    }
+
     public Integer getEpicId() {
         return epicId;
     }
@@ -22,12 +27,23 @@ public class Subtask extends Task {
     }
 
     @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
+    }
+
+    @Override
     public String toString() {
-        return "Subtask{" +
+        return getType() + "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", epic_id=" + epicId +
                 ", status=" + status +
                 '}';
+    }
+
+    @Override
+    public String convertToString() {
+        return getId().toString() + "," + getType().toString() + "," + getName() + "," + getStatus().toString() + ","
+                + getDescription() + "," + getEpicId().toString();
     }
 }
