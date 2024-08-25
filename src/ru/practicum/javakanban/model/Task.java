@@ -1,5 +1,7 @@
 package ru.practicum.javakanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -7,16 +9,38 @@ public class Task {
     protected String description;
     protected Integer id;
     protected Status status;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task(String name, String description, Status status) {
+    public Task(String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+        status = Status.NEW;
+        duration = null;
+        startTime = null;
+    }
+
+    public Task(String name, String description, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        status = Status.NEW;
+        startTime = null;
+    }
+
+    public Task(String name, String description, Duration duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.startTime = startTime;
         status = Status.NEW;
     }
 
@@ -25,6 +49,8 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+        duration = null;
+        startTime = null;
     }
 
     public String getName() {
@@ -61,6 +87,26 @@ public class Task {
 
     public TaskType getType() {
         return TaskType.TASK;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
     }
 
     @Override

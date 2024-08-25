@@ -1,16 +1,24 @@
 package ru.practicum.javakanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private Integer epicId;
 
-    public Subtask(String name, String description, Status status) {
-        super(name, description, status);
-    }
-
     public Subtask(String name, String description) {
         super(name, description);
         status = Status.NEW;
+    }
+
+    public Subtask(String name, String description, Duration duration) {
+        super(name, description, duration);
+        status = Status.NEW;
+    }
+
+    public Subtask(String name, String description, Duration duration, LocalDateTime startTime) {
+        super(name, description, duration, startTime);
     }
 
     public Subtask(String name, String description, Integer id, Status status, Integer epicId) {
