@@ -7,7 +7,9 @@ import ru.practicum.javakanban.model.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -21,48 +23,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private static Task fromString(String value) {
         String[] headers = HEADER.split(",");
-
-        int idInt = 0;
-        int typeInt = 0;
-        int nameInt = 0;
-        int statusInt = 0;
-        int descriptionInt = 0;
-        int epicIdInt = 0;
+        Map<String, Integer> params = new HashMap<>();
 
         for (int i = 0; i < headers.length; i++) {
-            switch (headers[i]) {
-                case "id":
-                    idInt = i;
-                    break;
-                case "type":
-                    typeInt = i;
-                    break;
-                case "name":
-                    nameInt = i;
-                    break;
-                case "status":
-                    statusInt = i;
-                    break;
-                case "description":
-                    descriptionInt = i;
-                    break;
-                case "epicId":
-                    epicIdInt = i;
-                    break;
-                default:
-                    System.out.println("Неизвестное поле!");
-            }
+            params.put(headers[i], i);
         }
 
         String[] parameters = value.split(",");
 
-        return switch (parameters[typeInt]) {
-            case "TASK" -> new Task(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
-                    Status.fromString(parameters[statusInt]));
-            case "SUBTASK" -> new Subtask(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
-                    Status.fromString(parameters[statusInt]), Integer.parseInt(parameters[epicIdInt]));
-            case "EPIC" -> new Epic(parameters[nameInt], parameters[descriptionInt], Integer.parseInt(parameters[idInt]),
-                    Status.fromString(parameters[statusInt]));
+        return switch (parameters[params.get("type")]) {
+            case "TASK" -> new Task(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                    Status.fromString(parameters[params.get("status")]));
+            case "SUBTASK" -> new Subtask(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                    Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]));
+            case "EPIC" -> new Epic(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                    Status.fromString(parameters[params.get("status")]));
             default -> throw new IllegalArgumentException("Невалидная строка.");
         };
     }
