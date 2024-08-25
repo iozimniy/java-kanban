@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    public static final String HEADER = "id,type,name,status,description,epicId";
+    public static final String HEADER = "id,type,name,status,description,epicId,duration,startTime";
     private final File taskManagerCsv;
 
     public FileBackedTaskManager(HistoryManager historyManager, File taskManagerCsv) {
