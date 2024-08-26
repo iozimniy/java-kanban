@@ -7,22 +7,13 @@ public class Subtask extends Task {
 
     private Integer epicId;
 
-    public Subtask(String name, String description) {
-        super(name, description);
-        status = Status.NEW;
-    }
-
-    public Subtask(String name, String description, Duration duration) {
-        super(name, description, duration);
-        status = Status.NEW;
-    }
-
     public Subtask(String name, String description, Duration duration, LocalDateTime startTime) {
         super(name, description, duration, startTime);
     }
 
-    public Subtask(String name, String description, Integer id, Status status, Integer epicId) {
-        super(name, description, id, status);
+    public Subtask(String name, String description, Integer id, Status status, Integer epicId, Duration duration,
+                   LocalDateTime startTime) {
+        super(name, description, id, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -51,7 +42,8 @@ public class Subtask extends Task {
 
     @Override
     public String convertToString() {
-        return getId().toString() + "," + getType().toString() + "," + getName() + "," + getStatus().toString() + ","
-                + getDescription() + "," + getEpicId().toString();
+        return getId().toString() + "," + getType().toString() + "," + getName() + "," +
+                getStatus().toString() + "," + getDescription() + "," + getDuration().toMinutes() + "," +
+                getStartTime().toString() + "," + getEpicId().toString();
     }
 }

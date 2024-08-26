@@ -20,22 +20,6 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public Task(String name, String description) {
-        this.name = name;
-        this.description = description;
-        status = Status.NEW;
-        duration = null;
-        startTime = null;
-    }
-
-    public Task(String name, String description, Duration duration) {
-        this.name = name;
-        this.description = description;
-        this.duration = duration;
-        status = Status.NEW;
-        startTime = null;
-    }
-
     public Task(String name, String description, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
@@ -44,13 +28,26 @@ public class Task {
         status = Status.NEW;
     }
 
-    public Task(String name, String description, Integer id, Status status) {
+    public Task(String name, String description, Integer id, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
-        duration = null;
-        startTime = null;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    protected Task(String name, String description) {
+        this.name = name;
+        this.description = description;
+        status = Status.NEW;
+    }
+
+    protected Task(String name, String description, Integer id, Status status) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
     }
 
     public String getName() {
@@ -133,6 +130,6 @@ public class Task {
 
     public String convertToString() {
         return getId().toString() + "," + getType().toString() + "," + getName() + "," +
-                getStatus().toString() + "," + getDescription();
+                getStatus().toString() + "," + getDescription() + "," + getDuration().toMinutes() + "," + getStartTime().toString();
     }
 }

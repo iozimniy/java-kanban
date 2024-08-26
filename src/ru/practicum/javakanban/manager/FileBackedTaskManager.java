@@ -6,6 +6,8 @@ import ru.practicum.javakanban.model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    public static final String HEADER = "id,type,name,status,description,epicId,duration,startTime";
+    public static final String HEADER = "id,type,name,status,description,duration,startTime,epicId";
     private final File taskManagerCsv;
 
     public FileBackedTaskManager(HistoryManager historyManager, File taskManagerCsv) {
@@ -32,10 +34,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String[] parameters = value.split(",");
 
         return switch (parameters[params.get("type")]) {
-            case "TASK" -> new Task(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]));
+            case "TASK" -> new Task(parameters[params.get("name")], parameters[params.get("description")],
+                    Integer.parseInt(parameters[params.get("id")]), Status.fromString(parameters[params.get("status")]),
+                    Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
+                    LocalDateTime.parse(parameters[params.get("startTime")]));
             case "SUBTASK" -> new Subtask(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]));
+                    Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]), Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
+                    LocalDateTime.parse(parameters[params.get("startTime")]));
             case "EPIC" -> new Epic(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
                     Status.fromString(parameters[params.get("status")]));
             default -> throw new IllegalArgumentException("Невалидная строка.");

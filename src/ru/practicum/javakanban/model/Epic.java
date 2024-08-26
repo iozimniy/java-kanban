@@ -14,6 +14,12 @@ public class Epic extends Task {
     public Epic(String name, String description) {
         super(name, description);
         status = Status.NEW;
+        duration = getDuration();
+        startTime = getStartTime();
+    }
+
+    public Epic(String name, String description, Integer id, Status status, Duration duration, LocalDateTime startTime) {
+        super(name, description, id, status, duration, startTime);
     }
 
     public Epic(String name, String description, Integer id, Status status) {
@@ -94,16 +100,31 @@ public class Epic extends Task {
     }
 
     public LocalDateTime getEndTime() {
+
         Optional<LocalDateTime> endEpicTime = subtasks.stream()
                 .filter(subtask -> subtask.getStartTime() != null && subtask.getDuration() != null)
                 .map(subtask -> subtask.getEndTime())
                 .max(LocalDateTime::compareTo);
-        return endEpicTime.get();
+        if (endEpicTime.isPresent()) {
+            return endEpicTime.get();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String convertToString() {
-        return getId().toString() + "," + getType().toString() + "," + getName() + "," + getStatus().toString()
+        String string = getId().toString() + "," + getType().toString() + "," + getName() + "," + getStatus().toString()
                 + "," + getDescription();
+
+        if (getDuration() != null && getStartTime() != null) {
+            return string + "," + getDuration().toMinutes() + "," + getStartTime().toString();
+        } else if (getDuration() != null) {
+            return string + "," + getDuration().toMinutes();
+        } else if (getStartTime() != null) {
+            return string + "," + getStartTime().toString();
+        }
+
+        return string;
     }
 }
