@@ -7,6 +7,8 @@ import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,6 +20,8 @@ class InMemoryTaskManagerTest {
     private Task task;
     private Epic epic;
     private Subtask subtask;
+    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
+    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
     @BeforeEach
     public void createTaskManager() {
@@ -151,6 +155,31 @@ class InMemoryTaskManagerTest {
         var epics = inMemoryTaskManager.getEpics();
 
         assertSame(epics.get(epic.getId()).getStatus(), Status.IN_PROGRESS, "У эпика не изменился статус");
+    }
+
+    @Test
+    public void updateSubtaskDurationChangesEpicDurationAndEndTime() {
+        createTestEpic();
+        createTestSubtask();
+
+        subtask.setDuration(Duration.ofMinutes(40));
+        inMemoryTaskManager.updateSubtask(subtask);
+
+        assertAll(
+                () -> assertTrue(subtask.getDuration().equals(epic.getDuration())),
+                () -> assertTrue(subtask.getEndTime().equals(epic.getEndTime()))
+        );
+    }
+
+    @Test
+    public void updateSubtaskStartTimeChangesEpicStartTime() {
+        createTestEpic();
+        createTestSubtask();
+
+        subtask.setStartTime(LocalDateTime.of(2024, 10, 17, 15, 20));
+        inMemoryTaskManager.updateSubtask(subtask);
+
+        assertTrue(subtask.getStartTime().equals(epic.getStartTime()));
     }
 
     @Test
@@ -479,9 +508,11 @@ class InMemoryTaskManagerTest {
         );
     }
 
+
+
     //вспомогательные методы
     private void createTestTask() {
-        task = new Task("Задача", "Описание задачи");
+        task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
         inMemoryTaskManager.createTask(task);
     }
 
@@ -491,9 +522,7 @@ class InMemoryTaskManagerTest {
     }
 
     private void createTestSubtask() {
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
+        subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         inMemoryTaskManager.createSubtask(subtask, epic.getId());
     }
-
-
 }

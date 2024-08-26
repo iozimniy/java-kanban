@@ -9,6 +9,8 @@ import ru.practicum.javakanban.model.Task;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -20,12 +22,14 @@ class FileBackedTaskManagerTest {
     private Task task;
     private Epic epic;
     private Subtask subtask;
+    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
+    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
     @BeforeEach
     public void createFileBackedTaskManager() throws IOException {
         /*здесь также можно использовать метод createFile(), который создаст файл в папке resources, что может быть
         удобнее для отладки*/
-        fileBackedTaskManager = Managers.getFileBacked(createTempFile());
+        fileBackedTaskManager = Managers.getFileBacked(createFile());
     }
 
     @Test
@@ -102,6 +106,9 @@ class FileBackedTaskManagerTest {
         createTestSubtask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
+
+        System.out.println(newFileBackedTaskManager.getEpic(epic.getId()).getDuration());
+        System.out.println(newFileBackedTaskManager.getEpic(epic.getId()).getStartTime());
 
         assertAll(
                 () -> assertEquals(newFileBackedTaskManager.getSubtask(subtask.getId()), subtask, "Подзадачу не " +
@@ -214,7 +221,7 @@ class FileBackedTaskManagerTest {
     @Test
     public void deleteAllSubtasksEpicInFile() throws IOException {
         createTestSubtask();
-        Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи");
+        Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createSubtask(subtask1, epic.getId());
         fileBackedTaskManager.deleteAllSubtasks();
 
@@ -248,7 +255,7 @@ class FileBackedTaskManagerTest {
     }
 
     private void createTestTask() {
-        task = new Task("Задача", "Описание задачи");
+        task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createTask(task);
     }
 
@@ -260,8 +267,9 @@ class FileBackedTaskManagerTest {
     private void createTestSubtask() {
         epic = new Epic("Эпик", "Описание эпика");
         fileBackedTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
+        subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createSubtask(subtask, epic.getId());
+        fileBackedTaskManager.updateEpic(epic);
     }
 
     private static String getFirsNote(String file) throws IOException {

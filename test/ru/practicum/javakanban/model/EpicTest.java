@@ -8,8 +8,7 @@ import ru.practicum.javakanban.manager.TaskManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
@@ -27,15 +26,11 @@ class EpicTest {
     public void createTestEpic() {
         taskManager = Managers.getDefault();
         epic = new Epic("Эпик", "Описание эпика");
-        subtask1 = new Subtask("Подзадача № 1", "Описание подзадачи № 1", SUBTASKS_DURATION,
-                EARLY_DATE_TIME);
-        subtask2 = new Subtask("Подзадача № 2", "Описание подзадачи № 2", SUBTASKS_DURATION,
-                LATE_DATE_TIME);
-        subtask3 = new Subtask("Подзадача № 3", "Описание подзадачи № 3");
+        subtask1 = new Subtask("Подзадача № 1", "Описание подзадачи № 1", SUBTASKS_DURATION, EARLY_DATE_TIME);
+        subtask2 = new Subtask("Подзадача № 2", "Описание подзадачи № 2", SUBTASKS_DURATION, LATE_DATE_TIME);
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask1, epic.getId());
         taskManager.createSubtask(subtask2, epic.getId());
-        taskManager.createSubtask(subtask3, epic.getId());
         taskManager.updateEpic(epic);
     }
 
@@ -46,8 +41,6 @@ class EpicTest {
         taskManager.updateSubtask(subtask1);
         subtask2.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask2);
-        subtask3.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask3);
 
         assertSame(epic.getStatus(), Status.DONE);
     }
@@ -96,7 +89,6 @@ class EpicTest {
     public void updateStatusDeleteAllSubtaskEpicIsDone() {
         taskManager.deleteSubtask(subtask1.getId());
         taskManager.deleteSubtask(subtask2.getId());
-        taskManager.deleteSubtask(subtask3.getId());
 
         assertSame(epic.getStatus(), Status.DONE);
     }
@@ -122,5 +114,12 @@ class EpicTest {
         Duration expectedDuration = subtask1.getDuration().plus(subtask2.getDuration());
 
         assertTrue(expectedDuration.equals(epicDuration));
+    }
+
+    @Test
+    public void epicWithoutSubtaskHasNullEndTime() {
+        taskManager.deleteAllSubtasks();
+
+        assertNull(epic.getEndTime());
     }
 }

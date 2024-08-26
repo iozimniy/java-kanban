@@ -6,6 +6,9 @@ import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
@@ -15,6 +18,8 @@ class InMemoryHistoryManagerTest {
     private Task task;
     private Epic epic;
     private Subtask subtask;
+    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
+    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
     @BeforeEach
     public void createInMemoryHistoryManager() {
@@ -131,7 +136,7 @@ class InMemoryHistoryManagerTest {
 
     //вспомогательные методы
     private void createTestTask() {
-        task = new Task("Задача", "Описание задачи");
+        task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
         inMemoryTaskManager.createTask(task);
     }
 
@@ -143,7 +148,7 @@ class InMemoryHistoryManagerTest {
     private void createTestSubtask() {
         epic = new Epic("Эпик", "Описание эпика");
         inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
+        subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         inMemoryTaskManager.createSubtask(subtask, epic.getId());
     }
 }
