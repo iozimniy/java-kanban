@@ -4,25 +4,29 @@ import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
+    private final Comparator<Task> comparator = Comparator.comparing(task -> task.getStartTime());
+    private final Set<Task> prioritizedTasks = new TreeSet<>(comparator);
     private int idCounter = 0;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
     }
 
+    public List<Task> getPrioritizedTasks() {
+        return prioritizedTasks.stream().toList();
+    }
+
     @Override
     public void createTask(Task task) {
         task.setId(idCounter++);
+        prioritizedTasks.add(task);
         tasks.put(task.getId(), task);
     }
 
@@ -41,29 +45,40 @@ public class InMemoryTaskManager implements TaskManager {
         epicSubtasks.add(subtask);
 
         subtask.setEpicId(epic.getId());
+        prioritizedTasks.add(subtask);
         subtasks.put(subtask.getId(), subtask);
 
         epic.updateStatus();
-        updateEpic(epic);
+        updateEpic(epic, epicId);
     }
 
     @Override
-    public void updateTask(Task task) {
-        tasks.put(task.getId(), task);
+    public void updateTask(Task newTask, Integer id) {
+        deleteTask(id);
+        newTask.setId(id);
+
+        tasks.put(newTask.getId(), newTask);
+        prioritizedTasks.add(newTask);
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        epics.put(epic.getId(), epic);
+    public void updateEpic(Epic newEpic, Integer id) {
+        newEpic.setSubtasks(epics.get(id).getSubtasks());
+        epics.remove(id);
+
+        newEpic.setId(id);
+        epics.put(newEpic.getId(), newEpic);
+        newEpic.updateTimes();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        subtasks.put(subtask.getId(), subtask);
-        Epic epic = epics.get(subtask.getEpicId());
+    public void updateSubtask(Subtask newSubtask, Integer id) {
+        newSubtask.setEpicId(subtasks.get(id).getEpicId());
 
-        epic.updateStatus();
-        updateEpic(epic);
+        deleteSubtask(id);
+        newSubtask.setId(id);
+
+        createSubtaskForUpdate(newSubtask, newSubtask.getEpicId());
     }
 
     @Override
@@ -119,7 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.clearSubtasks();
             epic.updateStatus();
-            updateEpic(epic);
+            updateEpic(epic, epic.getId());
         }
 
         List<Subtask> subtasksForDelete = new ArrayList<>(subtasks.values());
@@ -161,8 +176,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTask(int id) {
-        historyManager.remove(id);
-        tasks.remove(id);
+        if (tasks.containsKey(id)) {
+            historyManager.remove(id);
+            prioritizedTasks.remove(tasks.get(id));
+            tasks.remove(id);
+        }
     }
 
     @Override
@@ -191,9 +209,10 @@ public class InMemoryTaskManager implements TaskManager {
             epic.removeSubtask(subtask);
             epic.updateStatus();
             historyManager.remove(id);
+            prioritizedTasks.remove(subtask);
 
             subtasks.remove(id);
-            updateEpic(epic);
+            updateEpic(epic, epic.getId());
         }
     }
 
@@ -212,5 +231,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     public Map<Integer, Subtask> getSubtasks() {
         return subtasks;
+    }
+
+    public void createSubtaskForUpdate(Subtask subtask, int epicId) {
+        Epic epic = epics.get(epicId);
+
+        List<Subtask> epicSubtasks = epic.getSubtasks();
+        epicSubtasks.add(subtask);
+
+        subtask.setEpicId(epic.getId());
+        prioritizedTasks.add(subtask);
+        subtasks.put(subtask.getId(), subtask);
+
+        epic.updateStatus();
+        updateEpic(epic, epicId);
     }
 }

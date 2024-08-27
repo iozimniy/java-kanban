@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class Epic extends Task {
-    private final List<Subtask> subtasks = new ArrayList<>();
+    private List<Subtask> subtasks = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
@@ -28,6 +27,10 @@ public class Epic extends Task {
 
     public List<Subtask> getSubtasks() {
         return subtasks;
+    }
+
+    public void setSubtasks(List<Subtask> subtasks) {
+        this.subtasks = subtasks;
     }
 
     public void updateTimes() {
@@ -49,7 +52,6 @@ public class Epic extends Task {
                 ", status=" + status +
                 '}';
     }
-
 
     public void updateStatus() {
         if (subtasks.isEmpty()) {
@@ -87,7 +89,9 @@ public class Epic extends Task {
 
         if (startEpicTime.isPresent()) {
             return startEpicTime.get();
-        } else {return null;}
+        } else {
+            return null;
+        }
     }
 
     @Override

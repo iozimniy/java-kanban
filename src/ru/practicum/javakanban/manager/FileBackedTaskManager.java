@@ -2,7 +2,10 @@ package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerLoadException;
 import ru.practicum.javakanban.exeptions.ManagerSaveException;
-import ru.practicum.javakanban.model.*;
+import ru.practicum.javakanban.model.Epic;
+import ru.practicum.javakanban.model.Status;
+import ru.practicum.javakanban.model.Subtask;
+import ru.practicum.javakanban.model.Task;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -38,11 +41,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Integer.parseInt(parameters[params.get("id")]), Status.fromString(parameters[params.get("status")]),
                     Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
                     LocalDateTime.parse(parameters[params.get("startTime")]));
-            case "SUBTASK" -> new Subtask(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]), Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
-                    LocalDateTime.parse(parameters[params.get("startTime")]));
-            case "EPIC" -> new Epic(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]));
+            case "SUBTASK" ->
+                    new Subtask(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                            Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]), Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
+                            LocalDateTime.parse(parameters[params.get("startTime")]));
+            case "EPIC" ->
+                    new Epic(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                            Status.fromString(parameters[params.get("status")]));
             default -> throw new IllegalArgumentException("Невалидная строка.");
         };
     }
@@ -106,20 +111,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
+    public void updateTask(Task task, Integer id) {
+        super.updateTask(task, id);
         save();
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        super.updateEpic(epic);
+    public void updateEpic(Epic epic, Integer id) {
+        super.updateEpic(epic, id);
         save();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        super.updateSubtask(subtask);
+    public void updateSubtask(Subtask subtask, Integer id) {
+        super.updateSubtask(subtask, id);
         save();
     }
 

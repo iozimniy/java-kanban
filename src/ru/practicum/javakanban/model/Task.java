@@ -125,6 +125,7 @@ public class Task {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", status=" + status +
+                ", startTime" + startTime +
                 '}';
     }
 
