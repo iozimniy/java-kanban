@@ -31,56 +31,71 @@ class EpicTest {
         taskManager.createEpic(epic);
         taskManager.createSubtask(subtask1, epic.getId());
         taskManager.createSubtask(subtask2, epic.getId());
-        taskManager.updateEpic(epic);
+        taskManager.updateEpic(epic, epic.getId());
     }
 
 
     @Test
     public void updateStatusAllSubtaskIsDoneEpicIsDone() {
-        subtask1.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask1);
-        subtask2.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask2);
+        Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.DONE,
+                subtask1.getDuration(), subtask1.getStartTime());
+        taskManager.updateSubtask(updateSubtask1, subtask1.getId());
+
+        Subtask updateSubtask2 = new Subtask(subtask2.getName(), subtask2.getDescription(), Status.DONE,
+                subtask2.getDuration(), subtask2.getStartTime());
+        taskManager.updateSubtask(updateSubtask2, subtask2.getId());
 
         assertSame(epic.getStatus(), Status.DONE);
     }
 
     @Test
     public void updateStatusAllSubtaskInProgressEpicInProgress() {
-        subtask1.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubtask(subtask1);
-        subtask2.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubtask(subtask2);
+        Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.IN_PROGRESS,
+                subtask1.getDuration(), subtask1.getStartTime());
+        taskManager.updateSubtask(updateSubtask1, subtask1.getId());
+
+        Subtask updateSubtask2 = new Subtask(subtask2.getName(), subtask2.getDescription(), Status.IN_PROGRESS,
+                subtask2.getDuration(), subtask2.getStartTime());
+        taskManager.updateSubtask(updateSubtask2, subtask2.getId());
 
         assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
     public void updateStatusSubtasksNewAndInProgressEpicInProgress() {
-        subtask1.setStatus(Status.NEW);
-        taskManager.updateSubtask(subtask1);
-        subtask2.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubtask(subtask2);
+        Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.NEW,
+                subtask1.getDuration(), subtask1.getStartTime());
+        taskManager.updateSubtask(updateSubtask1, subtask1.getId());
+
+        Subtask updateSubtask2 = new Subtask(subtask2.getName(), subtask2.getDescription(), Status.IN_PROGRESS,
+                subtask2.getDuration(), subtask2.getStartTime());
+        taskManager.updateSubtask(updateSubtask2, subtask2.getId());
 
         assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
     public void updateStatusSubtasksNewAndDoneEpicInProgress() {
-        subtask1.setStatus(Status.NEW);
-        taskManager.updateSubtask(subtask1);
-        subtask2.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask2);
+        Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.NEW,
+                subtask1.getDuration(), subtask1.getStartTime());
+        taskManager.updateSubtask(updateSubtask1, subtask1.getId());
+
+        Subtask updateSubtask2 = new Subtask(subtask2.getName(), subtask2.getDescription(), Status.DONE,
+                subtask2.getDuration(), subtask2.getStartTime());
+        taskManager.updateSubtask(updateSubtask2, subtask2.getId());
 
         assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }
 
     @Test
     public void updateStatusSubtasksDoneAndInProgressEpicInProgress() {
-        subtask1.setStatus(Status.DONE);
-        taskManager.updateSubtask(subtask1);
-        subtask2.setStatus(Status.IN_PROGRESS);
-        taskManager.updateSubtask(subtask2);
+        Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.DONE,
+                subtask1.getDuration(), subtask1.getStartTime());
+        taskManager.updateSubtask(updateSubtask1, subtask1.getId());
+
+        Subtask updateSubtask2 = new Subtask(subtask2.getName(), subtask2.getDescription(), Status.IN_PROGRESS,
+                subtask2.getDuration(), subtask2.getStartTime());
+        taskManager.updateSubtask(updateSubtask2, subtask2.getId());
 
         assertSame(epic.getStatus(), Status.IN_PROGRESS);
     }

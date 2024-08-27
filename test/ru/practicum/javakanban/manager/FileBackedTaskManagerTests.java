@@ -107,13 +107,10 @@ class FileBackedTaskManagerTest {
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
 
-        System.out.println(newFileBackedTaskManager.getEpic(epic.getId()).getDuration());
-        System.out.println(newFileBackedTaskManager.getEpic(epic.getId()).getStartTime());
-
         assertAll(
-                () -> assertEquals(newFileBackedTaskManager.getSubtask(subtask.getId()), subtask, "Подзадачу не " +
+                () -> assertEquals(subtask, newFileBackedTaskManager.getSubtask(subtask.getId()), "Подзадачу не " +
                         "удалось восстановить из файла"),
-                () -> assertEquals(newFileBackedTaskManager.getEpic(epic.getId()), epic, "Эпик не удалось восстановить " +
+                () -> assertEquals(epic, newFileBackedTaskManager.getEpic(epic.getId()), "Эпик не удалось восстановить " +
                         "из файла")
         );
     }
@@ -121,39 +118,43 @@ class FileBackedTaskManagerTest {
     @Test
     public void updateTaskUpdateInFile() throws IOException {
         createTestTask();
-        task.setName("Новое название задачи");
-        fileBackedTaskManager.updateTask(task);
+
+        Task updateTask = new Task("Новое название задачи", task.getDescription(), task.getStatus(),
+                task.getDuration(), task.getStartTime());
+        fileBackedTaskManager.updateTask(updateTask, task.getId());
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
         String taskString = getFirsNote(file);
 
-        assertEquals(task.convertToString(), taskString, "Задача не обновилась в файле");
+        assertEquals(updateTask.convertToString(), taskString, "Задача не обновилась в файле");
     }
 
     @Test
     public void updateEpicUpdateInFile() throws IOException {
         createTestEpic();
-        epic.setName("Новое название эпика");
-        fileBackedTaskManager.updateEpic(epic);
+        Epic updateEpic = new Epic("Новое название эпика", epic.getDescription());
+        fileBackedTaskManager.updateEpic(updateEpic, epic.getId());
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
         String taskString = getFirsNote(file);
 
-        assertEquals(epic.convertToString(), taskString, "Задача не обновилась в файле");
+        assertEquals(updateEpic.convertToString(), taskString, "Задача не обновилась в файле");
     }
 
     @Test
     public void updateSubtaskUpdateInFile() throws IOException {
         createTestSubtask();
-        subtask.setName("Новое название подзадачи");
-        fileBackedTaskManager.updateSubtask(subtask);
+
+        Subtask updateSubtask = new Subtask("Новое название подзадачи", subtask.getDescription(),
+                subtask.getStatus(), subtask.getDuration(), subtask.getStartTime());
+        fileBackedTaskManager.updateSubtask(updateSubtask, subtask.getId());
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
         String epicString = getFirsNote(file);
         String subtaskString = getSecondNote(file);
 
         assertEquals(epic.convertToString(), epicString, "Эпик не записался в файл");
-        assertEquals(subtask.convertToString(), subtaskString, "Подзадача не обновилась в файле");
+        assertEquals(updateSubtask.convertToString(), subtaskString, "Подзадача не обновилась в файле");
     }
 
     @Test
@@ -269,7 +270,7 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createEpic(epic);
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createSubtask(subtask, epic.getId());
-        fileBackedTaskManager.updateEpic(epic);
+        fileBackedTaskManager.updateEpic(epic, epic.getId());
     }
 
     private static String getFirsNote(String file) throws IOException {
