@@ -23,6 +23,24 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasks.stream().toList();
     }
 
+    public boolean validateTimes(Task task1, Task task2) {
+        if (task1.getStartTime() == null || task2.getStartTime() == null) {
+            return true;
+        } else if ((task1.getStartTime().isBefore(task2.getStartTime()) &&
+                task1.getEndTime().isAfter(task2.getStartTime())) ||
+                (task1.getStartTime().isBefore(task2.getEndTime()) &&
+                task1.getEndTime().isAfter(task2.getEndTime())) ||
+                (task1.getStartTime().isBefore(task2.getStartTime()) &&
+                        task1.getEndTime().isAfter(task2.getEndTime())) ||
+                (task1.getStartTime().isAfter(task2.getStartTime()) &&
+                        task1.getEndTime().isBefore(task2.getEndTime())) ||
+                task1.getStartTime().equals(task2.getStartTime())){
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void createTask(Task task) {
         task.setId(idCounter++);
