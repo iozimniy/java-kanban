@@ -8,34 +8,32 @@ import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class InMemoryTaskManagerTest {
-
-    private final Integer incorrectId = 1001;
-    protected InMemoryTaskManager inMemoryTaskManager;
-    private Task task;
-    private Task task1;
-    private Task task2;
-    private Epic epic;
-    private Subtask subtask;
-    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
-    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
+public abstract class ManagersTest {
+    protected final Integer incorrectId = 1001;
+    protected TaskManager taskManager;
+    protected Task task;
+    protected Task task1;
+    protected Task task2;
+    protected Epic epic;
+    protected Subtask subtask;
+    protected static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
+    protected static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
     @BeforeEach
-    public void createTaskManager() {
-        inMemoryTaskManager = new InMemoryTaskManager(Managers.getDefaultHistory());
-    }
+    public abstract void createTaskManager() throws IOException;
 
     @Test
     public void createTaskTaskAddedToInMemoryManagerTasks() {
         createTestTask();
 
-        var tasks = inMemoryTaskManager.getTasks();
+        var tasks = taskManager.getTasks();
 
         assertAll(
                 () -> assertNotNull(task.getId(), "Задаче не присвоился id"),
@@ -49,7 +47,7 @@ abstract class InMemoryTaskManagerTest {
     public void createEpicAddedToInMemoryManagerEpics() {
         createTestEpic();
 
-        var epics = inMemoryTaskManager.getEpics();
+        var epics = taskManager.getEpics();
 
         assertAll(
                 () -> assertNotNull(epic.getId(), "Эпик не присвоился id"),
@@ -64,7 +62,7 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
         createTestSubtask();
 
-        var subtasks = inMemoryTaskManager.getSubtasks();
+        var subtasks = taskManager.getSubtasks();
 
         assertAll(
                 () -> assertNotNull(subtask.getId(), "Подзадаче не присвоился id"),
@@ -97,8 +95,8 @@ abstract class InMemoryTaskManagerTest {
         Task updateTask = new Task("Новое название задачи", "Новое описание задачи", task.getStatus(),
                 task.getDuration(), task.getStartTime());
 
-        inMemoryTaskManager.updateTask(updateTask, task.getId());
-        var tasks = inMemoryTaskManager.getTasks();
+        taskManager.updateTask(updateTask, task.getId());
+        var tasks = taskManager.getTasks();
 
         assertAll(
                 () -> assertEquals(updateTask.getName(), tasks.get(task.getId()).getName(),
@@ -117,9 +115,9 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
 
         Epic updateEpic = new Epic("Новое название эпика", "Новое описание эпика");
-        inMemoryTaskManager.updateEpic(updateEpic, epic.getId());
+        taskManager.updateEpic(updateEpic, epic.getId());
 
-        var epics = inMemoryTaskManager.getEpics();
+        var epics = taskManager.getEpics();
 
         assertAll(
                 () -> assertEquals(updateEpic.getName(), epics.get(epic.getId()).getName(),
@@ -139,8 +137,8 @@ abstract class InMemoryTaskManagerTest {
         Subtask updateSubtask = new Subtask("Новое имя подзадачи", "Новое описание подзадачи",
                 Status.IN_PROGRESS, subtask.getDuration(), subtask.getStartTime());
 
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
-        var subtasks = inMemoryTaskManager.getSubtasks();
+        taskManager.updateSubtask(updateSubtask, subtask.getId());
+        var subtasks = taskManager.getSubtasks();
 
         assertAll(
                 () -> assertEquals(updateSubtask.getName(), subtasks.get(subtask.getId()).getName(),
@@ -164,8 +162,8 @@ abstract class InMemoryTaskManagerTest {
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), Status.IN_PROGRESS,
                 subtask.getDuration(), subtask.getStartTime());
 
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
-        var epics = inMemoryTaskManager.getEpics();
+        taskManager.updateSubtask(updateSubtask, subtask.getId());
+        var epics = taskManager.getEpics();
 
         assertSame(epics.get(epic.getId()).getStatus(), Status.IN_PROGRESS, "У эпика не изменился статус");
     }
@@ -178,7 +176,7 @@ abstract class InMemoryTaskManagerTest {
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
                 Duration.ofMinutes(40), subtask.getStartTime());
 
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
+        taskManager.updateSubtask(updateSubtask, subtask.getId());
 
         assertAll(
                 () -> assertTrue(updateSubtask.getDuration().equals(epic.getDuration()), "У эпика его сабтаски" +
@@ -195,7 +193,7 @@ abstract class InMemoryTaskManagerTest {
 
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
                 subtask.getDuration(), LocalDateTime.of(2024, 10, 17, 15, 20));
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
+        taskManager.updateSubtask(updateSubtask, subtask.getId());
 
         assertTrue(updateSubtask.getStartTime().equals(epic.getStartTime()), "У эпика и его подзадачи разные" +
                 "startTime");
@@ -205,18 +203,18 @@ abstract class InMemoryTaskManagerTest {
     public void getAllTasksReturnArrayListTasks() {
         createTestTask();
 
-        ArrayList<Task> allTasks = new ArrayList<>(inMemoryTaskManager.getTasks().values());
+        ArrayList<Task> allTasks = new ArrayList<>(taskManager.getTasks().values());
 
-        assertEquals(allTasks, inMemoryTaskManager.getAllTasks(), "getAllTasks не возвращает список задач");
+        assertEquals(allTasks, taskManager.getAllTasks(), "getAllTasks не возвращает список задач");
     }
 
     @Test
     public void getAllEpicsReturnArrayListEpics() {
         createTestEpic();
 
-        ArrayList<Epic> allEpics = new ArrayList<>(inMemoryTaskManager.getEpics().values());
+        ArrayList<Epic> allEpics = new ArrayList<>(taskManager.getEpics().values());
 
-        assertEquals(allEpics, inMemoryTaskManager.getAllEpics(), "getAllEpics не возвращает список эпиков");
+        assertEquals(allEpics, taskManager.getAllEpics(), "getAllEpics не возвращает список эпиков");
     }
 
     @Test
@@ -224,9 +222,9 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
         createTestSubtask();
 
-        ArrayList<Subtask> allSubtasks = new ArrayList<>(inMemoryTaskManager.getSubtasks().values());
+        ArrayList<Subtask> allSubtasks = new ArrayList<>(taskManager.getSubtasks().values());
 
-        assertEquals(allSubtasks, inMemoryTaskManager.getAllSubtasks(),
+        assertEquals(allSubtasks, taskManager.getAllSubtasks(),
                 "getAllSubtasks не возвращает список подзадач");
     }
 
@@ -236,13 +234,13 @@ abstract class InMemoryTaskManagerTest {
         createTestSubtask();
 
         var epicSubtask = epic.getSubtasks();
-        assertEquals(epicSubtask, inMemoryTaskManager.getEpicSubtasks(epic.getId()),
+        assertEquals(epicSubtask, taskManager.getEpicSubtasks(epic.getId()),
                 "Не возвращаются подзадачи эпика");
     }
 
     @Test
     public void getEpicSubtasksIncorrectIdReturnNull() {
-        assertNull(inMemoryTaskManager.getEpicSubtasks(0),
+        assertNull(taskManager.getEpicSubtasks(0),
                 "Эпика нет, но null не возвращается");
     }
 
@@ -251,10 +249,10 @@ abstract class InMemoryTaskManagerTest {
         createTestTask();
         task2 = new Task("Другая задача", "Другое описание", Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
-        inMemoryTaskManager.createTask(task2);
+        taskManager.createTask(task2);
 
-        inMemoryTaskManager.deleteAllTasks();
-        assertTrue(inMemoryTaskManager.getTasks().isEmpty(), "Задачи не очистились");
+        taskManager.deleteAllTasks();
+        assertTrue(taskManager.getTasks().isEmpty(), "Задачи не очистились");
     }
 
     @Test
@@ -262,10 +260,10 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
         createTestEpic();
 
-        inMemoryTaskManager.deleteAllEpics();
+        taskManager.deleteAllEpics();
         assertAll(
-                () -> assertTrue(inMemoryTaskManager.getSubtasks().isEmpty(), "Подзадачи не очистились"),
-                () -> assertTrue(inMemoryTaskManager.getEpics().isEmpty(), "Эпики не очистились")
+                () -> assertTrue(taskManager.getSubtasks().isEmpty(), "Подзадачи не очистились"),
+                () -> assertTrue(taskManager.getEpics().isEmpty(), "Эпики не очистились")
         );
     }
 
@@ -277,9 +275,9 @@ abstract class InMemoryTaskManagerTest {
         Subtask otherSubtask = new Subtask("Ещё одна подзадача", "Описание", Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
 
-        inMemoryTaskManager.deleteAllSubtasks();
+        taskManager.deleteAllSubtasks();
         assertAll(
-                () -> assertTrue(inMemoryTaskManager.getSubtasks().isEmpty(), "Подзадачи не очистились"),
+                () -> assertTrue(taskManager.getSubtasks().isEmpty(), "Подзадачи не очистились"),
                 () -> assertTrue(epic.getSubtasks().isEmpty(), "У эпика не очистились задачи")
         );
     }
@@ -288,41 +286,41 @@ abstract class InMemoryTaskManagerTest {
     public void getTaskCorrectIdReturnTask() {
         createTestTask();
 
-        assertEquals(task, inMemoryTaskManager.getTask(task.getId()), "Задача не вернулась по id");
+        assertEquals(task, taskManager.getTask(task.getId()), "Задача не вернулась по id");
     }
 
     @Test
     public void getTaskIncorrectIdReturnNull() {
-        assertNull(inMemoryTaskManager.getTask(0), "Задачи нет, но null не возвращается");
+        assertNull(taskManager.getTask(0), "Задачи нет, но null не возвращается");
     }
 
     @Test
     public void getTaskAddTaskInHistory() {
         createTestTask();
 
-        inMemoryTaskManager.getTask(task.getId());
+        taskManager.getTask(task.getId());
 
-        assertTrue(inMemoryTaskManager.getHistory().contains(task), "Задача не сохранилась в истории после get");
+        assertTrue(taskManager.getHistory().contains(task), "Задача не сохранилась в истории после get");
     }
 
     @Test
     public void getEpicCorrectIdReturnEpic() {
         createTestEpic();
 
-        assertEquals(epic, inMemoryTaskManager.getEpic(epic.getId()), "Эпик не вернулся по id");
+        assertEquals(epic, taskManager.getEpic(epic.getId()), "Эпик не вернулся по id");
     }
 
     @Test
     public void getEpicAddEpicInHistory() {
         createTestEpic();
 
-        inMemoryTaskManager.getEpic(epic.getId());
-        assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик не сохранился в истории после get");
+        taskManager.getEpic(epic.getId());
+        assertTrue(taskManager.getHistory().contains(epic), "Эпик не сохранился в истории после get");
     }
 
     @Test
     public void getEpicIncorrectIdReturnNull() {
-        assertNull(inMemoryTaskManager.getEpic(0), "Эпика нет, но null не возвращается");
+        assertNull(taskManager.getEpic(0), "Эпика нет, но null не возвращается");
     }
 
     @Test
@@ -330,7 +328,7 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
         createTestSubtask();
 
-        assertEquals(subtask, inMemoryTaskManager.getSubtask(subtask.getId()),
+        assertEquals(subtask, taskManager.getSubtask(subtask.getId()),
                 "Подзадача не возвращается по id");
     }
 
@@ -338,41 +336,41 @@ abstract class InMemoryTaskManagerTest {
     public void getSubtaskAddInHistory() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getSubtask(subtask.getId());
+        taskManager.getSubtask(subtask.getId());
 
-        assertTrue(inMemoryTaskManager.getHistory().contains(subtask), "Подзадачи нет в истории после get");
+        assertTrue(taskManager.getHistory().contains(subtask), "Подзадачи нет в истории после get");
     }
 
     @Test
     public void getSubtaskIncorrectIdReturnNull() {
-        assertNull(inMemoryTaskManager.getSubtask(0), "Подзадачи нет, но null не возвращается");
+        assertNull(taskManager.getSubtask(0), "Подзадачи нет, но null не возвращается");
     }
 
     @Test
     public void deleteTaskCorrectIdTaskRemoveFromTasks() {
         createTestTask();
 
-        inMemoryTaskManager.deleteTask(task.getId());
-        assertFalse(inMemoryTaskManager.getTasks().containsKey(task.getId()),
+        taskManager.deleteTask(task.getId());
+        assertFalse(taskManager.getTasks().containsKey(task.getId()),
                 "Задача не удалилась из tasks");
     }
 
     @Test
     public void deleteTaskIncorrectIdTasksSizeIsTheSame() {
         createTestTask();
-        int tasksSize = inMemoryTaskManager.getTasks().size();
+        int tasksSize = taskManager.getTasks().size();
 
-        inMemoryTaskManager.deleteTask(incorrectId);
-        assertEquals(tasksSize, inMemoryTaskManager.getTasks().size(), "Что-то удалилось из tasks, хотя удалять нечего");
+        taskManager.deleteTask(incorrectId);
+        assertEquals(tasksSize, taskManager.getTasks().size(), "Что-то удалилось из tasks, хотя удалять нечего");
     }
 
     @Test
     public void deleteEpicCorrectIdEpicRemoveFromEpics() {
         createTestEpic();
 
-        inMemoryTaskManager.deleteEpic(epic.getId());
+        taskManager.deleteEpic(epic.getId());
 
-        assertFalse(inMemoryTaskManager.getTasks().containsKey(epic.getId()),
+        assertFalse(taskManager.getTasks().containsKey(epic.getId()),
                 "Эпик не удалился из epics");
     }
 
@@ -382,9 +380,9 @@ abstract class InMemoryTaskManagerTest {
         createTestSubtask();
         var epicSubtasks = epic.getSubtasks();
 
-        inMemoryTaskManager.deleteEpic(epic.getId());
+        taskManager.deleteEpic(epic.getId());
         for (Subtask epicSubtask : epicSubtasks) {
-            assertFalse(inMemoryTaskManager.getSubtasks().containsKey(epicSubtask.getId()),
+            assertFalse(taskManager.getSubtasks().containsKey(epicSubtask.getId()),
                     "Позадача не удалилась вместе с эпиком");
         }
     }
@@ -392,10 +390,10 @@ abstract class InMemoryTaskManagerTest {
     @Test
     public void deleteEpicIncorrectIdEpicsSizeIsTheSame() {
         createTestEpic();
-        int epicsSize = inMemoryTaskManager.getEpics().size();
+        int epicsSize = taskManager.getEpics().size();
 
-        inMemoryTaskManager.deleteEpic(incorrectId);
-        assertEquals(epicsSize, inMemoryTaskManager.getEpics().size(), "Что-то удалилось из epics, хотя удалять нечего");
+        taskManager.deleteEpic(incorrectId);
+        assertEquals(epicsSize, taskManager.getEpics().size(), "Что-то удалилось из epics, хотя удалять нечего");
     }
 
     @Test
@@ -403,12 +401,12 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
         createTestSubtask();
 
-        inMemoryTaskManager.deleteSubtask(subtask.getId());
+        taskManager.deleteSubtask(subtask.getId());
 
         assertAll(
                 () -> assertFalse(epic.getSubtasks().contains(subtask),
                         "Подзадача не удалилась из epicSubtasks"),
-                () -> assertFalse(inMemoryTaskManager.getSubtasks().containsKey(subtask.getId()),
+                () -> assertFalse(taskManager.getSubtasks().containsKey(subtask.getId()),
                         "Подзадача не удалилась из subtasks")
         );
     }
@@ -418,61 +416,61 @@ abstract class InMemoryTaskManagerTest {
         createTestEpic();
         createTestSubtask();
 
-        int subtasksSize = inMemoryTaskManager.getSubtasks().size();
-        inMemoryTaskManager.deleteSubtask(incorrectId);
+        int subtasksSize = taskManager.getSubtasks().size();
+        taskManager.deleteSubtask(incorrectId);
 
-        assertEquals(subtasksSize, inMemoryTaskManager.getSubtasks().size(), "Что-то удалилось из subtasks, хотя удалять нечего");
+        assertEquals(subtasksSize, taskManager.getSubtasks().size(), "Что-то удалилось из subtasks, хотя удалять нечего");
     }
 
     @Test
     public void deleteTaskItShouldNotBeInHistory() {
         createTestTask();
-        inMemoryTaskManager.getTask(task.getId());
-        inMemoryTaskManager.deleteTask(task.getId());
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "Удалённая задача не удалилась из истории");
+        taskManager.getTask(task.getId());
+        taskManager.deleteTask(task.getId());
+        assertTrue(taskManager.getHistory().isEmpty(), "Удалённая задача не удалилась из истории");
     }
 
     @Test
     public void deleteEpicItShouldNotBeInHistory() {
         createTestEpic();
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.deleteEpic(epic.getId());
+        taskManager.getEpic(epic.getId());
+        taskManager.deleteEpic(epic.getId());
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "Удалённый эпик не удалилась из истории");
+        assertTrue(taskManager.getHistory().isEmpty(), "Удалённый эпик не удалилась из истории");
     }
 
     @Test
     public void deleteEpicWithSubtaskSubtaskDeleteFromHistory() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.getSubtask(subtask.getId());
-        inMemoryTaskManager.deleteEpic(epic.getId());
+        taskManager.getEpic(epic.getId());
+        taskManager.getSubtask(subtask.getId());
+        taskManager.deleteEpic(epic.getId());
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+        assertTrue(taskManager.getHistory().isEmpty(), "История подозрительно полна");
     }
 
     @Test
     public void deleteSubtaskItShouldNotBeInHistory() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getSubtask(subtask.getId());
-        inMemoryTaskManager.deleteSubtask(subtask.getId());
+        taskManager.getSubtask(subtask.getId());
+        taskManager.deleteSubtask(subtask.getId());
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "Подзадача не удалилась из истории");
+        assertTrue(taskManager.getHistory().isEmpty(), "Подзадача не удалилась из истории");
     }
 
     @Test
     public void deleteSubtaskEpicIsInHistory() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.getSubtask(subtask.getId());
-        inMemoryTaskManager.deleteSubtask(subtask.getId());
+        taskManager.getEpic(epic.getId());
+        taskManager.getSubtask(subtask.getId());
+        taskManager.deleteSubtask(subtask.getId());
 
         assertAll(
-                () -> assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик удалился из истории"),
-                () -> assertEquals(1, inMemoryTaskManager.getHistory().size(), "Неожиданный размер " +
+                () -> assertTrue(taskManager.getHistory().contains(epic), "Эпик удалился из истории"),
+                () -> assertEquals(1, taskManager.getHistory().size(), "Неожиданный размер " +
                         "истории")
         );
     }
@@ -480,53 +478,53 @@ abstract class InMemoryTaskManagerTest {
     @Test
     public void deleteAllTasksHistoryIsEmpty() {
         createTestTask();
-        inMemoryTaskManager.getTask(task.getId());
-        inMemoryTaskManager.deleteAllTasks();
+        taskManager.getTask(task.getId());
+        taskManager.deleteAllTasks();
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+        assertTrue(taskManager.getHistory().isEmpty(), "История подозрительно полна");
     }
 
     @Test
     public void deleteAllEpicsHistoryIsEmpty() {
         createTestEpic();
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.deleteAllEpics();
+        taskManager.getEpic(epic.getId());
+        taskManager.deleteAllEpics();
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+        assertTrue(taskManager.getHistory().isEmpty(), "История подозрительно полна");
     }
 
     @Test
     public void deleteAllEpicsWithSubtaskHistoryIsEmpty() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.getSubtask(subtask.getId());
-        inMemoryTaskManager.deleteAllEpics();
+        taskManager.getEpic(epic.getId());
+        taskManager.getSubtask(subtask.getId());
+        taskManager.deleteAllEpics();
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+        assertTrue(taskManager.getHistory().isEmpty(), "История подозрительно полна");
     }
 
     @Test
     public void deleteAllSubtasksHistoryIsEmpty() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getSubtask(subtask.getId());
-        inMemoryTaskManager.deleteAllSubtasks();
+        taskManager.getSubtask(subtask.getId());
+        taskManager.deleteAllSubtasks();
 
-        assertTrue(inMemoryTaskManager.getHistory().isEmpty(), "История подозрительно полна");
+        assertTrue(taskManager.getHistory().isEmpty(), "История подозрительно полна");
     }
 
     @Test
     public void deleteAllSubtasksEpicIsInHistory() {
         createTestEpic();
         createTestSubtask();
-        inMemoryTaskManager.getEpic(epic.getId());
-        inMemoryTaskManager.getSubtask(subtask.getId());
-        inMemoryTaskManager.deleteAllSubtasks();
+        taskManager.getEpic(epic.getId());
+        taskManager.getSubtask(subtask.getId());
+        taskManager.deleteAllSubtasks();
 
         assertAll(
-                () -> assertTrue(inMemoryTaskManager.getHistory().contains(epic), "Эпик удалился из истории"),
-                () -> assertEquals(1, inMemoryTaskManager.getHistory().size(), "Неожиданный размер " +
+                () -> assertTrue(taskManager.getHistory().contains(epic), "Эпик удалился из истории"),
+                () -> assertEquals(1, taskManager.getHistory().size(), "Неожиданный размер " +
                         "истории")
         );
     }
@@ -536,11 +534,11 @@ abstract class InMemoryTaskManagerTest {
         createTaskForPrioritized();
 
         assertAll(
-                () -> assertSame(task2, inMemoryTaskManager.getPrioritizedTasks().getFirst(),
+                () -> assertSame(task2, taskManager.getPrioritizedTasks().getFirst(),
                         "Задача № 2 не первая"),
-                () -> assertSame(subtask, inMemoryTaskManager.getPrioritizedTasks().getLast(),
+                () -> assertSame(subtask, taskManager.getPrioritizedTasks().getLast(),
                         "Подзадача не последняя"),
-                () -> assertSame(3, inMemoryTaskManager.getPrioritizedTasks().size(),
+                () -> assertSame(3, taskManager.getPrioritizedTasks().size(),
                         "В приоритизированном списке подозрительное количество задач")
         );
     }
@@ -549,9 +547,9 @@ abstract class InMemoryTaskManagerTest {
     public void deleteTaskItRemoveFromPrioritizedTask() {
         createTaskForPrioritized();
 
-        inMemoryTaskManager.deleteTask(task2.getId());
+        taskManager.deleteTask(task2.getId());
 
-        assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(task2), "Задача не удалилась из списка" +
+        assertFalse(taskManager.getPrioritizedTasks().contains(task2), "Задача не удалилась из списка" +
                 "приоритизации");
     }
 
@@ -559,9 +557,9 @@ abstract class InMemoryTaskManagerTest {
     public void deleteSubtaskItRemoveFromPrioritizedTask() {
         createTaskForPrioritized();
 
-        inMemoryTaskManager.deleteSubtask(subtask.getId());
+        taskManager.deleteSubtask(subtask.getId());
 
-        assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(subtask), "Подзадача не удалилась из " +
+        assertFalse(taskManager.getPrioritizedTasks().contains(subtask), "Подзадача не удалилась из " +
                 "списка приоритезации");
     }
 
@@ -571,12 +569,12 @@ abstract class InMemoryTaskManagerTest {
         Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), task2.getDuration(),
                 LocalDateTime.of(2025, 1, 15, 15, 0));
 
-        inMemoryTaskManager.updateTask(updateTask2, task2.getId());
+        taskManager.updateTask(updateTask2, task2.getId());
 
         assertAll(
-                () -> assertSame(updateTask2, inMemoryTaskManager.getPrioritizedTasks().getLast(), "Список " +
+                () -> assertSame(updateTask2, taskManager.getPrioritizedTasks().getLast(), "Список " +
                         "приоритизации имеет странный порядок"),
-                () -> assertSame(task1, inMemoryTaskManager.getPrioritizedTasks().getFirst(), "Список " +
+                () -> assertSame(task1, taskManager.getPrioritizedTasks().getFirst(), "Список " +
                         "приоритизации имеет странный порядок")
         );
 
@@ -587,81 +585,48 @@ abstract class InMemoryTaskManagerTest {
         createTaskForPrioritized();
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
                 subtask.getDuration(), LocalDateTime.of(2025, 1, 15, 15, 0));
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
+        taskManager.updateSubtask(updateSubtask, subtask.getId());
 
         assertAll(
-                () -> assertSame(task2, inMemoryTaskManager.getPrioritizedTasks().getFirst(), "Список " +
+                () -> assertSame(task2, taskManager.getPrioritizedTasks().getFirst(), "Список " +
                         "приоритезации имеет странный порядок"),
-                () -> assertSame(updateSubtask, inMemoryTaskManager.getPrioritizedTasks().getLast(), "Список" +
+                () -> assertSame(updateSubtask, taskManager.getPrioritizedTasks().getLast(), "Список" +
                         "приоритезации имеет странный порядок")
         );
     }
 
     @Test
-    public void updateTaskStartTimeNullTaskDeleteFromPrioritizedTask() {
-        createTaskForPrioritized();
-
-        Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), task2.getDuration(),
-                null);
-
-        inMemoryTaskManager.updateTask(updateTask2, task2.getId());
-
-        assertAll(
-                () -> assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(updateTask2), "После " +
-                        "обнуления startTime задача всё ещё в приоритезации"),
-                () -> assertNull(inMemoryTaskManager.getTask(task2.getId()).getStartTime(), "У задачи " +
-                        "startTime не нул")
-        );
-    }
-
-    @Test
-    public void updateSubtaskStartTimeNullTaskDeleteFromPrioritizedTask() {
-        createTaskForPrioritized();
+    public void updateSubtaskStartTimeNullException() {
+        createTestEpic();
+        createTestSubtask();
 
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
                 subtask.getDuration(), null);
 
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
-
-        assertAll(
-                () -> assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(updateSubtask), "После " +
-                        "обнуления startTime сабтаска всё ещё в приоритезации"),
-                () -> assertNull(inMemoryTaskManager.getSubtask(subtask.getId()).getStartTime(), "У сабтаски" +
-                        "startTime не нул")
-        );
+        assertThrows(IllegalArgumentException.class, () -> taskManager.updateSubtask(updateSubtask, subtask.getId()));
     }
 
     @Test
-    public void updateTaskNullStarTimeToStartTimeTaskInPrioritizedTasks() {
+    public void createTaskNullStarTimeException() {
         task = new Task("Название", "Описание", Duration.ofMinutes(30), null);
-        inMemoryTaskManager.createTask(task);
 
-        assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(task), "Таска с нулом в startTime " +
-                "попала в список приоритизации");
-
-        Task updateTask = new Task(task.getName(), task.getDescription(), task.getStatus(), task.getDuration(),
-                LocalDateTime.of(2024, 11, 17, 11, 20));
-        inMemoryTaskManager.updateTask(updateTask, task.getId());
-
-        assertTrue(inMemoryTaskManager.getPrioritizedTasks().contains(updateTask), "После появления у сабтаски " +
-                "startTime она не попала в приоритезацию");
+        assertThrows(IllegalArgumentException.class, () -> taskManager.createTask(task));
     }
 
     @Test
-    public void updateSubtaskNullStarTimeToStartTimeTaskInPrioritizedTasks() {
+    public void updateTaskNullException() {
+        createTestTask();
+        Task updateTask = new Task(task.getName(), task.getDescription(), task.getStatus(), task.getDuration(), null);
+
+        assertThrows(IllegalArgumentException.class, () -> taskManager.updateTask(updateTask, task.getId()));
+    }
+
+    @Test
+    public void createSubtaskNullStarTimeException() {
         createTestEpic();
         subtask = new Subtask("Название", "Описание", Duration.ofMinutes(30), null);
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
 
-        assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(subtask), "Сабтаска с нулом в startTime " +
-                "попала в список приоритизации");
-
-        Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
-                subtask.getDuration(), LocalDateTime.of(2024, 11, 17, 11, 20));
-        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
-
-        assertTrue(inMemoryTaskManager.getPrioritizedTasks().contains(updateSubtask), "После появления у сабтаски " +
-                "startTime она не попала в приоритезацию");
+        assertThrows(IllegalArgumentException.class, () -> taskManager.createSubtask(subtask, epic.getId()));
     }
 
     @Test
@@ -679,19 +644,19 @@ abstract class InMemoryTaskManagerTest {
                 LocalDateTime.of(2024, 12, 31, 12, 30));
 
         assertThrows(ManagerPrioritizeException.class, () ->
-                inMemoryTaskManager.createTask(task1), "Нет исключения при проверке валидации! Пересечение" +
+                taskManager.createTask(task1), "Нет исключения при проверке валидации! Пересечение" +
                 "в конце периода первой задачи");
         assertThrows(ManagerPrioritizeException.class, () ->
-                inMemoryTaskManager.createTask(task2), "Нет исключения при проверке валидации! Пересечение" +
+                taskManager.createTask(task2), "Нет исключения при проверке валидации! Пересечение" +
                 "в начале периода первой задачи");
         assertThrows(ManagerPrioritizeException.class, () ->
-                inMemoryTaskManager.createTask(task3), "Нет исключения при проверке валидации! Период второй " +
+                taskManager.createTask(task3), "Нет исключения при проверке валидации! Период второй " +
                 "задачи внутри первой");
         assertThrows(ManagerPrioritizeException.class, () ->
-                inMemoryTaskManager.createTask(task4), "Нет исключения при проверке валидации! Период первой " +
+                taskManager.createTask(task4), "Нет исключения при проверке валидации! Период первой " +
                 "задачи внутри внутри");
         assertThrows(ManagerPrioritizeException.class, () ->
-                inMemoryTaskManager.createTask(task5), "Нет исключения при проверке валидации! Одинаковое " +
+                taskManager.createTask(task5), "Нет исключения при проверке валидации! Одинаковое " +
                 "startTime");
     }
 
@@ -703,10 +668,10 @@ abstract class InMemoryTaskManagerTest {
         task2 = new Task("Другая задача", "Тестовое описание", Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 12, 31, 13, 1));
 
-        inMemoryTaskManager.createTask(task1);
-        inMemoryTaskManager.createTask(task2);
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
 
-        assertSame(3, inMemoryTaskManager.getTasks().size(), "Пробоема граничных значений при " +
+        assertSame(3, taskManager.getTasks().size(), "Пробоема граничных значений при " +
                 "добавлении задач");
     }
 
@@ -719,7 +684,7 @@ abstract class InMemoryTaskManagerTest {
                 LocalDateTime.of(2024, 12, 31, 12, 15));
 
         assertThrows(ManagerPrioritizeException.class, () ->
-                inMemoryTaskManager.createSubtask(subtask, epic.getId()), "У сабтаски не проверяется время!");
+                taskManager.createSubtask(subtask, epic.getId()), "У сабтаски не проверяется время!");
     }
 
     @Test
@@ -729,7 +694,7 @@ abstract class InMemoryTaskManagerTest {
         Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 10, 15, 12, 0));
 
-        assertThrows(ManagerPrioritizeException.class, () -> inMemoryTaskManager.updateTask(updateTask2, task2.getId()),
+        assertThrows(ManagerPrioritizeException.class, () -> taskManager.updateTask(updateTask2, task2.getId()),
                 "Апдейт задачи с пересечением с другой задачей прошёл успешно");
     }
 
@@ -741,7 +706,7 @@ abstract class InMemoryTaskManagerTest {
                 Duration.ofMinutes(60), LocalDateTime.of(2024, 10, 15, 12, 0));
 
         assertThrows(ManagerPrioritizeException.class, () ->
-            inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId()), "Апдейт подзадачи с пересечением" +
+                taskManager.updateSubtask(updateSubtask, subtask.getId()), "Апдейт подзадачи с пересечением" +
                 "с задачей прошёл успешно");
     }
 
@@ -753,12 +718,12 @@ abstract class InMemoryTaskManagerTest {
         task = new Task("Задача", "Описание", Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 12, 31, 11, 0));
 
-        inMemoryTaskManager.createTask(task);
+        taskManager.createTask(task);
 
         Task updateTask = new Task(task.getName(), task.getDescription(), task.getStatus(), Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 12, 31, 12, 0));
 
-        assertThrows(ManagerPrioritizeException.class, () -> inMemoryTaskManager.updateTask(updateTask, task.getId()),
+        assertThrows(ManagerPrioritizeException.class, () -> taskManager.updateTask(updateTask, task.getId()),
                 "Апдейт задачи с пересечением по времени с подзадачей прощёд успешно");
     }
 
@@ -768,11 +733,11 @@ abstract class InMemoryTaskManagerTest {
         createTestSubtask();
         Subtask subtask1 = new Subtask("Название", "Описание", Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
-        inMemoryTaskManager.createSubtask(subtask1, epic.getId());
+        taskManager.createSubtask(subtask1, epic.getId());
 
-        inMemoryTaskManager.deleteEpic(epic.getId());
+        taskManager.deleteEpic(epic.getId());
 
-        assertTrue(inMemoryTaskManager.getPrioritizedTasks().isEmpty(), "После удаления эпика его подзадачи" +
+        assertTrue(taskManager.getPrioritizedTasks().isEmpty(), "После удаления эпика его подзадачи" +
                 "не удалились из приоритезации");
     }
 
@@ -780,33 +745,34 @@ abstract class InMemoryTaskManagerTest {
     //вспомогательные методы
     private void createTestTask() {
         task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
-        inMemoryTaskManager.createTask(task);
+        taskManager.createTask(task);
     }
 
     private void createTestEpic() {
         epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        taskManager.createEpic(epic);
     }
 
     private void createTestSubtask() {
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        taskManager.createSubtask(subtask, epic.getId());
     }
 
     private void createTaskForPrioritized() {
         task1 = new Task("Задача № 1", "Описание задачи № 1", TASKS_DURATION,
                 LocalDateTime.of(2024, 10, 15, 12, 30));
-        inMemoryTaskManager.createTask(task1);
+        taskManager.createTask(task1);
 
         epic = new Epic("Эпик", "Описание эпика");
-        inMemoryTaskManager.createEpic(epic);
+        taskManager.createEpic(epic);
 
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION,
                 LocalDateTime.of(2024, 11, 5, 15, 0));
-        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+        taskManager.createSubtask(subtask, epic.getId());
 
         task2 = new Task("Задача № 2", "Описание задачи № 2", TASKS_DURATION,
                 LocalDateTime.of(2024, 9, 7, 10, 15));
-        inMemoryTaskManager.createTask(task2);
+        taskManager.createTask(task2);
     }
+
 }

@@ -20,11 +20,12 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = historyManager;
     }
 
+    @Override
     public List<Task> getPrioritizedTasks() {
         return prioritizedTasks.stream().toList();
     }
 
-    public boolean validateTimes(Task task1, Task task2) {
+    protected boolean validateTimes(Task task1, Task task2) {
         if (task1.getStartTime() == null || task2.getStartTime() == null) {
             return true;
         } else if ((task1.getStartTime().isBefore(task2.getStartTime()) &&
@@ -43,7 +44,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-    public boolean validateTask(Task task) {
+    protected boolean validateTask(Task task) {
         if ((task.getStartTime() != null) && (!getPrioritizedTasks().isEmpty())) {
             return getPrioritizedTasks().stream()
                     .filter(someTask -> !someTask.equals(task))
@@ -53,7 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
         return true;
     }
 
-    public void addPrioritizedTasks(Task task) {
+    protected void addPrioritizedTasks(Task task) {
         if (task.getStartTime() == null) {return;}
 
         if (validateTask(task)) {
@@ -66,9 +67,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        addPrioritizedTasks(task);
-        task.setId(idCounter++);
-        tasks.put(task.getId(), task);
+        if (task.getStartTime() != null) {
+            addPrioritizedTasks(task);
+            task.setId(idCounter++);
+            tasks.put(task.getId(), task);
+        } else {
+            throw new IllegalArgumentException("Задача не может быть создана без даты начала");
+        }
     }
 
     @Override
@@ -79,28 +84,36 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubtask(Subtask subtask, int epicId) {
-        addPrioritizedTasks(subtask);
-        subtask.setId(idCounter++);
-        Epic epic = epics.get(epicId);
+        if (subtask.getStartTime() != null) {
+            addPrioritizedTasks(subtask);
+            subtask.setId(idCounter++);
+            Epic epic = epics.get(epicId);
 
-        List<Subtask> epicSubtasks = epic.getSubtasks();
-        epicSubtasks.add(subtask);
+            List<Subtask> epicSubtasks = epic.getSubtasks();
+            epicSubtasks.add(subtask);
 
-        subtask.setEpicId(epic.getId());
-        subtasks.put(subtask.getId(), subtask);
+            subtask.setEpicId(epic.getId());
+            subtasks.put(subtask.getId(), subtask);
 
-        epic.updateStatus();
-        updateEpic(epic, epicId);
+            epic.updateStatus();
+            updateEpic(epic, epicId);
+        } else {
+            throw new IllegalArgumentException("Задача не может быть добавлена без даты начала");
+        }
     }
 
     @Override
     public void updateTask(Task newTask, Integer id) {
-        newTask.setId(id);
-        addPrioritizedTasks(newTask);
+        if (newTask.getStartTime() != null) {
+            newTask.setId(id);
+            addPrioritizedTasks(newTask);
 
-        deleteTask(id);
+            deleteTask(id);
 
-        tasks.put(newTask.getId(), newTask);
+            tasks.put(newTask.getId(), newTask);
+        } else {
+            throw new IllegalArgumentException("Задача не может быть изменена без даты начала");
+        }
     }
 
     @Override
@@ -115,13 +128,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask newSubtask, Integer id) {
-        newSubtask.setId(id);
-        addPrioritizedTasks(newSubtask);
+        if (newSubtask.getStartTime() != null) {
+            newSubtask.setId(id);
+            addPrioritizedTasks(newSubtask);
 
-        newSubtask.setEpicId(subtasks.get(id).getEpicId());
-        deleteSubtask(id);
+            newSubtask.setEpicId(subtasks.get(id).getEpicId());
+            deleteSubtask(id);
 
-        createSubtaskForUpdate(newSubtask, newSubtask.getEpicId());
+            createSubtaskForUpdate(newSubtask, newSubtask.getEpicId());
+        } else {
+            throw new IllegalArgumentException("Задача не может быть изменена без даты начала");
+        }
     }
 
     @Override
@@ -263,19 +280,22 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    @Override
     public Map<Integer, Task> getTasks() {
         return tasks;
     }
 
+    @Override
     public Map<Integer, Epic> getEpics() {
         return epics;
     }
 
+    @Override
     public Map<Integer, Subtask> getSubtasks() {
         return subtasks;
     }
 
-    public void createSubtaskForUpdate(Subtask subtask, int epicId) {
+    protected void createSubtaskForUpdate(Subtask subtask, int epicId) {
         Epic epic = epics.get(epicId);
 
         List<Subtask> epicSubtasks = epic.getSubtasks();

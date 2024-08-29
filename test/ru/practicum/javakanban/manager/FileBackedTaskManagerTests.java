@@ -16,21 +16,25 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends ManagersTest {
     private final String resources = ".\\src\\resources";
-    private FileBackedTaskManager fileBackedTaskManager;
+    protected FileBackedTaskManager fileBackedTaskManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
     private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
     private static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
+    @Override
     @BeforeEach
-    public void createFileBackedTaskManager() throws IOException {
+    public void createTaskManager() throws IOException {
         /*здесь также можно использовать метод createFile(), который создаст файл в папке resources, что может быть
         удобнее для отладки*/
+        taskManager = Managers.getFileBacked(createFile());
         fileBackedTaskManager = Managers.getFileBacked(createFile());
     }
+
+
 
     @Test
     public void saveEmptyFileManagerHasNoTasks() throws IOException {

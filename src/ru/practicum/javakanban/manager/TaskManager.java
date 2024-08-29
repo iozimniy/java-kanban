@@ -5,6 +5,7 @@ import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
 
@@ -49,4 +50,8 @@ public interface TaskManager {
     List<Task> getHistory();
 
     List<Task> getPrioritizedTasks();
+
+    Map<Integer, Task> getTasks();
+    Map<Integer, Epic> getEpics();
+    Map<Integer, Subtask> getSubtasks();
 }
