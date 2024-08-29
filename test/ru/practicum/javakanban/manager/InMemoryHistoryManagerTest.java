@@ -120,7 +120,8 @@ class InMemoryHistoryManagerTest {
     @Test
     public void addEpicSubtaskAndTaskAndTheSameSubtaskIsFirstInHistory() {
         createTestSubtask();
-        createTestTask();
+        task = new Task("Название", "Описание", Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
         inMemoryHistoryManager.add(epic);
         inMemoryHistoryManager.add(subtask);
         inMemoryHistoryManager.add(task);

@@ -198,7 +198,9 @@ class FileBackedTaskManagerTest {
     @Test
     public void deleteAllTasksFileIsEmpty() throws IOException {
         createTestTask();
-        createTestTask();
+        Task task1 = new Task("Название", "Описание", Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
+        fileBackedTaskManager.createTask(task1);
         fileBackedTaskManager.deleteAllTasks();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -222,7 +224,8 @@ class FileBackedTaskManagerTest {
     @Test
     public void deleteAllSubtasksEpicInFile() throws IOException {
         createTestSubtask();
-        Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
+        Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION,
+                LocalDateTime.of(2024, 11, 17, 11, 20));
         fileBackedTaskManager.createSubtask(subtask1, epic.getId());
         fileBackedTaskManager.deleteAllSubtasks();
 

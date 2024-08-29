@@ -2,6 +2,7 @@ package ru.practicum.javakanban.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
@@ -249,7 +250,9 @@ class InMemoryTaskManagerTest {
     @Test
     public void deleteAllTasksTaskIsEmpty() {
         createTestTask();
-        createTestTask();
+        task2 = new Task("Другая задача", "Другое описание", Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
+        inMemoryTaskManager.createTask(task2);
 
         inMemoryTaskManager.deleteAllTasks();
         assertTrue(inMemoryTaskManager.getTasks().isEmpty(), "Задачи не очистились");
@@ -271,7 +274,9 @@ class InMemoryTaskManagerTest {
     public void deleteAllSubtasksSubtasksIsEmptyAndEpicHasNoSubtasks() {
         createTestEpic();
         createTestSubtask();
-        createTestSubtask();
+
+        Subtask otherSubtask = new Subtask("Ещё одна подзадача", "Описание", Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
 
         inMemoryTaskManager.deleteAllSubtasks();
         assertAll(
@@ -594,6 +599,186 @@ class InMemoryTaskManagerTest {
                         "приоритезации имеет странный порядок")
         );
     }
+
+    @Test
+    public void updateTaskStartTimeNullTaskDeleteFromPrioritizedTask() {
+        createTaskForPrioritized();
+
+        Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), task2.getDuration(),
+                null);
+
+        inMemoryTaskManager.updateTask(updateTask2, task2.getId());
+
+        assertAll(
+                () -> assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(updateTask2), "После " +
+                        "обнуления startTime задача всё ещё в приоритезации"),
+                () -> assertNull(inMemoryTaskManager.getTask(task2.getId()).getStartTime(), "У задачи " +
+                        "startTime не нул")
+        );
+    }
+
+    @Test
+    public void updateSubtaskStartTimeNullTaskDeleteFromPrioritizedTask() {
+        createTaskForPrioritized();
+
+        Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
+                subtask.getDuration(), null);
+
+        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
+
+        assertAll(
+                () -> assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(updateSubtask), "После " +
+                        "обнуления startTime сабтаска всё ещё в приоритезации"),
+                () -> assertNull(inMemoryTaskManager.getSubtask(subtask.getId()).getStartTime(), "У сабтаски" +
+                        "startTime не нул")
+        );
+    }
+
+    @Test
+    public void updateTaskNullStarTimeToStartTimeTaskInPrioritizedTasks() {
+        task = new Task("Название", "Описание", Duration.ofMinutes(30), null);
+        inMemoryTaskManager.createTask(task);
+
+        assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(task), "Таска с нулом в startTime " +
+                "попала в список приоритизации");
+
+        Task updateTask = new Task(task.getName(), task.getDescription(), task.getStatus(), task.getDuration(),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
+        inMemoryTaskManager.updateTask(updateTask, task.getId());
+
+        assertTrue(inMemoryTaskManager.getPrioritizedTasks().contains(updateTask), "После появления у сабтаски " +
+                "startTime она не попала в приоритезацию");
+    }
+
+    @Test
+    public void updateSubtaskNullStarTimeToStartTimeTaskInPrioritizedTasks() {
+        createTestEpic();
+        subtask = new Subtask("Название", "Описание", Duration.ofMinutes(30), null);
+        inMemoryTaskManager.createSubtask(subtask, epic.getId());
+
+        assertFalse(inMemoryTaskManager.getPrioritizedTasks().contains(subtask), "Сабтаска с нулом в startTime " +
+                "попала в список приоритизации");
+
+        Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
+                subtask.getDuration(), LocalDateTime.of(2024, 11, 17, 11, 20));
+        inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId());
+
+        assertTrue(inMemoryTaskManager.getPrioritizedTasks().contains(updateSubtask), "После появления у сабтаски " +
+                "startTime она не попала в приоритезацию");
+    }
+
+    @Test
+    public void createTaskCrossedTimesException() {
+        createTestTask();
+        task1 = new Task("Другая задача", "Тестовое описание", Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 12, 31, 12, 15));
+        task2 = new Task("Ещё одна задача", "Тестовое описание", Duration.ofMinutes(40),
+                LocalDateTime.of(2024, 12, 31, 12, 0));
+        Task task3 = new Task("И снова задача", "Тестовое описание", Duration.ofMinutes(10),
+                LocalDateTime.of(2024, 12, 31, 12, 40));
+        Task task4 = new Task("О! Задача!", "Тестовое описание", Duration.ofMinutes(240),
+                LocalDateTime.of(2024, 12, 31, 10, 0));
+        Task task5 = new Task("О! Задача!", "Тестовое описание", Duration.ofMinutes(10),
+                LocalDateTime.of(2024, 12, 31, 12, 30));
+
+        assertThrows(ManagerPrioritizeException.class, () ->
+                inMemoryTaskManager.createTask(task1), "Нет исключения при проверке валидации! Пересечение" +
+                "в конце периода первой задачи");
+        assertThrows(ManagerPrioritizeException.class, () ->
+                inMemoryTaskManager.createTask(task2), "Нет исключения при проверке валидации! Пересечение" +
+                "в начале периода первой задачи");
+        assertThrows(ManagerPrioritizeException.class, () ->
+                inMemoryTaskManager.createTask(task3), "Нет исключения при проверке валидации! Период второй " +
+                "задачи внутри первой");
+        assertThrows(ManagerPrioritizeException.class, () ->
+                inMemoryTaskManager.createTask(task4), "Нет исключения при проверке валидации! Период первой " +
+                "задачи внутри внутри");
+        assertThrows(ManagerPrioritizeException.class, () ->
+                inMemoryTaskManager.createTask(task5), "Нет исключения при проверке валидации! Одинаковое " +
+                "startTime");
+    }
+
+    @Test
+    public void createTaskWithoutCrossedTimeWithoutException() {
+        createTestTask();
+        task1 = new Task("Другая задача", "Тестовое описание", Duration.ofMinutes(29),
+                LocalDateTime.of(2024, 12, 31, 12, 0));
+        task2 = new Task("Другая задача", "Тестовое описание", Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 12, 31, 13, 1));
+
+        inMemoryTaskManager.createTask(task1);
+        inMemoryTaskManager.createTask(task2);
+
+        assertSame(3, inMemoryTaskManager.getTasks().size(), "Пробоема граничных значений при " +
+                "добавлении задач");
+    }
+
+    @Test
+    public void createSubtaskCrossedTimesException() {
+        createTestTask();
+        createTestEpic();
+
+        subtask = new Subtask("Подзадача", "Тестовое описание", Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 12, 31, 12, 15));
+
+        assertThrows(ManagerPrioritizeException.class, () ->
+                inMemoryTaskManager.createSubtask(subtask, epic.getId()), "У сабтаски не проверяется время!");
+    }
+
+    @Test
+    public void updateTaskCrossedWithTaskException() {
+        createTaskForPrioritized();
+
+        Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 10, 15, 12, 0));
+
+        assertThrows(ManagerPrioritizeException.class, () -> inMemoryTaskManager.updateTask(updateTask2, task2.getId()),
+                "Апдейт задачи с пересечением с другой задачей прошёл успешно");
+    }
+
+    @Test
+    public void updateSubtaskCrossedTaskException() {
+        createTaskForPrioritized();
+
+        Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
+                Duration.ofMinutes(60), LocalDateTime.of(2024, 10, 15, 12, 0));
+
+        assertThrows(ManagerPrioritizeException.class, () ->
+            inMemoryTaskManager.updateSubtask(updateSubtask, subtask.getId()), "Апдейт подзадачи с пересечением" +
+                "с задачей прошёл успешно");
+    }
+
+    @Test
+    public void updateTaskCrossedSubtaskException() {
+        createTestEpic();
+        createTestSubtask();
+
+        task = new Task("Задача", "Описание", Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 12, 31, 11, 0));
+
+        inMemoryTaskManager.createTask(task);
+
+        Task updateTask = new Task(task.getName(), task.getDescription(), task.getStatus(), Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 12, 31, 12, 0));
+
+        assertThrows(ManagerPrioritizeException.class, () -> inMemoryTaskManager.updateTask(updateTask, task.getId()),
+                "Апдейт задачи с пересечением по времени с подзадачей прощёд успешно");
+    }
+
+    @Test
+    public void deleteEpicHisSubtaskDeleteFromPrioritizedTasks() {
+        createTestEpic();
+        createTestSubtask();
+        Subtask subtask1 = new Subtask("Название", "Описание", Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
+        inMemoryTaskManager.createSubtask(subtask1, epic.getId());
+
+        inMemoryTaskManager.deleteEpic(epic.getId());
+
+        assertTrue(inMemoryTaskManager.getPrioritizedTasks().isEmpty(), "После удаления эпика его подзадачи" +
+                "не удалились из приоритезации");
+    }
+
 
     //вспомогательные методы
     private void createTestTask() {
