@@ -80,14 +80,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         var strings = getStrings(file);
 
-        for (String string : strings) {
+        strings.stream().forEach(string -> {
             Task task = fromString(string);
             switch (task.getType()) {
                 case TASK -> fileBackedTaskManager.createTask(task);
                 case EPIC -> fileBackedTaskManager.createEpic((Epic) task);
                 case SUBTASK -> fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
             }
-        }
+        });
 
         return fileBackedTaskManager;
     }
@@ -176,6 +176,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Task task : tasks) {
                 writer.write(task.convertToString() + "\n");
             }
+
 
             for (Epic epic : epics) {
                 writer.write(epic.convertToString() + "\n");
