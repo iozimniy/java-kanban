@@ -31,7 +31,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
         /*здесь также можно использовать метод createFile(), который создаст файл в папке resources, что может быть
         удобнее для отладки*/
         taskManager = Managers.getFileBacked(createFile());
-        fileBackedTaskManager = Managers.getFileBacked(createFile());
+        fileBackedTaskManager = Managers.getFileBacked(createTempFile());
     }
 
 
