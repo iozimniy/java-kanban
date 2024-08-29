@@ -28,19 +28,15 @@ public class InMemoryTaskManager implements TaskManager {
     protected boolean validateTimes(Task task1, Task task2) {
         if (task1.getStartTime() == null || task2.getStartTime() == null) {
             return true;
-        } else if ((task1.getStartTime().isBefore(task2.getStartTime()) &&
-                task1.getEndTime().isAfter(task2.getStartTime())) ||
-                (task1.getStartTime().isBefore(task2.getEndTime()) &&
-                task1.getEndTime().isAfter(task2.getEndTime())) ||
-                (task1.getStartTime().isBefore(task2.getStartTime()) &&
-                        task1.getEndTime().isAfter(task2.getEndTime())) ||
-                (task1.getStartTime().isAfter(task2.getStartTime()) &&
-                        task1.getEndTime().isBefore(task2.getEndTime())) ||
-                task1.getStartTime().equals(task2.getStartTime())){
-            return false;
-        }
-
-        return true;
+        } else return (!task1.getStartTime().isBefore(task2.getStartTime()) ||
+                !task1.getEndTime().isAfter(task2.getStartTime())) &&
+                (!task1.getStartTime().isBefore(task2.getEndTime()) ||
+                        !task1.getEndTime().isAfter(task2.getEndTime())) &&
+                (!task1.getStartTime().isBefore(task2.getStartTime()) ||
+                        !task1.getEndTime().isAfter(task2.getEndTime())) &&
+                (!task1.getStartTime().isAfter(task2.getStartTime()) ||
+                        !task1.getEndTime().isBefore(task2.getEndTime())) &&
+                !task1.getStartTime().equals(task2.getStartTime());
     }
 
 
@@ -55,7 +51,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void addPrioritizedTasks(Task task) {
-        if (task.getStartTime() == null) {return;}
+        if (task.getStartTime() == null) {
+            return;
+        }
 
         if (validateTask(task)) {
             prioritizedTasks.add(task);
