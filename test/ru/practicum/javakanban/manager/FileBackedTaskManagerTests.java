@@ -249,21 +249,6 @@ class FileBackedTaskManagerTest extends ManagersTest {
 
     }
 
-    @Test
-    public void createSubtaskCrossedTimesException() throws ManagerPrioritizeException {
-        createTestTask();
-
-        taskManager.getPrioritizedTasks().forEach(System.out::println);
-
-        task1 = new Task("Подзадача", "Тестовое описание", Duration.ofMinutes(60),
-                LocalDateTime.of(2024, 12, 31, 12, 15));
-
-        taskManager.createTask(task1);
-
-//            assertThrows(ManagerPrioritizeException.class, () ->
-//                    taskManager.createSubtask(subtask, epic.getId()), "У сабтаски не проверяется время!");
-    }
-
     //вспомогательные методы
     public File createFile() throws IOException {
         if (!Files.exists(Paths.get(resources, "taskManagerCsv.csv"))) {
