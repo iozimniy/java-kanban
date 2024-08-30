@@ -30,7 +30,7 @@ public abstract class ManagersTest {
     public abstract void createTaskManager() throws IOException;
 
     @Test
-    public void createTaskTaskAddedToInMemoryManagerTasks() {
+    public void createTaskTaskAddedToInMemoryManagerTasks() throws ManagerPrioritizeException {
         createTestTask();
 
         var tasks = taskManager.getTasks();
@@ -58,7 +58,7 @@ public abstract class ManagersTest {
 
 
     @Test
-    public void createSubtaskAddedToInMemoryManagerSubtask() {
+    public void createSubtaskAddedToInMemoryManagerSubtask() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -75,7 +75,7 @@ public abstract class ManagersTest {
 
 
     @Test
-    public void createSubtaskAddEpicSubtasks() {
+    public void createSubtaskAddEpicSubtasks() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -90,7 +90,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateTaskTaskChangesInTasks() {
+    public void updateTaskTaskChangesInTasks() throws ManagerPrioritizeException {
         createTestTask();
         Task updateTask = new Task("Новое название задачи", "Новое описание задачи", task.getStatus(),
                 task.getDuration(), task.getStartTime());
@@ -130,7 +130,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskSubtaskChangesInSubtasks() {
+    public void updateSubtaskSubtaskChangesInSubtasks() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -155,7 +155,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskStatusChangeEpicStatus() {
+    public void updateSubtaskStatusChangeEpicStatus() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -169,7 +169,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskDurationChangesEpicDurationAndEndTime() {
+    public void updateSubtaskDurationChangesEpicDurationAndEndTime() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -187,7 +187,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskStartTimeChangesEpicStartTime() {
+    public void updateSubtaskStartTimeChangesEpicStartTime() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -200,7 +200,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getAllTasksReturnArrayListTasks() {
+    public void getAllTasksReturnArrayListTasks() throws ManagerPrioritizeException {
         createTestTask();
 
         ArrayList<Task> allTasks = new ArrayList<>(taskManager.getTasks().values());
@@ -218,7 +218,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getAllSubtasksReturnArrayListSubtasks() {
+    public void getAllSubtasksReturnArrayListSubtasks() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -229,7 +229,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getEpicSubtasksCorrectIdReturnEpicSubtask() {
+    public void getEpicSubtasksCorrectIdReturnEpicSubtask() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -245,7 +245,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllTasksTaskIsEmpty() {
+    public void deleteAllTasksTaskIsEmpty() throws ManagerPrioritizeException {
         createTestTask();
         task2 = new Task("Другая задача", "Другое описание", Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
@@ -268,7 +268,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksSubtasksIsEmptyAndEpicHasNoSubtasks() {
+    public void deleteAllSubtasksSubtasksIsEmptyAndEpicHasNoSubtasks() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -283,7 +283,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getTaskCorrectIdReturnTask() {
+    public void getTaskCorrectIdReturnTask() throws ManagerPrioritizeException {
         createTestTask();
 
         assertEquals(task, taskManager.getTask(task.getId()), "Задача не вернулась по id");
@@ -295,7 +295,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getTaskAddTaskInHistory() {
+    public void getTaskAddTaskInHistory() throws ManagerPrioritizeException {
         createTestTask();
 
         taskManager.getTask(task.getId());
@@ -324,7 +324,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getSubtaskCorrectIdReturnSubtask() {
+    public void getSubtaskCorrectIdReturnSubtask() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -333,7 +333,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getSubtaskAddInHistory() {
+    public void getSubtaskAddInHistory() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getSubtask(subtask.getId());
@@ -347,7 +347,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteTaskCorrectIdTaskRemoveFromTasks() {
+    public void deleteTaskCorrectIdTaskRemoveFromTasks() throws ManagerPrioritizeException {
         createTestTask();
 
         taskManager.deleteTask(task.getId());
@@ -356,7 +356,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteTaskIncorrectIdTasksSizeIsTheSame() {
+    public void deleteTaskIncorrectIdTasksSizeIsTheSame() throws ManagerPrioritizeException {
         createTestTask();
         int tasksSize = taskManager.getTasks().size();
 
@@ -375,7 +375,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicCorrectIdEpicSubtasksRemoveFromSubtask() {
+    public void deleteEpicCorrectIdEpicSubtasksRemoveFromSubtask() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         var epicSubtasks = epic.getSubtasks();
@@ -397,7 +397,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskCorrectIdSubtaskRemoveFromSubtask() {
+    public void deleteSubtaskCorrectIdSubtaskRemoveFromSubtask() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -412,7 +412,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskIncorrectIdSubtasksIsTheSame() {
+    public void deleteSubtaskIncorrectIdSubtasksIsTheSame() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -423,7 +423,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteTaskItShouldNotBeInHistory() {
+    public void deleteTaskItShouldNotBeInHistory() throws ManagerPrioritizeException {
         createTestTask();
         taskManager.getTask(task.getId());
         taskManager.deleteTask(task.getId());
@@ -440,7 +440,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicWithSubtaskSubtaskDeleteFromHistory() {
+    public void deleteEpicWithSubtaskSubtaskDeleteFromHistory() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -451,7 +451,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskItShouldNotBeInHistory() {
+    public void deleteSubtaskItShouldNotBeInHistory() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getSubtask(subtask.getId());
@@ -461,7 +461,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskEpicIsInHistory() {
+    public void deleteSubtaskEpicIsInHistory() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -476,7 +476,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllTasksHistoryIsEmpty() {
+    public void deleteAllTasksHistoryIsEmpty() throws ManagerPrioritizeException {
         createTestTask();
         taskManager.getTask(task.getId());
         taskManager.deleteAllTasks();
@@ -494,7 +494,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllEpicsWithSubtaskHistoryIsEmpty() {
+    public void deleteAllEpicsWithSubtaskHistoryIsEmpty() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -505,7 +505,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksHistoryIsEmpty() {
+    public void deleteAllSubtasksHistoryIsEmpty() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getSubtask(subtask.getId());
@@ -515,7 +515,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksEpicIsInHistory() {
+    public void deleteAllSubtasksEpicIsInHistory() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -530,7 +530,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getPrioritizedTask() {
+    public void getPrioritizedTask() throws ManagerPrioritizeException {
         createTaskForPrioritized();
 
         assertAll(
@@ -544,7 +544,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteTaskItRemoveFromPrioritizedTask() {
+    public void deleteTaskItRemoveFromPrioritizedTask() throws ManagerPrioritizeException {
         createTaskForPrioritized();
 
         taskManager.deleteTask(task2.getId());
@@ -554,7 +554,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskItRemoveFromPrioritizedTask() {
+    public void deleteSubtaskItRemoveFromPrioritizedTask() throws ManagerPrioritizeException {
         createTaskForPrioritized();
 
         taskManager.deleteSubtask(subtask.getId());
@@ -564,7 +564,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateTaskStartTimeChangePrioritizedTask() {
+    public void updateTaskStartTimeChangePrioritizedTask() throws ManagerPrioritizeException {
         createTaskForPrioritized();
         Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), task2.getDuration(),
                 LocalDateTime.of(2025, 1, 15, 15, 0));
@@ -581,7 +581,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskStartTimeChangePrioritizedTask() {
+    public void updateSubtaskStartTimeChangePrioritizedTask() throws ManagerPrioritizeException {
         createTaskForPrioritized();
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
                 subtask.getDuration(), LocalDateTime.of(2025, 1, 15, 15, 0));
@@ -596,7 +596,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskStartTimeNullException() {
+    public void updateSubtaskStartTimeNullException() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -614,7 +614,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateTaskNullException() {
+    public void updateTaskNullException() throws ManagerPrioritizeException {
         createTestTask();
         Task updateTask = new Task(task.getName(), task.getDescription(), task.getStatus(), task.getDuration(), null);
 
@@ -630,7 +630,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void createTaskCrossedTimesException() {
+    public void createTaskCrossedTimesException() throws ManagerPrioritizeException {
         createTestTask();
         task1 = new Task("Другая задача", "Тестовое описание", Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 12, 31, 12, 15));
@@ -661,7 +661,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void createTaskWithoutCrossedTimeWithoutException() {
+    public void createTaskWithoutCrossedTimeWithoutException() throws ManagerPrioritizeException {
         createTestTask();
         task1 = new Task("Другая задача", "Тестовое описание", Duration.ofMinutes(29),
                 LocalDateTime.of(2024, 12, 31, 12, 0));
@@ -676,7 +676,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void createSubtaskCrossedTimesException() {
+    public void createSubtaskCrossedTimesException() throws ManagerPrioritizeException {
         createTestTask();
         createTestEpic();
 
@@ -688,7 +688,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateTaskCrossedWithTaskException() {
+    public void updateTaskCrossedWithTaskException() throws ManagerPrioritizeException {
         createTaskForPrioritized();
 
         Task updateTask2 = new Task(task2.getName(), task2.getDescription(), task2.getStatus(), Duration.ofMinutes(60),
@@ -699,7 +699,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateSubtaskCrossedTaskException() {
+    public void updateSubtaskCrossedTaskException() throws ManagerPrioritizeException {
         createTaskForPrioritized();
 
         Subtask updateSubtask = new Subtask(subtask.getName(), subtask.getDescription(), subtask.getStatus(),
@@ -711,7 +711,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void updateTaskCrossedSubtaskException() {
+    public void updateTaskCrossedSubtaskException() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
 
@@ -725,10 +725,11 @@ public abstract class ManagersTest {
 
         assertThrows(ManagerPrioritizeException.class, () -> taskManager.updateTask(updateTask, task.getId()),
                 "Апдейт задачи с пересечением по времени с подзадачей прощёд успешно");
+
     }
 
     @Test
-    public void deleteEpicHisSubtaskDeleteFromPrioritizedTasks() {
+    public void deleteEpicHisSubtaskDeleteFromPrioritizedTasks() throws ManagerPrioritizeException {
         createTestEpic();
         createTestSubtask();
         Subtask subtask1 = new Subtask("Название", "Описание", Duration.ofMinutes(30),
@@ -743,7 +744,7 @@ public abstract class ManagersTest {
 
 
     //вспомогательные методы
-    private void createTestTask() {
+    private void createTestTask() throws ManagerPrioritizeException {
         task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
         taskManager.createTask(task);
     }
@@ -753,12 +754,12 @@ public abstract class ManagersTest {
         taskManager.createEpic(epic);
     }
 
-    private void createTestSubtask() {
+    private void createTestSubtask() throws ManagerPrioritizeException {
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         taskManager.createSubtask(subtask, epic.getId());
     }
 
-    private void createTaskForPrioritized() {
+    private void createTaskForPrioritized() throws ManagerPrioritizeException {
         task1 = new Task("Задача № 1", "Описание задачи № 1", TASKS_DURATION,
                 LocalDateTime.of(2024, 10, 15, 12, 30));
         taskManager.createTask(task1);

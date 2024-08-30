@@ -50,7 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
         return true;
     }
 
-    protected void addPrioritizedTasks(Task task) {
+    protected void addPrioritizedTasks(Task task) throws ManagerPrioritizeException {
         if (task.getStartTime() == null) {
             return;
         }
@@ -64,7 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
+    public void createTask(Task task) throws ManagerPrioritizeException {
         if (task.getStartTime() != null) {
             addPrioritizedTasks(task);
             task.setId(idCounter++);
@@ -81,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) {
+    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
         if (subtask.getStartTime() != null) {
             addPrioritizedTasks(subtask);
             subtask.setId(idCounter++);
@@ -101,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task newTask, Integer id) {
+    public void updateTask(Task newTask, Integer id) throws ManagerPrioritizeException {
         if (newTask.getStartTime() != null) {
             newTask.setId(id);
             addPrioritizedTasks(newTask);
@@ -125,7 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask newSubtask, Integer id) {
+    public void updateSubtask(Subtask newSubtask, Integer id) throws ManagerPrioritizeException {
         if (newSubtask.getStartTime() != null) {
             newSubtask.setId(id);
             addPrioritizedTasks(newSubtask);

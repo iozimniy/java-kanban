@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerLoadException;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.ManagerSaveException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Status;
@@ -83,9 +84,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         strings.stream().forEach(string -> {
             Task task = fromString(string);
             switch (task.getType()) {
-                case TASK -> fileBackedTaskManager.createTask(task);
+                case TASK -> {
+                    try {
+                        fileBackedTaskManager.createTask(task);
+                    } catch (ManagerPrioritizeException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 case EPIC -> fileBackedTaskManager.createEpic((Epic) task);
-                case SUBTASK -> fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
+                case SUBTASK -> {
+                    try {
+                        fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
+                    } catch (ManagerPrioritizeException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         });
 
@@ -93,7 +106,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
+    public void createTask(Task task) throws ManagerPrioritizeException {
         super.createTask(task);
         save();
     }
@@ -105,13 +118,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) {
+    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
         super.createSubtask(subtask, epicId);
         save();
     }
 
     @Override
-    public void updateTask(Task task, Integer id) {
+    public void updateTask(Task task, Integer id) throws ManagerPrioritizeException {
         super.updateTask(task, id);
         save();
     }
@@ -123,7 +136,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask, Integer id) {
+    public void updateSubtask(Subtask subtask, Integer id) throws ManagerPrioritizeException {
         super.updateSubtask(subtask, id);
         save();
     }

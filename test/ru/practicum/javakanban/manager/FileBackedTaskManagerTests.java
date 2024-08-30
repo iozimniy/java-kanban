@@ -2,6 +2,7 @@ package ru.practicum.javakanban.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
@@ -53,7 +54,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void createTaskFileWithTask() throws IOException {
+    public void createTaskFileWithTask() throws IOException, ManagerPrioritizeException {
         createTestTask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -73,7 +74,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void createSubtaskFileWithEpicAndSubtask() throws IOException {
+    public void createSubtaskFileWithEpicAndSubtask() throws IOException, ManagerPrioritizeException {
         createTestSubtask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -86,7 +87,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnTaskFromFile() {
+    public void returnTaskFromFile() throws ManagerPrioritizeException {
         createTestTask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -106,7 +107,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnSubtaskAndEpicFromFile() {
+    public void returnSubtaskAndEpicFromFile() throws ManagerPrioritizeException {
         createTestSubtask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -120,7 +121,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void updateTaskUpdateInFile() throws IOException {
+    public void updateTaskUpdateInFile() throws IOException, ManagerPrioritizeException {
         createTestTask();
 
         Task updateTask = new Task("Новое название задачи", task.getDescription(), task.getStatus(),
@@ -146,7 +147,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void updateSubtaskUpdateInFile() throws IOException {
+    public void updateSubtaskUpdateInFile() throws IOException, ManagerPrioritizeException {
         createTestSubtask();
 
         Subtask updateSubtask = new Subtask("Новое название подзадачи", subtask.getDescription(),
@@ -162,7 +163,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteTaskFileIsEmpty() throws IOException {
+    public void deleteTaskFileIsEmpty() throws IOException, ManagerPrioritizeException {
         createTestTask();
         fileBackedTaskManager.deleteTask(task.getId());
 
@@ -184,7 +185,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskEpicInFile() throws IOException {
+    public void deleteSubtaskEpicInFile() throws IOException, ManagerPrioritizeException {
         createTestSubtask();
         fileBackedTaskManager.deleteSubtask(subtask.getId());
 
@@ -200,7 +201,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteAllTasksFileIsEmpty() throws IOException {
+    public void deleteAllTasksFileIsEmpty() throws IOException, ManagerPrioritizeException {
         createTestTask();
         Task task1 = new Task("Название", "Описание", Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
@@ -226,7 +227,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksEpicInFile() throws IOException {
+    public void deleteAllSubtasksEpicInFile() throws IOException, ManagerPrioritizeException {
         createTestSubtask();
         Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION,
                 LocalDateTime.of(2024, 11, 17, 11, 20));
@@ -245,6 +246,22 @@ class FileBackedTaskManagerTest extends ManagersTest {
                 () -> assertNull(otherSubtaskString, "Вторая подзадача не удалилась из файла после удаления " +
                         "всех подзадач")
         );
+
+    }
+
+    @Test
+    public void createSubtaskCrossedTimesException() throws ManagerPrioritizeException {
+        createTestTask();
+
+        taskManager.getPrioritizedTasks().forEach(System.out::println);
+
+        task1 = new Task("Подзадача", "Тестовое описание", Duration.ofMinutes(60),
+                LocalDateTime.of(2024, 12, 31, 12, 15));
+
+        taskManager.createTask(task1);
+
+//            assertThrows(ManagerPrioritizeException.class, () ->
+//                    taskManager.createSubtask(subtask, epic.getId()), "У сабтаски не проверяется время!");
     }
 
     //вспомогательные методы
@@ -262,7 +279,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
         return File.createTempFile("taskManagerCsv", ".csv");
     }
 
-    private void createTestTask() {
+    private void createTestTask() throws ManagerPrioritizeException {
         task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createTask(task);
     }
@@ -272,7 +289,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
         fileBackedTaskManager.createEpic(epic);
     }
 
-    private void createTestSubtask() {
+    private void createTestSubtask() throws ManagerPrioritizeException {
         epic = new Epic("Эпик", "Описание эпика");
         fileBackedTaskManager.createEpic(epic);
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);

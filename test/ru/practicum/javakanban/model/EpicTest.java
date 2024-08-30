@@ -2,6 +2,7 @@ package ru.practicum.javakanban.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.manager.Managers;
 import ru.practicum.javakanban.manager.TaskManager;
 
@@ -23,7 +24,7 @@ class EpicTest {
     private static LocalDateTime LATE_DATE_TIME = LocalDateTime.of(2024, 9,10, 10, 30);
 
     @BeforeEach
-    public void createTestEpic() {
+    public void createTestEpic() throws ManagerPrioritizeException {
         taskManager = Managers.getDefault();
         epic = new Epic("Эпик", "Описание эпика");
         subtask1 = new Subtask("Подзадача № 1", "Описание подзадачи № 1", SUBTASKS_DURATION, EARLY_DATE_TIME);
@@ -36,7 +37,7 @@ class EpicTest {
 
 
     @Test
-    public void updateStatusAllSubtaskIsDoneEpicIsDone() {
+    public void updateStatusAllSubtaskIsDoneEpicIsDone() throws ManagerPrioritizeException {
         Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.DONE,
                 subtask1.getDuration(), subtask1.getStartTime());
         taskManager.updateSubtask(updateSubtask1, subtask1.getId());
@@ -49,7 +50,7 @@ class EpicTest {
     }
 
     @Test
-    public void updateStatusAllSubtaskInProgressEpicInProgress() {
+    public void updateStatusAllSubtaskInProgressEpicInProgress() throws ManagerPrioritizeException {
         Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.IN_PROGRESS,
                 subtask1.getDuration(), subtask1.getStartTime());
         taskManager.updateSubtask(updateSubtask1, subtask1.getId());
@@ -62,7 +63,7 @@ class EpicTest {
     }
 
     @Test
-    public void updateStatusSubtasksNewAndInProgressEpicInProgress() {
+    public void updateStatusSubtasksNewAndInProgressEpicInProgress() throws ManagerPrioritizeException {
         Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.NEW,
                 subtask1.getDuration(), subtask1.getStartTime());
         taskManager.updateSubtask(updateSubtask1, subtask1.getId());
@@ -75,7 +76,7 @@ class EpicTest {
     }
 
     @Test
-    public void updateStatusSubtasksNewAndDoneEpicInProgress() {
+    public void updateStatusSubtasksNewAndDoneEpicInProgress() throws ManagerPrioritizeException {
         Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.NEW,
                 subtask1.getDuration(), subtask1.getStartTime());
         taskManager.updateSubtask(updateSubtask1, subtask1.getId());
@@ -88,7 +89,7 @@ class EpicTest {
     }
 
     @Test
-    public void updateStatusSubtasksDoneAndInProgressEpicInProgress() {
+    public void updateStatusSubtasksDoneAndInProgressEpicInProgress() throws ManagerPrioritizeException {
         Subtask updateSubtask1 = new Subtask(subtask1.getName(), subtask1.getDescription(), Status.DONE,
                 subtask1.getDuration(), subtask1.getStartTime());
         taskManager.updateSubtask(updateSubtask1, subtask1.getId());
