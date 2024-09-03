@@ -38,7 +38,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
 
 
     @Test
-    public void saveEmptyFileManagerHasNoTasks() throws IOException, ManagerPrioritizeException {
+    public void saveEmptyFileManagerHasNoTasks() throws IOException {
         File file = createTempFile();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
 
@@ -97,7 +97,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnEpicFromFile() throws ManagerPrioritizeException {
+    public void returnEpicFromFile() {
         createTestEpic();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);

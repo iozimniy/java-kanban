@@ -274,6 +274,7 @@ public abstract class ManagersTest {
 
         Subtask otherSubtask = new Subtask("Ещё одна подзадача", "Описание", Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
+        taskManager.createSubtask(otherSubtask, epic.getId());
 
         taskManager.deleteAllSubtasks();
         assertAll(
