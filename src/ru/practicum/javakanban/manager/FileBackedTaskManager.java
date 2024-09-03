@@ -78,29 +78,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(Managers.getDefaultHistory(), file);
-
         var strings = getStrings(file);
 
-        strings.stream().forEach(string -> {
-            Task task = fromString(string);
-            switch (task.getType()) {
-                case TASK -> {
-                    try {
-                        fileBackedTaskManager.createTask(task);
-                    } catch (ManagerPrioritizeException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                case EPIC -> fileBackedTaskManager.createEpic((Epic) task);
-                case SUBTASK -> {
-                    try {
-                        fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
-                    } catch (ManagerPrioritizeException e) {
-                        throw new RuntimeException(e);
-                    }
+        try {
+            for (String string : strings) {
+                Task task = fromString(string);
+                switch (task.getType()) {
+                    case TASK -> fileBackedTaskManager.createTask(task);
+                    case EPIC -> fileBackedTaskManager.createEpic((Epic) task);
+                    case SUBTASK -> fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
                 }
             }
-        });
+        } catch (ManagerPrioritizeException e) {
+            throw new RuntimeException(e);
+        }
 
         return fileBackedTaskManager;
     }
