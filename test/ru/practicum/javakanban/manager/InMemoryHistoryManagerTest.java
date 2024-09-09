@@ -2,9 +2,13 @@ package ru.practicum.javakanban.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +19,8 @@ class InMemoryHistoryManagerTest {
     private Task task;
     private Epic epic;
     private Subtask subtask;
+    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
+    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
     @BeforeEach
     public void createInMemoryHistoryManager() {
@@ -23,7 +29,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void addTaskItShouldBeInHistoryList() {
+    public void addTaskItShouldBeInHistoryList() throws ManagerPrioritizeException {
         createTestTask();
         inMemoryHistoryManager.add(task);
         var historyTasks = inMemoryHistoryManager.getHistory();
@@ -45,7 +51,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void addSubtaskItShouldBeInHistoryList() {
+    public void addSubtaskItShouldBeInHistoryList() throws ManagerPrioritizeException {
         createTestSubtask();
         inMemoryHistoryManager.add(subtask);
         var historyTasks = inMemoryHistoryManager.getHistory();
@@ -56,7 +62,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void removeTaskItShouldNotBeInHistoryList() {
+    public void removeTaskItShouldNotBeInHistoryList() throws ManagerPrioritizeException {
         createTestTask();
         inMemoryHistoryManager.add(task);
         inMemoryHistoryManager.remove(task.getId());
@@ -75,7 +81,7 @@ class InMemoryHistoryManagerTest {
 
 
     @Test
-    public void removeSubtaskItShouldNotBeInHistoryList() {
+    public void removeSubtaskItShouldNotBeInHistoryList() throws ManagerPrioritizeException {
         createTestSubtask();
         inMemoryHistoryManager.add(subtask);
         inMemoryHistoryManager.remove(subtask.getId());
@@ -85,7 +91,7 @@ class InMemoryHistoryManagerTest {
 
 
     @Test
-    public void addTwoTheSameTasksFirstShouldBeRemoved() {
+    public void addTwoTheSameTasksFirstShouldBeRemoved() throws ManagerPrioritizeException {
         createTestTask();
         inMemoryHistoryManager.add(task);
         inMemoryHistoryManager.add(task);
@@ -98,7 +104,7 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void addTwoTheSameSubtasksEpicAndSubtaskInHistory() {
+    public void addTwoTheSameSubtasksEpicAndSubtaskInHistory() throws ManagerPrioritizeException {
         createTestSubtask();
         inMemoryHistoryManager.add(epic);
         inMemoryHistoryManager.add(subtask);
@@ -113,9 +119,10 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    public void addEpicSubtaskAndTaskAndTheSameSubtaskIsFirstInHistory() {
+    public void addEpicSubtaskAndTaskAndTheSameSubtaskIsFirstInHistory() throws ManagerPrioritizeException {
         createTestSubtask();
-        createTestTask();
+        task = new Task("Название", "Описание", Duration.ofMinutes(30),
+                LocalDateTime.of(2024, 11, 17, 11, 20));
         inMemoryHistoryManager.add(epic);
         inMemoryHistoryManager.add(subtask);
         inMemoryHistoryManager.add(task);
@@ -130,8 +137,8 @@ class InMemoryHistoryManagerTest {
     }
 
     //вспомогательные методы
-    private void createTestTask() {
-        task = new Task("Задача", "Описание задачи");
+    private void createTestTask() throws ManagerPrioritizeException {
+        task = new Task("Задача", "Описание задачи", TASKS_DURATION, TASKS_DATE_TIME);
         inMemoryTaskManager.createTask(task);
     }
 
@@ -140,10 +147,10 @@ class InMemoryHistoryManagerTest {
         inMemoryTaskManager.createEpic(epic);
     }
 
-    private void createTestSubtask() {
+    private void createTestSubtask() throws ManagerPrioritizeException {
         epic = new Epic("Эпик", "Описание эпика");
         inMemoryTaskManager.createEpic(epic);
-        subtask = new Subtask("Подзадача", "Описание подзадачи");
+        subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         inMemoryTaskManager.createSubtask(subtask, epic.getId());
     }
 }

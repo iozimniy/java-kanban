@@ -1,11 +1,17 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerLoadException;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.ManagerSaveException;
-import ru.practicum.javakanban.model.*;
+import ru.practicum.javakanban.model.Epic;
+import ru.practicum.javakanban.model.Status;
+import ru.practicum.javakanban.model.Subtask;
+import ru.practicum.javakanban.model.Task;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +19,7 @@ import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    public static final String HEADER = "id,type,name,status,description,epicId";
+    public static final String HEADER = "id,type,name,status,description,duration,startTime,epicId";
     private final File taskManagerCsv;
 
     public FileBackedTaskManager(HistoryManager historyManager, File taskManagerCsv) {
@@ -32,12 +38,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String[] parameters = value.split(",");
 
         return switch (parameters[params.get("type")]) {
-            case "TASK" -> new Task(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]));
-            case "SUBTASK" -> new Subtask(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]));
-            case "EPIC" -> new Epic(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
-                    Status.fromString(parameters[params.get("status")]));
+            case "TASK" -> new Task(parameters[params.get("name")], parameters[params.get("description")],
+                    Integer.parseInt(parameters[params.get("id")]), Status.fromString(parameters[params.get("status")]),
+                    Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
+                    LocalDateTime.parse(parameters[params.get("startTime")]));
+            case "SUBTASK" ->
+                    new Subtask(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                            Status.fromString(parameters[params.get("status")]), Integer.parseInt(parameters[params.get("epicId")]), Duration.ofMinutes(Long.parseLong(parameters[params.get("duration")])),
+                            LocalDateTime.parse(parameters[params.get("startTime")]));
+            case "EPIC" ->
+                    new Epic(parameters[params.get("name")], parameters[params.get("description")], Integer.parseInt(parameters[params.get("id")]),
+                            Status.fromString(parameters[params.get("status")]));
             default -> throw new IllegalArgumentException("Невалидная строка.");
         };
     }
@@ -67,23 +78,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(Managers.getDefaultHistory(), file);
-
         var strings = getStrings(file);
 
-        for (String string : strings) {
-            Task task = fromString(string);
-            switch (task.getType()) {
-                case TASK -> fileBackedTaskManager.createTask(task);
-                case EPIC -> fileBackedTaskManager.createEpic((Epic) task);
-                case SUBTASK -> fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
+        try {
+            for (String string : strings) {
+                Task task = fromString(string);
+                switch (task.getType()) {
+                    case TASK -> fileBackedTaskManager.createTask(task);
+                    case EPIC -> fileBackedTaskManager.createEpic((Epic) task);
+                    case SUBTASK -> fileBackedTaskManager.createSubtask((Subtask) task, ((Subtask) task).getEpicId());
+                }
             }
+        } catch (ManagerPrioritizeException e) {
+            throw new RuntimeException(e);
         }
 
         return fileBackedTaskManager;
     }
 
     @Override
-    public void createTask(Task task) {
+    public void createTask(Task task) throws ManagerPrioritizeException {
         super.createTask(task);
         save();
     }
@@ -95,26 +109,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) {
+    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
         super.createSubtask(subtask, epicId);
         save();
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
+    public void updateTask(Task task, Integer id) throws ManagerPrioritizeException {
+        super.updateTask(task, id);
         save();
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        super.updateEpic(epic);
+    public void updateEpic(Epic epic, Integer id) {
+        super.updateEpic(epic, id);
         save();
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        super.updateSubtask(subtask);
+    public void updateSubtask(Subtask subtask, Integer id) throws ManagerPrioritizeException {
+        super.updateSubtask(subtask, id);
         save();
     }
 
@@ -166,6 +180,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (Task task : tasks) {
                 writer.write(task.convertToString() + "\n");
             }
+
 
             for (Epic epic : epics) {
                 writer.write(epic.convertToString() + "\n");

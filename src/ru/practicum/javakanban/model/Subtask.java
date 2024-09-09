@@ -1,20 +1,24 @@
 package ru.practicum.javakanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private Integer epicId;
 
-    public Subtask(String name, String description, Status status) {
-        super(name, description, status);
+    public Subtask(String name, String description, Duration duration, LocalDateTime startTime) {
+        super(name, description, duration, startTime);
+        this.status = Status.NEW;
     }
 
-    public Subtask(String name, String description) {
-        super(name, description);
-        status = Status.NEW;
+    public Subtask(String name, String description, Status status, Duration duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
     }
 
-    public Subtask(String name, String description, Integer id, Status status, Integer epicId) {
-        super(name, description, id, status);
+    public Subtask(String name, String description, Integer id, Status status, Integer epicId, Duration duration,
+                   LocalDateTime startTime) {
+        super(name, description, id, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -38,12 +42,14 @@ public class Subtask extends Task {
                 ", name='" + name + '\'' +
                 ", epic_id=" + epicId +
                 ", status=" + status +
+                ", startTime" + startTime +
                 '}';
     }
 
     @Override
     public String convertToString() {
-        return getId().toString() + "," + getType().toString() + "," + getName() + "," + getStatus().toString() + ","
-                + getDescription() + "," + getEpicId().toString();
+        return getId().toString() + "," + getType().toString() + "," + getName() + "," +
+                getStatus().toString() + "," + getDescription() + "," + getDuration().toMinutes() + "," +
+                getStartTime().toString() + "," + getEpicId().toString();
     }
 }

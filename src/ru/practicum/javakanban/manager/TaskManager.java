@@ -1,24 +1,26 @@
 package ru.practicum.javakanban.manager;
 
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
 
-    void createTask(Task task);
+    void createTask(Task task) throws ManagerPrioritizeException;
 
     void createEpic(Epic epic);
 
-    void createSubtask(Subtask subtask, int epicId);
+    void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException;
 
-    void updateTask(Task task);
+    void updateTask(Task task, Integer id) throws ManagerPrioritizeException;
 
-    void updateEpic(Epic epic);
+    void updateEpic(Epic epic, Integer id);
 
-    void updateSubtask(Subtask subtask);
+    void updateSubtask(Subtask subtask, Integer id) throws ManagerPrioritizeException;
 
     List<Task> getAllTasks();
 
@@ -47,4 +49,12 @@ public interface TaskManager {
     void deleteSubtask(int id);
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
+
+    Map<Integer, Task> getTasks();
+
+    Map<Integer, Epic> getEpics();
+
+    Map<Integer, Subtask> getSubtasks();
 }
