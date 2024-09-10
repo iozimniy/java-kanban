@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
@@ -194,13 +195,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(int id) {
+    public Task getTask(int id) throws NotFoundException {
         if (tasks.containsKey(id)) {
             historyManager.add(tasks.get(id));
             return tasks.get(id);
+        } else {
+            throw new NotFoundException("Задача не найдена по id.");
         }
-
-        return null;
     }
 
     @Override

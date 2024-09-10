@@ -3,6 +3,7 @@ package ru.practicum.javakanban.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
@@ -87,7 +88,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnTaskFromFile() throws ManagerPrioritizeException {
+    public void returnTaskFromFile() throws ManagerPrioritizeException, NotFoundException {
         createTestTask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);

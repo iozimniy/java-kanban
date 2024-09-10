@@ -3,6 +3,7 @@ package ru.practicum.javakanban.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
@@ -284,19 +285,19 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getTaskCorrectIdReturnTask() throws ManagerPrioritizeException {
+    public void getTaskCorrectIdReturnTask() throws ManagerPrioritizeException, NotFoundException {
         createTestTask();
 
         assertEquals(task, taskManager.getTask(task.getId()), "Задача не вернулась по id");
     }
 
     @Test
-    public void getTaskIncorrectIdReturnNull() {
+    public void getTaskIncorrectIdReturnNull() throws NotFoundException {
         assertNull(taskManager.getTask(0), "Задачи нет, но null не возвращается");
     }
 
     @Test
-    public void getTaskAddTaskInHistory() throws ManagerPrioritizeException {
+    public void getTaskAddTaskInHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestTask();
 
         taskManager.getTask(task.getId());
@@ -424,7 +425,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteTaskItShouldNotBeInHistory() throws ManagerPrioritizeException {
+    public void deleteTaskItShouldNotBeInHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestTask();
         taskManager.getTask(task.getId());
         taskManager.deleteTask(task.getId());
@@ -477,7 +478,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllTasksHistoryIsEmpty() throws ManagerPrioritizeException {
+    public void deleteAllTasksHistoryIsEmpty() throws ManagerPrioritizeException, NotFoundException {
         createTestTask();
         taskManager.getTask(task.getId());
         taskManager.deleteAllTasks();

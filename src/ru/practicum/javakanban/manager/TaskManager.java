@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
@@ -36,7 +37,7 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    Task getTask(int id);
+    Task getTask(int id) throws NotFoundException;
 
     Epic getEpic(int id);
 
