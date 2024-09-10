@@ -12,12 +12,15 @@ public abstract class BaseHttpHandler {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     protected void sendText(HttpExchange exchange, String answer) {
+        exchange.getResponseHeaders().add("Content-type", "application/json;charset=utf-8");
         try (OutputStream os = exchange.getResponseBody()) {
             exchange.sendResponseHeaders(200, 0);
             os.write(answer.getBytes(DEFAULT_CHARSET));
         } catch (IOException e) {
             System.out.println("Во время отправки ответа возникла ошибка");
         }
+
+        exchange.close();
     }
 
     protected Optional<Integer> getId(HttpExchange exchange) {
@@ -28,6 +31,7 @@ public abstract class BaseHttpHandler {
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
+
     }
 
     protected void sendNotFound(HttpExchange exchange) {
@@ -35,17 +39,42 @@ public abstract class BaseHttpHandler {
             exchange.sendResponseHeaders(404, 0);
             os.write("Запрашиваемый ресурс не существует".getBytes(DEFAULT_CHARSET));
         } catch (IOException e) {
-            System.out.println("Во время отправки ответа возникла ошибка");
+            System.out.println("Во время отправки ответа возникла ошибка.");
         }
+
+        exchange.close();
     }
 
-    protected void sendBadId(HttpExchange exchange) {
+    protected void sendBadRequest(HttpExchange exchange, String message) {
         try (OutputStream os = exchange.getResponseBody()) {
             exchange.sendResponseHeaders(400, 0);
             os.write("Задача не найдена по id".getBytes(DEFAULT_CHARSET));
         } catch (IOException e) {
-            System.out.println("Во время отправки ответа возникла ошибка");
+            System.out.println("Во время отправки ответа возникла ошибка.");
         }
+
+        exchange.close();
+    }
+
+    protected void sendHasInteractions(HttpExchange exchange) {
+        try (OutputStream os = exchange.getResponseBody()) {
+            exchange.sendResponseHeaders(406, 0);
+            os.write("Задача пересекается по времени с другой задачей.".getBytes(DEFAULT_CHARSET));
+        } catch (IOException e) {
+            System.out.println("Во время отправки ответа возникла ошибка.");
+        }
+
+        exchange.close();
+    }
+
+    protected void sendCreated(HttpExchange exchange) {
+        try {
+            exchange.sendResponseHeaders(201, 0);
+        } catch (IOException e) {
+            System.out.println("Во время отправки ответа возникла ошибка.");
+        }
+
+        exchange.close();
     }
 
     protected String[] getParams(HttpExchange exchange) {

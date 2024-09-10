@@ -20,6 +20,7 @@ public class HttpTaskServer {
 
     public void startServer() {
         httpServer.start();
+        System.out.println("Старт сервера");
     }
 
     public void stopServer() {
@@ -30,14 +31,11 @@ public class HttpTaskServer {
         httpServer.createContext("/tasks", new TaskHandler(taskManager));
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         try {
             HttpTaskServer taskServer = new HttpTaskServer();
             taskServer.createHandlers();
-
-
-
-            //taskServer.startServer();
+            taskServer.startServer();
 
         } catch (IOException e) {
             throw new RuntimeException(e);

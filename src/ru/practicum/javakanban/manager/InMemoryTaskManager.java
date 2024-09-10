@@ -103,6 +103,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task newTask, Integer id) throws ManagerPrioritizeException {
+        if (!tasks.containsKey(id)) {
+            throw new IllegalArgumentException("Задача для изменения не найдена.");
+        }
+
         if (newTask.getStartTime() != null) {
             newTask.setId(id);
             addPrioritizedTasks(newTask);
