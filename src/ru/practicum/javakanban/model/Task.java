@@ -11,6 +11,7 @@ public class Task {
     protected Status status;
     protected Duration duration;
     protected LocalDateTime startTime;
+    public Task() {}
 
     public Task(String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
@@ -125,7 +126,8 @@ public class Task {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", status=" + status +
-                ", startTime" + startTime +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
                 '}';
     }
 
