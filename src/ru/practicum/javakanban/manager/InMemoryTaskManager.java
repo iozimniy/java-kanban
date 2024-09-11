@@ -236,6 +236,8 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.remove(tasks.get(id));
             }
             tasks.remove(id);
+        } else {
+            throw new IllegalArgumentException("Задача для удаления не найдена");
         }
     }
 

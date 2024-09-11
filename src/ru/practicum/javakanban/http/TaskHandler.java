@@ -44,10 +44,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 handlePost(exchange);
                 break;
             case "DELETE":
-
+                handleDelete(exchange);
                 break;
             default:
-
+                sendBadRequest(exchange, "Невалидный запрос");
                 break;
         }
     }
@@ -107,6 +107,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                     try {
                         Task newTask = parseTask(exchange);
                         taskManager.updateTask(newTask, optId.get());
+                        sendCreated(exchange);
                     } catch (IllegalArgumentException e) {
                         sendBadRequest(exchange, e.getMessage());
                     } catch (IOException e) {
@@ -116,6 +117,32 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                     }
                 }
                 break;
+            default:
+                sendNotFound(exchange);
+                break;
+        }
+    }
+
+    public void handleDelete(HttpExchange exchange) {
+        String[] params = getParams(exchange);
+
+        switch (params.length) {
+            case 2:
+                taskManager.deleteAllTasks();
+                sendCreated(exchange);
+            case 3:
+                Optional<Integer> optId = getId(exchange);
+
+                if (optId.isEmpty()) {
+                    sendBadRequest(exchange, "Невереный id задачи");
+                } else {
+                    try {
+                        taskManager.deleteTask(optId.get());
+                        sendCreated(exchange);
+                    } catch (IllegalArgumentException e) {
+                        sendBadRequest(exchange, e.getMessage());
+                    }
+                }
         }
     }
 
