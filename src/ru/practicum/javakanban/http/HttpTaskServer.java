@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import ru.practicum.javakanban.manager.Managers;
 import ru.practicum.javakanban.manager.TaskManager;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
@@ -12,9 +13,10 @@ public class HttpTaskServer {
     HttpServer httpServer;
 
     private static final int PORT = 8080;
+    File file = File.createTempFile("taskManagerCsv", ".csv");
 
     public HttpTaskServer() throws IOException {
-        taskManager = Managers.getDefault();
+        taskManager = Managers.getFileBacked(file);
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
     }
 
@@ -40,6 +42,5 @@ public class HttpTaskServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

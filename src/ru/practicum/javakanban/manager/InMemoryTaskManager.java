@@ -3,6 +3,7 @@ package ru.practicum.javakanban.manager;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
+import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
@@ -69,6 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getStartTime() != null) {
             addPrioritizedTasks(task);
             task.setId(idCounter++);
+            task.setStatus(Status.NEW);
             tasks.put(task.getId(), task);
         } else {
             throw new IllegalArgumentException("Задача не может быть создана без даты начала");
@@ -86,6 +88,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getStartTime() != null) {
             addPrioritizedTasks(subtask);
             subtask.setId(idCounter++);
+            subtask.setStatus(Status.NEW);
             Epic epic = epics.get(epicId);
 
             List<Subtask> epicSubtasks = epic.getSubtasks();
