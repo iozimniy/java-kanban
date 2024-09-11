@@ -124,12 +124,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic newEpic, Integer id) {
-            newEpic.setSubtasks(epics.get(id).getSubtasks());
-            epics.remove(id);
+        newEpic.setSubtasks(epics.get(id).getSubtasks());
+        epics.remove(id);
 
-            newEpic.setId(id);
-            epics.put(newEpic.getId(), newEpic);
-            newEpic.updateTimes();
+        newEpic.setId(id);
+        epics.put(newEpic.getId(), newEpic);
+        newEpic.updateTimes();
     }
 
     @Override
@@ -185,7 +185,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         List<Epic> epicsForDelete = new ArrayList<>(epics.values());
-        epicsForDelete.stream().forEach(epic -> deleteEpic(epic.getId()));
+        epicsForDelete.stream().forEach(epic -> {
+            try {
+                deleteEpic(epic.getId());
+            } catch (NotFoundException e) {
+                System.out.println("Внимание! Рак на горе свистнул!");
+            }
+        });
     }
 
     @Override
@@ -245,7 +251,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteEpic(int id) {
+    public void deleteEpic(int id) throws NotFoundException {
 
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
@@ -262,6 +268,8 @@ public class InMemoryTaskManager implements TaskManager {
 
             historyManager.remove(id);
             epics.remove(id);
+        } else {
+            throw new NotFoundException("Эпик для удаления не найден");
         }
     }
 

@@ -3,6 +3,7 @@ package ru.practicum.javakanban.manager;
 import ru.practicum.javakanban.exeptions.ManagerLoadException;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.ManagerSaveException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
@@ -163,7 +164,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteEpic(int id) {
+    public void deleteEpic(int id) throws NotFoundException {
         super.deleteEpic(id);
         save();
     }

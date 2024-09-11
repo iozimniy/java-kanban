@@ -2,7 +2,6 @@ package ru.practicum.javakanban.http;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.javakanban.manager.TaskManager;
 
 import java.io.IOException;

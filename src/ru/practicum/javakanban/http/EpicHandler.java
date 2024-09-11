@@ -4,11 +4,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.manager.TaskManager;
 import ru.practicum.javakanban.model.Epic;
-import ru.practicum.javakanban.model.Task;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -27,7 +25,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         String method = exchange.getRequestMethod();
 
         switch (method) {
@@ -38,7 +36,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 handlePost(exchange);
                 break;
             case "DELETE":
-                //handleDelete(exchange);
+                handleDelete(exchange);
                 break;
             default:
                 sendBadRequest(exchange, "Невалидный запрос");
@@ -145,7 +143,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                     try {
                         taskManager.deleteEpic(optId.get());
                         sendCreated(exchange);
-                    } catch (IllegalArgumentException e) {
+                    } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
                     }
                 }

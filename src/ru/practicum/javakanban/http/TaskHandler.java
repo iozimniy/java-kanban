@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.http;
 
-import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
@@ -9,8 +10,6 @@ import ru.practicum.javakanban.manager.TaskManager;
 import ru.practicum.javakanban.model.Task;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
