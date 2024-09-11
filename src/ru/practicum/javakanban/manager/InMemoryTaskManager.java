@@ -228,13 +228,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubtask(int id) {
+    public Subtask getSubtask(int id) throws NotFoundException {
         if (subtasks.containsKey(id)) {
             historyManager.add(subtasks.get(id));
             return subtasks.get(id);
+        } else {
+            throw new NotFoundException("Подзадача не найдена по id");
         }
-
-        return null;
     }
 
     @Override

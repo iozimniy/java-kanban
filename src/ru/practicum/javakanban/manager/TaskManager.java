@@ -41,7 +41,7 @@ public interface TaskManager {
 
     Epic getEpic(int id) throws NotFoundException;
 
-    Subtask getSubtask(int id);
+    Subtask getSubtask(int id) throws NotFoundException;
 
     void deleteTask(int id);
 
