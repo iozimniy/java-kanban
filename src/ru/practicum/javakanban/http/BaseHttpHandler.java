@@ -1,6 +1,9 @@
 package ru.practicum.javakanban.http;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import ru.practicum.javakanban.manager.TaskManager;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,7 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public abstract class BaseHttpHandler {
-    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    protected final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    TaskManager taskManager;
+    Gson gson;
 
     protected void sendText(HttpExchange exchange, String answer) {
         exchange.getResponseHeaders().add("Content-type", "application/json;charset=utf-8");
@@ -47,8 +52,8 @@ public abstract class BaseHttpHandler {
 
     protected void sendBadRequest(HttpExchange exchange, String message) {
         try (OutputStream os = exchange.getResponseBody()) {
-            exchange.sendResponseHeaders(400, 0);
-            os.write("Задача не найдена по id".getBytes(DEFAULT_CHARSET));
+            exchange.sendResponseHeaders(404, 0);
+            os.write(message.getBytes(DEFAULT_CHARSET));
         } catch (IOException e) {
             System.out.println("Во время отправки ответа возникла ошибка.");
         }

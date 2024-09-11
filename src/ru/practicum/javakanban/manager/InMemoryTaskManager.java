@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
-    private final Comparator<Task> comparator = Comparator.comparing(task -> task.getStartTime());
+    private final Comparator<Task> comparator = Comparator.comparing(Task::getStartTime);
     private final Set<Task> prioritizedTasks = new TreeSet<>(comparator);
     private int idCounter = 1;
 
@@ -124,12 +124,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic newEpic, Integer id) {
-        newEpic.setSubtasks(epics.get(id).getSubtasks());
-        epics.remove(id);
+            newEpic.setSubtasks(epics.get(id).getSubtasks());
+            epics.remove(id);
 
-        newEpic.setId(id);
-        epics.put(newEpic.getId(), newEpic);
-        newEpic.updateTimes();
+            newEpic.setId(id);
+            epics.put(newEpic.getId(), newEpic);
+            newEpic.updateTimes();
     }
 
     @Override
@@ -163,13 +163,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Subtask> getEpicSubtasks(int id) {
+    public List<Subtask> getEpicSubtasks(int id) throws NotFoundException {
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
             return epic.getSubtasks();
+        } else {
+            throw new NotFoundException("Эпик не найден по id.");
         }
-
-        return null;
     }
 
     @Override
@@ -212,13 +212,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Epic getEpic(int id) {
+    public Epic getEpic(int id) throws NotFoundException {
         if (epics.containsKey(id)) {
             historyManager.add(epics.get(id));
             return epics.get(id);
+        } else {
+            throw new NotFoundException("Эпик не найден по id");
         }
-
-        return null;
     }
 
     @Override

@@ -29,7 +29,7 @@ public interface TaskManager {
 
     List<Subtask> getAllSubtasks();
 
-    List<Subtask> getEpicSubtasks(int id);
+    List<Subtask> getEpicSubtasks(int id) throws NotFoundException;
 
     void deleteAllTasks();
 
@@ -39,7 +39,7 @@ public interface TaskManager {
 
     Task getTask(int id) throws NotFoundException;
 
-    Epic getEpic(int id);
+    Epic getEpic(int id) throws NotFoundException;
 
     Subtask getSubtask(int id);
 

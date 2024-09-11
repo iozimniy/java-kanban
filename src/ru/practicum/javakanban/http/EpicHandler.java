@@ -1,23 +1,23 @@
 package ru.practicum.javakanban.http;
 
-import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.manager.TaskManager;
+import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Task;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class TaskHandler extends BaseHttpHandler implements HttpHandler {
+public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
-    public TaskHandler(TaskManager taskManager) {
+    public EpicHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
         gson = new GsonBuilder()
                 .serializeNulls()
@@ -27,7 +27,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) {
+    public void handle(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
 
         switch (method) {
@@ -38,7 +38,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 handlePost(exchange);
                 break;
             case "DELETE":
-                handleDelete(exchange);
+                //handleDelete(exchange);
                 break;
             default:
                 sendBadRequest(exchange, "Невалидный запрос");
@@ -51,18 +51,36 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (params.length) {
             case 2:
-                String tasks = gson.toJson(taskManager.getAllTasks());
-                sendText(exchange, tasks);
+                String epics = gson.toJson(taskManager.getAllEpics());
+                sendText(exchange, epics);
                 break;
             case 3:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id задачи");
+                    sendBadRequest(exchange, "Невереный id эпика");
                 } else {
                     try {
-                        String task = gson.toJson(taskManager.getTask(optId.get()));
-                        sendText(exchange, task);
+                        String epic = gson.toJson(taskManager.getEpic(optId.get()));
+                        sendText(exchange, epic);
+                    } catch (NotFoundException e) {
+                        sendBadRequest(exchange, e.getMessage());
+                    }
+                }
+                break;
+            case 4:
+                if (!("subtasks".equals(params[3]))) {
+                    sendNotFound(exchange);
+                }
+
+                Optional<Integer> optEpicId = getId(exchange);
+
+                if (optEpicId.isEmpty()) {
+                    sendBadRequest(exchange, "Невереный id эпика");
+                } else {
+                    try {
+                        String epic = gson.toJson(taskManager.getEpicSubtasks(optEpicId.get()));
+                        sendText(exchange, epic);
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
                     }
@@ -81,13 +99,11 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         switch (params.length) {
             case 2:
                 try {
-                    Task task = parseTask(exchange);
-                    taskManager.createTask(task);
+                    Epic epic = parseEpic(exchange);
+                    taskManager.createEpic(epic);
                     sendCreated(exchange);
                 } catch (IOException e) {
                     System.out.println("Во время получения запроса возникла ошибка.");
-                } catch (ManagerPrioritizeException e) {
-                    sendHasInteractions(exchange);
                 } catch (IllegalArgumentException e) {
                     sendBadRequest(exchange, e.getMessage());
                 }
@@ -96,18 +112,14 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id задачи");
+                    sendBadRequest(exchange, "Невереный id эпика");
                 } else {
                     try {
-                        Task newTask = parseTask(exchange);
-                        taskManager.updateTask(newTask, optId.get());
+                        Epic newEpic = parseEpic(exchange);
+                        taskManager.updateEpic(newEpic, optId.get());
                         sendCreated(exchange);
-                    } catch (IllegalArgumentException e) {
-                        sendBadRequest(exchange, e.getMessage());
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
-                    } catch (ManagerPrioritizeException e) {
-                        sendHasInteractions(exchange);
                     }
                 }
                 break;
@@ -122,7 +134,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (params.length) {
             case 2:
-                taskManager.deleteAllTasks();
+                taskManager.deleteAllEpics();
                 sendCreated(exchange);
             case 3:
                 Optional<Integer> optId = getId(exchange);
@@ -131,7 +143,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                     sendBadRequest(exchange, "Невереный id задачи");
                 } else {
                     try {
-                        taskManager.deleteTask(optId.get());
+                        taskManager.deleteEpic(optId.get());
                         sendCreated(exchange);
                     } catch (IllegalArgumentException e) {
                         sendBadRequest(exchange, e.getMessage());
@@ -140,10 +152,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    public Task parseTask(HttpExchange exchange) throws IOException {
+    public Epic parseEpic(HttpExchange exchange) throws IOException {
         try {
             String strBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            return gson.fromJson(strBody, Task.class);
+            return gson.fromJson(strBody, Epic.class);
         } catch (IOException e) {
             System.out.println("Во время получения запроса возникла ошибка.");
         } catch (JsonSyntaxException e) {
@@ -152,5 +164,4 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
         return null;
     }
-
 }

@@ -30,6 +30,7 @@ public class HttpTaskServer {
 
     public void createHandlers() {
         httpServer.createContext("/tasks", new TaskHandler(taskManager));
+        httpServer.createContext("/epics", new EpicHandler(taskManager));
     }
 
     public static void main(String[] args) {
