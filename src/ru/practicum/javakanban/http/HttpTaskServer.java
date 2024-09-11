@@ -9,14 +9,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
-    static TaskManager taskManager;
+    TaskManager taskManager;
     HttpServer httpServer;
 
     private static final int PORT = 8080;
-    File file = File.createTempFile("taskManagerCsv", ".csv");
 
-    public HttpTaskServer() throws IOException {
-        taskManager = Managers.getFileBacked(file);
+    public HttpTaskServer(TaskManager taskManager) throws IOException {
+        this.taskManager = taskManager;
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
     }
 
@@ -34,8 +33,10 @@ public class HttpTaskServer {
     }
 
     public static void main(String[] args) {
+
         try {
-            HttpTaskServer taskServer = new HttpTaskServer();
+            File file = File.createTempFile("taskManagerCsv", ".csv");
+            HttpTaskServer taskServer = new HttpTaskServer(Managers.getFileBacked(file));
             taskServer.createHandlers();
             taskServer.startServer();
 

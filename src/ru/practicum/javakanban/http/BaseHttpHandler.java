@@ -62,6 +62,7 @@ public abstract class BaseHttpHandler {
             os.write("Задача пересекается по времени с другой задачей.".getBytes(DEFAULT_CHARSET));
         } catch (IOException e) {
             System.out.println("Во время отправки ответа возникла ошибка.");
+
         }
 
         exchange.close();
@@ -75,6 +76,15 @@ public abstract class BaseHttpHandler {
         }
 
         exchange.close();
+    }
+
+    protected void sendServerError(HttpExchange exchange, String message) {
+        try (OutputStream os = exchange.getResponseBody()) {
+            exchange.sendResponseHeaders(500, 0);
+            os.write(message.getBytes(DEFAULT_CHARSET));
+        } catch (IOException e) {
+            System.out.println("Во время отправки ответа возникла ошибка.");
+        }
     }
 
     protected String[] getParams(HttpExchange exchange) {

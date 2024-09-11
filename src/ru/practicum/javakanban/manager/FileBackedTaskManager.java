@@ -90,7 +90,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         } catch (ManagerPrioritizeException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Ошибка чтения из файла.");
         }
 
         return fileBackedTaskManager;
