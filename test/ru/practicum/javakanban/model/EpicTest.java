@@ -106,7 +106,7 @@ class EpicTest {
         taskManager.deleteSubtask(subtask1.getId());
         taskManager.deleteSubtask(subtask2.getId());
 
-        assertSame(epic.getStatus(), Status.DONE);
+        assertSame(epic.getStatus(), Status.NEW);
     }
 
     @Test

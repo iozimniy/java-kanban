@@ -230,7 +230,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getEpicSubtasksCorrectIdReturnEpicSubtask() throws ManagerPrioritizeException {
+    public void getEpicSubtasksCorrectIdReturnEpicSubtask() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
 
@@ -241,8 +241,8 @@ public abstract class ManagersTest {
 
     @Test
     public void getEpicSubtasksIncorrectIdReturnNull() {
-        assertNull(taskManager.getEpicSubtasks(0),
-                "Эпика нет, но null не возвращается");
+        assertThrows(NotFoundException.class, () -> taskManager.getEpicSubtasks(0), "Нет исключения " +
+                "эпик не найден");
     }
 
     @Test
@@ -292,8 +292,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getTaskIncorrectIdReturnNull() throws NotFoundException {
-        //assertNull(taskManager.getTask(0), "Задачи нет, но null не возвращается");
+    public void getTaskIncorrectIdReturnNull() {
         assertThrows(NotFoundException.class, () -> taskManager.getTask(0), "Задача не найдена по id.");
     }
 
@@ -307,14 +306,14 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getEpicCorrectIdReturnEpic() {
+    public void getEpicCorrectIdReturnEpic() throws NotFoundException {
         createTestEpic();
 
         assertEquals(epic, taskManager.getEpic(epic.getId()), "Эпик не вернулся по id");
     }
 
     @Test
-    public void getEpicAddEpicInHistory() {
+    public void getEpicAddEpicInHistory() throws NotFoundException {
         createTestEpic();
 
         taskManager.getEpic(epic.getId());
@@ -323,7 +322,8 @@ public abstract class ManagersTest {
 
     @Test
     public void getEpicIncorrectIdReturnNull() {
-        assertNull(taskManager.getEpic(0), "Эпика нет, но null не возвращается");
+        assertThrows(NotFoundException.class, () -> taskManager.getEpic(0), "Нет исключения " +
+                "эпик не найден");
     }
 
     @Test
@@ -435,7 +435,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicItShouldNotBeInHistory() {
+    public void deleteEpicItShouldNotBeInHistory() throws NotFoundException {
         createTestEpic();
         taskManager.getEpic(epic.getId());
         taskManager.deleteEpic(epic.getId());
@@ -444,7 +444,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicWithSubtaskSubtaskDeleteFromHistory() throws ManagerPrioritizeException {
+    public void deleteEpicWithSubtaskSubtaskDeleteFromHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -465,7 +465,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskEpicIsInHistory() throws ManagerPrioritizeException {
+    public void deleteSubtaskEpicIsInHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -489,7 +489,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllEpicsHistoryIsEmpty() {
+    public void deleteAllEpicsHistoryIsEmpty() throws NotFoundException {
         createTestEpic();
         taskManager.getEpic(epic.getId());
         taskManager.deleteAllEpics();
@@ -498,7 +498,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllEpicsWithSubtaskHistoryIsEmpty() throws ManagerPrioritizeException {
+    public void deleteAllEpicsWithSubtaskHistoryIsEmpty() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());
@@ -519,7 +519,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksEpicIsInHistory() throws ManagerPrioritizeException {
+    public void deleteAllSubtasksEpicIsInHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getEpic(epic.getId());

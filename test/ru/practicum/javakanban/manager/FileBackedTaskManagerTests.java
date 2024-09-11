@@ -75,7 +75,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void createSubtaskFileWithEpicAndSubtask() throws IOException, ManagerPrioritizeException {
+    public void createSubtaskFileWithEpicAndSubtask() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -98,7 +98,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnEpicFromFile() {
+    public void returnEpicFromFile() throws NotFoundException {
         createTestEpic();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -108,7 +108,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnSubtaskAndEpicFromFile() throws ManagerPrioritizeException {
+    public void returnSubtaskAndEpicFromFile() throws ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -136,7 +136,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void updateEpicUpdateInFile() throws IOException {
+    public void updateEpicUpdateInFile() throws IOException, NotFoundException {
         createTestEpic();
         Epic updateEpic = new Epic("Новое название эпика", epic.getDescription());
         fileBackedTaskManager.updateEpic(updateEpic, epic.getId());
@@ -148,7 +148,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void updateSubtaskUpdateInFile() throws IOException, ManagerPrioritizeException {
+    public void updateSubtaskUpdateInFile() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
 
         Subtask updateSubtask = new Subtask("Новое название подзадачи", subtask.getDescription(),
@@ -186,7 +186,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskEpicInFile() throws IOException, ManagerPrioritizeException {
+    public void deleteSubtaskEpicInFile() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
         fileBackedTaskManager.deleteSubtask(subtask.getId());
 
@@ -228,7 +228,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksEpicInFile() throws IOException, ManagerPrioritizeException {
+    public void deleteAllSubtasksEpicInFile() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
         Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION,
                 LocalDateTime.of(2024, 11, 17, 11, 20));
@@ -275,7 +275,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
         fileBackedTaskManager.createEpic(epic);
     }
 
-    private void createTestSubtask() throws ManagerPrioritizeException {
+    private void createTestSubtask() throws ManagerPrioritizeException, NotFoundException {
         epic = new Epic("Эпик", "Описание эпика");
         fileBackedTaskManager.createEpic(epic);
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
