@@ -369,7 +369,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicCorrectIdEpicRemoveFromEpics() {
+    public void deleteEpicCorrectIdEpicRemoveFromEpics() throws NotFoundException {
         createTestEpic();
 
         taskManager.deleteEpic(epic.getId());
@@ -379,7 +379,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicCorrectIdEpicSubtasksRemoveFromSubtask() throws ManagerPrioritizeException {
+    public void deleteEpicCorrectIdEpicSubtasksRemoveFromSubtask() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         var epicSubtasks = epic.getSubtasks();
@@ -389,15 +389,6 @@ public abstract class ManagersTest {
             assertFalse(taskManager.getSubtasks().containsKey(epicSubtask.getId()),
                     "Позадача не удалилась вместе с эпиком");
         }
-    }
-
-    @Test
-    public void deleteEpicIncorrectIdEpicsSizeIsTheSame() {
-        createTestEpic();
-        int epicsSize = taskManager.getEpics().size();
-
-        taskManager.deleteEpic(incorrectId);
-        assertEquals(epicsSize, taskManager.getEpics().size(), "Что-то удалилось из epics, хотя удалять нечего");
     }
 
     @Test
@@ -733,7 +724,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteEpicHisSubtaskDeleteFromPrioritizedTasks() throws ManagerPrioritizeException {
+    public void deleteEpicHisSubtaskDeleteFromPrioritizedTasks() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         Subtask subtask1 = new Subtask("Название", "Описание", Duration.ofMinutes(30),

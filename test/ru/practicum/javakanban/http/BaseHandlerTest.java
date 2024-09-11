@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import ru.practicum.javakanban.manager.Managers;
 import ru.practicum.javakanban.manager.TaskManager;
-import ru.practicum.javakanban.model.Status;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,11 +18,10 @@ import java.time.LocalDateTime;
 
 public abstract class BaseHandlerTest {
 
-    HttpTaskServer taskServer;
-    HttpClient client = HttpClient.newHttpClient();
     protected final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     protected final String baseURL = "http://localhost:8080";
-
+    HttpTaskServer taskServer;
+    HttpClient client = HttpClient.newHttpClient();
     TaskManager taskManager = Managers.getDefault();
 
     Gson gson = new GsonBuilder()

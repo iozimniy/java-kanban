@@ -175,7 +175,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteEpicFileIsEmpty() throws IOException {
+    public void deleteEpicFileIsEmpty() throws IOException, NotFoundException {
         createTestEpic();
         fileBackedTaskManager.deleteEpic(epic.getId());
 

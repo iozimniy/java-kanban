@@ -9,7 +9,6 @@ import ru.practicum.javakanban.model.Task;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TaskHandlerTest extends BaseHandlerTest{
+public class TaskHandlerTest extends BaseHandlerTest {
 
     Task task;
     Task task1;
@@ -26,8 +25,8 @@ public class TaskHandlerTest extends BaseHandlerTest{
     public void postTaskWithoutIDReturn200() {
         URI uri = createUri("/tasks");
 
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         HttpRequest request = postRequestWithBody(uri, taskBody());
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
         try {
             HttpResponse<String> response = client.send(request, handler);
@@ -203,14 +202,14 @@ public class TaskHandlerTest extends BaseHandlerTest{
     //вспомогательные методы
     public String taskBody() {
         task = new Task("Задача", "Описание задачи", Duration.ofMinutes(20),
-                LocalDateTime.of(2024,11,17, 11,20));
+                LocalDateTime.of(2024, 11, 17, 11, 20));
 
         return gson.toJson(task);
     }
 
     public String anotherTaskBody() {
         task1 = new Task("Другая задача", "Другое описание задачи", Status.IN_PROGRESS, Duration.ofMinutes(30),
-                LocalDateTime.of(2024,11,15, 14,00));
+                LocalDateTime.of(2024, 11, 15, 14, 00));
 
         return gson.toJson(task1);
     }
@@ -222,7 +221,7 @@ public class TaskHandlerTest extends BaseHandlerTest{
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
         try {
-            HttpResponse<String> response = client.send(request, handler);
+            client.send(request, handler);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
