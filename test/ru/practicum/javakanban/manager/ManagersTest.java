@@ -293,7 +293,8 @@ public abstract class ManagersTest {
 
     @Test
     public void getTaskIncorrectIdReturnNull() throws NotFoundException {
-        assertNull(taskManager.getTask(0), "Задачи нет, но null не возвращается");
+        //assertNull(taskManager.getTask(0), "Задачи нет, но null не возвращается");
+        assertThrows(NotFoundException.class, () -> taskManager.getTask(0), "Задача не найдена по id.");
     }
 
     @Test
@@ -362,7 +363,8 @@ public abstract class ManagersTest {
         createTestTask();
         int tasksSize = taskManager.getTasks().size();
 
-        taskManager.deleteTask(incorrectId);
+        assertThrows(IllegalArgumentException.class, () -> taskManager.deleteTask(incorrectId), "Задача " +
+                "для удаления не найдена");
         assertEquals(tasksSize, taskManager.getTasks().size(), "Что-то удалилось из tasks, хотя удалять нечего");
     }
 
