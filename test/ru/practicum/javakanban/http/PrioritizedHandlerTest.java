@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PrioritizedHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void getPrioritizedListReturn200() throws ManagerPrioritizeException {
+    public void getPrioritizedListReturn200AndArray() throws ManagerPrioritizeException {
         createTasks();
         URI uri = createUri("/prioritized");
         HttpRequest request = getRequest(uri);

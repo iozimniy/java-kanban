@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.jupiter.api.Test;
-import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Task;
 
@@ -76,23 +75,21 @@ public class TaskHandlerTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
 
-            if (response.statusCode() == 200) {
-                JsonElement jsonElement = JsonParser.parseString(response.body());
+            JsonElement jsonElement = JsonParser.parseString(response.body());
 
-                if (jsonElement.isJsonObject()) {
-                    JsonObject object = jsonElement.getAsJsonObject();
-                    assertAll(
-                            () -> assertEquals(1, object.get("id").getAsInt()),
-                            () -> assertEquals(task.getName(), object.get("name").getAsString()),
-                            () -> assertEquals(task.getDescription(), object.get("description").getAsString()),
-                            () -> assertEquals("NEW", object.get("status").getAsString()),
-                            () -> assertEquals(20, object.get("duration").getAsInt()),
-                            () -> assertEquals("2024-11-17, 11:20", object.get("startTime").getAsString())
-                    );
+            if (jsonElement.isJsonObject()) {
+                JsonObject object = jsonElement.getAsJsonObject();
+                assertAll(
+                        () -> assertEquals(1, object.get("id").getAsInt()),
+                        () -> assertEquals(task.getName(), object.get("name").getAsString()),
+                        () -> assertEquals(task.getDescription(), object.get("description").getAsString()),
+                        () -> assertEquals("NEW", object.get("status").getAsString()),
+                        () -> assertEquals(20, object.get("duration").getAsInt()),
+                        () -> assertEquals("2024-11-17, 11:20", object.get("startTime").getAsString())
+                );
 
-                } else {
-                    System.out.println("Тело ответа не соответствует ожиданиям");
-                }
+            } else {
+                System.out.println("Тело ответа не соответствует ожиданиям");
             }
 
         } catch (IOException e) {
@@ -100,27 +97,6 @@ public class TaskHandlerTest extends BaseHandlerTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Test
-    public void getTasksReturn200() {
-        createTask(taskBody());
-        createTask(anotherTaskBody());
-
-        URI uri = createUri("/tasks");
-        HttpRequest request = getRequest(uri);
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-
-            assertEquals(200, response.statusCode(), "Код статуса на запрос всего списка задач не 200");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 
     @Test
@@ -134,12 +110,13 @@ public class TaskHandlerTest extends BaseHandlerTest {
 
         try {
             HttpResponse<String> response = client.send(request, handler);
-
-            if (response.statusCode() == 200) {
                 JsonElement jsonElement = JsonParser.parseString(response.body());
 
-                assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач");
-            }
+                assertAll(
+                        () -> assertEquals(200, response.statusCode(), "Код статуса на запрос " +
+                                "всего списка задач не 200"),
+                        () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
+                );
 
         } catch (IOException e) {
             throw new RuntimeException(e);

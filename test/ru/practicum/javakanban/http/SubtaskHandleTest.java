@@ -63,7 +63,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
     }
 
     @Test
-    public void getSubtaskWithoutIdReturn200() {
+    public void getSubtaskWithoutIdReturn200AndArray() {
         createEpicAndTwoSubtasks();
         URI uriWithoutId = createUri("/subtasks");
         HttpRequest request = getRequest(uriWithoutId);
@@ -71,29 +71,13 @@ public class SubtaskHandleTest extends BaseHandlerTest {
 
         try {
             HttpResponse<String> response = client.send(request, handler);
+            JsonElement jsonElement = JsonParser.parseString(response.body());
 
-            assertEquals(200, response.statusCode(), "При запрове всех сабтасок код не 200");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+            assertAll(
+                    () -> assertEquals(200, response.statusCode(), "При запрове всех сабтасок код не 200"),
+                    () -> assertTrue(jsonElement.isJsonArray(), "Вернули не список при запросе всех тасок")
+            );
 
-    @Test
-    public void getSubtaskReturnArray() {
-        createEpicAndTwoSubtasks();
-        URI uriWithoutId = createUri("/subtasks");
-        HttpRequest request = getRequest(uriWithoutId);
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            if (response.statusCode() == 200) {
-                JsonElement jsonElement = JsonParser.parseString(response.body());
-
-                assertTrue(jsonElement.isJsonArray());
-            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -129,15 +113,14 @@ public class SubtaskHandleTest extends BaseHandlerTest {
 
         try {
             HttpResponse<String> response = client.send(request, handler);
+            JsonElement jsonElement = JsonParser.parseString(response.body());
 
-            if (response.statusCode() == 200) {
-               JsonElement jsonElement = JsonParser.parseString(response.body());
+            if (jsonElement.isJsonObject()) {
+                JsonObject object = jsonElement.getAsJsonObject();
 
-               if (jsonElement.isJsonObject()) {
-                   JsonObject object = jsonElement.getAsJsonObject();
-
-                   assertEquals(taskManager.getSubtask(2).getName(), object.get("name").getAsString());
-               }
+                assertEquals(taskManager.getSubtask(2).getName(), object.get("name").getAsString());
+            } else {
+                System.out.println("Что-то подозрительное вернулось при запросе сабтаски");
             }
 
         } catch (IOException e) {
