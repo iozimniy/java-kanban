@@ -23,7 +23,7 @@ public abstract class BaseHandlerTest {
     HttpTaskServer taskServer;
     HttpClient client = HttpClient.newHttpClient();
     TaskManager taskManager = Managers.getDefault();
-    String INCORRECT_ID = "120";
+    final String INCORRECT_ID = "120";
 
     Gson gson = new GsonBuilder()
             .serializeNulls()
