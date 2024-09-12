@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HistoryHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void getHistoryReturn200() throws ManagerPrioritizeException {
+    public void getHistoryReturn200AndArray() throws ManagerPrioritizeException {
         createAndGetTasks();
         URI uri = createUri("/history");
         HttpRequest request = getRequest(uri);
@@ -27,7 +27,14 @@ public class HistoryHandlerTest extends BaseHandlerTest {
 
         try {
             HttpResponse<String> response = client.send(request, handler);
-            assertEquals(200, response.statusCode(), "Код не 200 при запросе истории");
+            JsonElement jsonElement = JsonParser.parseString(response.body());
+
+            assertAll(
+                    () -> assertEquals(200, response.statusCode(), "Код не 200 при запросе истории"),
+                    () -> assertTrue(jsonElement.isJsonArray(), "Пришёл не список тасок")
+            );
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
@@ -35,29 +42,9 @@ public class HistoryHandlerTest extends BaseHandlerTest {
         }
     }
 
-    @Test
-    public void getHistoryReturnArray() throws ManagerPrioritizeException {
-        createAndGetTasks();
-        URI uri = createUri("/history");
-        HttpRequest request = getRequest(uri);
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-
-            if (response.statusCode() == 200) {
-                JsonElement jsonElement = JsonParser.parseString(response.body());
-                assertTrue(jsonElement.isJsonArray());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
-    public void sendInvalidMethod() throws ManagerPrioritizeException {
+    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException {
         createAndGetTasks();
         URI uri = createUri("/history");
         HttpRequest request = deleteRequest(uri);

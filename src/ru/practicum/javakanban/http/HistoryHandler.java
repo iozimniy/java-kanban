@@ -4,12 +4,9 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.javakanban.manager.TaskManager;
-import ru.practicum.javakanban.model.Task;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     public HistoryHandler(TaskManager taskManager) {
@@ -22,7 +19,7 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         String method = exchange.getRequestMethod();
 
         switch (method) {

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PrioritizedHandlerTest extends BaseHandlerTest{
+public class PrioritizedHandlerTest extends BaseHandlerTest {
 
     @Test
     public void getPrioritizedListReturn200() throws ManagerPrioritizeException {
@@ -28,26 +28,13 @@ public class PrioritizedHandlerTest extends BaseHandlerTest{
 
         try {
             HttpResponse<String> response = client.send(request, handler);
-            assertEquals(200, response.statusCode(), "При запросы списка приоритета код не 200");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
-    public void getPrioritizedListReturnArray() throws ManagerPrioritizeException {
-        createTasks();
-        URI uri = createUri("/prioritized");
-        HttpRequest request = getRequest(uri);
-        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
-
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-
             JsonElement jsonElement = JsonParser.parseString(response.body());
-            assertTrue(jsonElement.isJsonArray(), "Прислали что-то не то при запросе списка приоритета");
+
+            assertAll(
+                    () -> assertEquals(200, response.statusCode(), "При запросы списка приоритета код не 200"),
+                    () -> assertTrue(jsonElement.isJsonArray(), "Прислали что-то не то при запросе списка приоритета")
+            );
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {

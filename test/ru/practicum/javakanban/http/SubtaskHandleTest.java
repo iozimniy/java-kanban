@@ -191,6 +191,75 @@ public class SubtaskHandleTest extends BaseHandlerTest {
         }
     }
 
+    @Test
+    public void sendInvalidMethodReturn404() {
+        createEpicId1();
+        URI uri = createUri("/epics");
+        HttpRequest request = putInvalidMethod(uri, (subtaskBody()));
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getSubtaskWithIncorrectIdReturn404() {
+        URI uri = createUri("/subtasks/" + INCORRECT_ID);
+        HttpRequest request = getRequest(uri);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при запросе несуществующей сабтаски");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void postSubtaskWithIncorrectIdReturn404() {
+        createEpicAndSubtask();
+        URI uriWithId = createUri("/subtasks/" + INCORRECT_ID);
+        HttpRequest request = postRequestWithBody(uriWithId, anotherSubtaskBody());
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Не 404 при апдете несуществующей сабтаски");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void deleteSubtaskWithIncorrectIdReturn404() {
+        createEpicAndSubtask();
+        URI uriWithId = createUri("/subtasks/" + INCORRECT_ID);
+        HttpRequest request = deleteRequest(uriWithId);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Не 404 при удалении несуществующей сабтаски");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //вспомогательные методы
 
     public void createEpicId1() {

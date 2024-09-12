@@ -411,10 +411,7 @@ public abstract class ManagersTest {
         createTestEpic();
         createTestSubtask();
 
-        int subtasksSize = taskManager.getSubtasks().size();
-        taskManager.deleteSubtask(incorrectId);
-
-        assertEquals(subtasksSize, taskManager.getSubtasks().size(), "Что-то удалилось из subtasks, хотя удалять нечего");
+        assertThrows(IllegalArgumentException.class, () -> taskManager.deleteSubtask(incorrectId));
     }
 
     @Test

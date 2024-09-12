@@ -15,7 +15,7 @@ public interface TaskManager {
 
     void createEpic(Epic epic);
 
-    void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException;
+    void createSubtask(Subtask subtask, Integer epicId) throws ManagerPrioritizeException;
 
     void updateTask(Task task, Integer id) throws ManagerPrioritizeException;
 

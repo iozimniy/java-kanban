@@ -23,6 +23,7 @@ public abstract class BaseHandlerTest {
     HttpTaskServer taskServer;
     HttpClient client = HttpClient.newHttpClient();
     TaskManager taskManager = Managers.getDefault();
+    String INCORRECT_ID = "120";
 
     Gson gson = new GsonBuilder()
             .serializeNulls()
@@ -79,6 +80,16 @@ public abstract class BaseHandlerTest {
         return requestBuilder
                 .uri(uri)
                 .DELETE()
+                .version(HttpClient.Version.HTTP_1_1)
+                .header("Accept", "application/json;charset=utf-8")
+                .build();
+    }
+
+    public HttpRequest putInvalidMethod(URI uri, String body) {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
+        return requestBuilder
+                .uri(uri)
+                .PUT(HttpRequest.BodyPublishers.ofString(body, DEFAULT_CHARSET))
                 .version(HttpClient.Version.HTTP_1_1)
                 .header("Accept", "application/json;charset=utf-8")
                 .build();

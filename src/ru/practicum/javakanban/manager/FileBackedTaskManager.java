@@ -110,7 +110,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
+    public void createSubtask(Subtask subtask, Integer epicId) throws ManagerPrioritizeException {
         super.createSubtask(subtask, epicId);
         save();
     }

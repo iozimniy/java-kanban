@@ -84,7 +84,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
+    public void createSubtask(Subtask subtask, Integer epicId) throws ManagerPrioritizeException {
+        if (epicId == null || !(epics.containsKey(epicId))) {
+            throw new IllegalArgumentException("Эпик не указан в запросе или не существует");
+        }
+
         if (subtask.getStartTime() != null) {
             addPrioritizedTasks(subtask);
             subtask.setId(idCounter++);
@@ -134,6 +138,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask newSubtask, Integer id) throws ManagerPrioritizeException {
+        if (!(subtasks.containsKey(id))) {
+            throw new IllegalArgumentException("Задачи с таким id не существует");
+        }
+
         if (newSubtask.getStartTime() != null) {
             newSubtask.setId(id);
             addPrioritizedTasks(newSubtask);
@@ -288,6 +296,8 @@ public class InMemoryTaskManager implements TaskManager {
 
             subtasks.remove(id);
             updateEpic(epic, epic.getId());
+        } else {
+            throw new IllegalArgumentException("Подзадачи с таким id не существует");
         }
     }
 

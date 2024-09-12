@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.jupiter.api.Test;
+import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Task;
 
@@ -213,7 +214,78 @@ public class TaskHandlerTest extends BaseHandlerTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    @Test
+    public void sendInvalidMethodReturn404() {
+        URI uri = createUri("/task");
+        HttpRequest request = putInvalidMethod(uri, taskBody());
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getTaskWithIncorrectIdReturn404() {
+        createTask(taskBody());
+        URI uriWithId = createUri("/tasks/" + INCORRECT_ID);
+
+        HttpRequest request = getRequest(uriWithId);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+
+            assertEquals(404, response.statusCode(), "Не 404 при запросе несуществующей задачи");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void postTaskWithIncorrectIdReturn404() {
+        createTask(taskBody());
+        URI uriWithId = createUri("/tasks/" + INCORRECT_ID);
+        HttpRequest request = postRequestWithBody(uriWithId, anotherTaskBody());
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Не 404 при попытке апдейта несуществующей таски");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void deleteTaskWithIncorrectId() {
+        createTask(taskBody());
+        createTask(anotherTaskBody());
+        URI uriWithId = createUri("/tasks/" + INCORRECT_ID);
+        HttpRequest request = deleteRequest(uriWithId);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Не 404 при попытке удаления несуществующей таски");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //вспомогательные методы

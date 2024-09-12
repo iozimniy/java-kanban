@@ -95,21 +95,17 @@ public class EpicHandleTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
 
-            if (response.statusCode() == 200) {
-                JsonElement jsonElement = JsonParser.parseString(response.body());
+            JsonElement jsonElement = JsonParser.parseString(response.body());
 
-                if (jsonElement.isJsonObject()) {
-                    JsonObject object = jsonElement.getAsJsonObject();
+            if (jsonElement.isJsonObject()) {
+                JsonObject object = jsonElement.getAsJsonObject();
 
-                    assertAll(
-                            () -> assertEquals(epic.getName(), object.get("name").getAsString()),
-                            () -> assertEquals(epic.getDescription(), object.get("description").getAsString())
-                    );
-                } else {
-                    System.out.println("Тело ответа не соответствует ожиданиям");
-                }
+                assertAll(
+                        () -> assertEquals(epic.getName(), object.get("name").getAsString()),
+                        () -> assertEquals(epic.getDescription(), object.get("description").getAsString())
+                );
             } else {
-                System.out.println("Код не 200 при создании jsonElement");
+                System.out.println("Тело ответа не соответствует ожиданиям");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -209,6 +205,95 @@ public class EpicHandleTest extends BaseHandlerTest {
         }
     }
 
+    @Test
+    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException {
+        URI uri = createUri("/epics");
+        HttpRequest request = putInvalidMethod(uri, epicBody());
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getEpicIncorrectIdReturn404() {
+        createEpic(epicBody());
+        URI uri = createUri("/epics/" + INCORRECT_ID);
+        HttpRequest request = getRequest(uri);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при запросе несуществующего эпика");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getEpicSubtaskIncorrectIdReturn404() {
+        createEpic(epicBody());
+        URI uri = createUri("/epics/" + INCORRECT_ID + "/subtasks");
+        HttpRequest request = getRequest(uri);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при запросе сабтасок несуществующего " +
+                    "эпика");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getIncorrectPathForGetEpicSubtasksReturn404() throws ManagerPrioritizeException {
+        createEpicAndSubtasks();
+        URI uri = createUri("/epics/1/subtask");
+        HttpRequest request = getRequest(uri);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 при неправильном пути до сабтасок");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void deleteIncorrectIdReturn404() {
+        createEpic(epicBody());
+        URI uri = createUri("/epics/" + INCORRECT_ID);
+        HttpRequest request = deleteRequest(uri);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            assertEquals(404, response.statusCode(), "Код не 404 удалении несуществующего эпика");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // вспомогательные методы
 
     public String epicBody() {
@@ -238,10 +323,11 @@ public class EpicHandleTest extends BaseHandlerTest {
     public void createEpicAndSubtasks() throws ManagerPrioritizeException {
         createEpic(epicBody());
         Subtask subtask = new Subtask("Подзадача", "Описание подзадачи", Duration.ofMinutes(60),
-                LocalDateTime.of(2024,11,05,15,20));
+                LocalDateTime.of(2024, 11, 05, 15, 20));
         taskManager.createSubtask(subtask, 1);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Duration.ofMinutes(60),
-                LocalDateTime.of(2024,11,10,16,30));
+                LocalDateTime.of(2024, 11, 10, 16, 30));
         taskManager.createSubtask(subtask, 1);
     }
+
 }
