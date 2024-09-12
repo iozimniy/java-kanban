@@ -45,5 +45,6 @@ public class HttpTaskServer {
         httpServer.createContext("/epics", new EpicHandler(taskManager));
         httpServer.createContext("/subtasks", new SubtaskHandler(taskManager));
         httpServer.createContext("/history", new HistoryHandler(taskManager));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
     }
 }
