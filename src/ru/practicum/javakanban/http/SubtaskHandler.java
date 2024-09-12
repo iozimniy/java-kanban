@@ -8,7 +8,6 @@ import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.manager.TaskManager;
 import ru.practicum.javakanban.model.Subtask;
-import ru.practicum.javakanban.model.Task;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -26,7 +25,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 .create();
     }
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         String method = exchange.getRequestMethod();
 
         switch (method) {

@@ -46,7 +46,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
     }
 
     @Test
-    public void getTasksReturn200() {
+    public void getTasksWithIdReturn200() {
         createTask(taskBody());
         URI uriWithId = createUri("/tasks/1");
 
@@ -102,6 +102,27 @@ public class TaskHandlerTest extends BaseHandlerTest {
     }
 
     @Test
+    public void getTasksReturn200() {
+        createTask(taskBody());
+        createTask(anotherTaskBody());
+
+        URI uri = createUri("/tasks");
+        HttpRequest request = getRequest(uri);
+        HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
+
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+
+            assertEquals(200, response.statusCode(), "Код статуса на запрос всего списка задач не 200");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Test
     public void getTasksReturnAllTasksAnd200() {
         createTask(taskBody());
         createTask(anotherTaskBody());
@@ -116,11 +137,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
             if (response.statusCode() == 200) {
                 JsonElement jsonElement = JsonParser.parseString(response.body());
 
-                assertAll(
-                        () -> assertEquals(200, response.statusCode(), "Код статуса на запрос всего" +
-                                "списка задач не 200"),
-                        () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
-                );
+                assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач");
             }
 
         } catch (IOException e) {

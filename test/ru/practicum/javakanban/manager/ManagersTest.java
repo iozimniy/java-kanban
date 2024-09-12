@@ -327,7 +327,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getSubtaskCorrectIdReturnSubtask() throws ManagerPrioritizeException {
+    public void getSubtaskCorrectIdReturnSubtask() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
 
@@ -336,7 +336,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getSubtaskAddInHistory() throws ManagerPrioritizeException {
+    public void getSubtaskAddInHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getSubtask(subtask.getId());
@@ -345,8 +345,8 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void getSubtaskIncorrectIdReturnNull() {
-        assertNull(taskManager.getSubtask(0), "Подзадачи нет, но null не возвращается");
+    public void getSubtaskIncorrectIdReturnNull() throws NotFoundException {
+        assertThrows(NotFoundException.class, () -> taskManager.getSubtask(0));
     }
 
     @Test
@@ -446,7 +446,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskItShouldNotBeInHistory() throws ManagerPrioritizeException {
+    public void deleteSubtaskItShouldNotBeInHistory() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getSubtask(subtask.getId());
@@ -500,7 +500,7 @@ public abstract class ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksHistoryIsEmpty() throws ManagerPrioritizeException {
+    public void deleteAllSubtasksHistoryIsEmpty() throws ManagerPrioritizeException, NotFoundException {
         createTestEpic();
         createTestSubtask();
         taskManager.getSubtask(subtask.getId());
