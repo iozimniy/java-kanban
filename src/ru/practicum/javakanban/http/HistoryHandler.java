@@ -22,13 +22,10 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     public void handle(HttpExchange exchange) {
         String method = exchange.getRequestMethod();
 
-        switch (method) {
-            case "GET":
-                handleGet(exchange);
-                break;
-            default:
-                sendBadRequest(exchange, "Невалидный запрос");
-                break;
+        if (method.equals("GET")) {
+            handleGet(exchange);
+        } else {
+            sendBadRequest(exchange, "Невалидный запрос");
         }
     }
 

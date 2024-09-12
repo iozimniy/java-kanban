@@ -24,6 +24,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
     }
+
     @Override
     public void handle(HttpExchange exchange) {
         String method = exchange.getRequestMethod();

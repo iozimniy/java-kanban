@@ -37,9 +37,7 @@ public class EpicHandleTest extends BaseHandlerTest {
                             " в таскменеджере")
             );
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -59,9 +57,7 @@ public class EpicHandleTest extends BaseHandlerTest {
                     () -> assertEquals(anotherEpic.getName(), taskManager.getEpic(1).getName())
             );
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -78,9 +74,7 @@ public class EpicHandleTest extends BaseHandlerTest {
 
             assertEquals(200, response.statusCode(), "При запросе эпика код не 200");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -107,9 +101,7 @@ public class EpicHandleTest extends BaseHandlerTest {
             } else {
                 System.out.println("Тело ответа не соответствует ожиданиям");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
@@ -132,9 +124,7 @@ public class EpicHandleTest extends BaseHandlerTest {
                     () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив эпиков")
             );
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -154,9 +144,7 @@ public class EpicHandleTest extends BaseHandlerTest {
                     () -> assertEquals(200, response.statusCode(), "Код не 200 при запросе сабтасок"),
                     () -> assertTrue(jsonElement.isJsonArray())
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -176,9 +164,7 @@ public class EpicHandleTest extends BaseHandlerTest {
                     () -> assertEquals(201, response.statusCode(), "При удалении эпика кож не 201"),
                     () -> assertFalse(taskManager.getEpics().containsKey(1), "Эпик не удалился")
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -198,15 +184,13 @@ public class EpicHandleTest extends BaseHandlerTest {
                     () -> assertEquals(201, response.statusCode(), "При удалении эпика кож не 201"),
                     () -> assertTrue(taskManager.getEpics().isEmpty(), "Эпики не удалился")
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Test
-    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException {
+    public void sendInvalidMethodReturn404() {
         URI uri = createUri("/epics");
         HttpRequest request = putInvalidMethod(uri, epicBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
@@ -214,9 +198,7 @@ public class EpicHandleTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -232,9 +214,7 @@ public class EpicHandleTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при запросе несуществующего эпика");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -251,9 +231,7 @@ public class EpicHandleTest extends BaseHandlerTest {
             assertEquals(404, response.statusCode(), "Код не 404 при запросе сабтасок несуществующего " +
                     "эпика");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -269,9 +247,7 @@ public class EpicHandleTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при неправильном пути до сабтасок");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -287,9 +263,7 @@ public class EpicHandleTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 удалении несуществующего эпика");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -313,9 +287,7 @@ public class EpicHandleTest extends BaseHandlerTest {
 
         try {
             client.send(request, handler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -323,7 +295,7 @@ public class EpicHandleTest extends BaseHandlerTest {
     public void createEpicAndSubtasks() throws ManagerPrioritizeException {
         createEpic(epicBody());
         Subtask subtask = new Subtask("Подзадача", "Описание подзадачи", Duration.ofMinutes(60),
-                LocalDateTime.of(2024, 11, 05, 15, 20));
+                LocalDateTime.of(2024, 11,5, 15, 20));
         taskManager.createSubtask(subtask, 1);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 11, 10, 16, 30));

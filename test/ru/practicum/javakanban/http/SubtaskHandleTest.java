@@ -33,11 +33,9 @@ public class SubtaskHandleTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertAll(
                     () -> assertEquals(201, response.statusCode(), "Код при создании сабтаски не 201"),
-                    () -> assertTrue(!(taskManager.getSubtasks().isEmpty()), "Сабтаска не создалась")
+                    () -> assertFalse(taskManager.getSubtasks().isEmpty(), "Сабтаска не создалась")
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -55,9 +53,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
                     () -> assertEquals(201, response.statusCode(), "Код при апдейте сабтаски не 201"),
                     () -> assertEquals(anotherSubtask.getName(), taskManager.getSubtask(2).getName())
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -78,9 +74,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
                     () -> assertTrue(jsonElement.isJsonArray(), "Вернули не список при запросе всех тасок")
             );
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -97,9 +91,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
 
             assertEquals(200, response.statusCode(), "При запросе сабтаски код не 200");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -123,11 +115,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
                 System.out.println("Что-то подозрительное вернулось при запросе сабтаски");
             }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (NotFoundException e) {
+        } catch (IOException | InterruptedException | NotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -145,9 +133,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
                     () -> assertEquals(201, response.statusCode(), "При удалении всех сабтасок код не 201"),
                     () -> assertTrue(taskManager.getSubtasks().isEmpty(), "Сабтаски не удалились")
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -167,9 +153,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
                     () -> assertFalse(taskManager.getSubtasks().containsKey(3)),
                     () -> assertFalse(taskManager.getSubtasks().isEmpty())
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -184,9 +168,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -201,9 +183,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при запросе несуществующей сабтаски");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -218,9 +198,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Не 404 при апдете несуществующей сабтаски");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -236,9 +214,7 @@ public class SubtaskHandleTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Не 404 при удалении несуществующей сабтаски");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -268,10 +244,8 @@ public class SubtaskHandleTest extends BaseHandlerTest {
         HttpRequest request = postRequestWithBody(uriWithoutId, subtaskBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         try {
-            HttpResponse<String> response = client.send(request, handler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+            client.send(request, handler);
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -282,10 +256,8 @@ public class SubtaskHandleTest extends BaseHandlerTest {
         HttpRequest request = postRequestWithBody(uriWithoutId, anotherSubtaskBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
         try {
-            HttpResponse<String> response = client.send(request, handler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+            client.send(request, handler);
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

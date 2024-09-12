@@ -32,9 +32,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
 
             assertEquals(201, response.statusCode(), "Код статуса запроса на создание задачи не 201");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -57,9 +55,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
 
             assertEquals(200, response.statusCode(), "Код статуса запроса на создание задачи не 201");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -92,9 +88,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
                 System.out.println("Тело ответа не соответствует ожиданиям");
             }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -118,9 +112,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
                         () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
                 );
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
@@ -142,9 +134,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
                     () -> assertEquals(task1.getStatus(), taskManager.getTask(1).getStatus(), "Задача " +
                             "в таскменеджере не изменилась")
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -164,9 +154,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
                     () -> assertTrue(taskManager.getAllTasks().isEmpty(), "Задача не удалилась")
             );
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -186,9 +174,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
                     () -> assertEquals(201, response.statusCode(), "При удалении задачи код не 201"),
                     () -> assertFalse(taskManager.getTasks().containsKey(1))
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -202,9 +188,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -221,9 +205,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
 
             assertEquals(404, response.statusCode(), "Не 404 при запросе несуществующей задачи");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -239,9 +221,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Не 404 при попытке апдейта несуществующей таски");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -258,9 +238,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Не 404 при попытке удаления несуществующей таски");
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -275,7 +253,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
 
     public String anotherTaskBody() {
         task1 = new Task("Другая задача", "Другое описание задачи", Status.IN_PROGRESS, Duration.ofMinutes(30),
-                LocalDateTime.of(2024, 11, 15, 14, 00));
+                LocalDateTime.of(2024, 11, 15, 14, 0));
 
         return gson.toJson(task1);
     }
@@ -288,9 +266,7 @@ public class TaskHandlerTest extends BaseHandlerTest {
 
         try {
             client.send(request, handler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

@@ -33,7 +33,6 @@ public class HttpTaskServer {
 
     public void startServer() {
         httpServer.start();
-        System.out.println("Старт сервера");
     }
 
     public void stopServer() {

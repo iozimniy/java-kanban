@@ -35,9 +35,7 @@ public class HistoryHandlerTest extends BaseHandlerTest {
             );
 
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -53,9 +51,7 @@ public class HistoryHandlerTest extends BaseHandlerTest {
         try {
             HttpResponse<String> response = client.send(request, handler);
             assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
