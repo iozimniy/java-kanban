@@ -3,6 +3,7 @@ package ru.practicum.javakanban.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
@@ -18,13 +19,40 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest extends ManagersTest {
+    private static final LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024, 12, 31, 12, 30);
+    private static final Duration TASKS_DURATION = Duration.ofMinutes(30);
     private final String resources = ".\\src\\resources";
     protected FileBackedTaskManager fileBackedTaskManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
-    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
-    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
+
+    private static String getFirsNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+
+        return bufferedReader.readLine();
+    }
+
+    private static String getSecondNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+        bufferedReader.readLine(); //пропускаем первую запись
+
+        return bufferedReader.readLine();
+    }
+
+    private static String getThirdNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+        bufferedReader.readLine(); //пропускаем первую запись
+        bufferedReader.readLine(); //пропускаем вторую запись
+
+        return bufferedReader.readLine();
+    }
 
     @Override
     @BeforeEach
@@ -34,8 +62,6 @@ class FileBackedTaskManagerTest extends ManagersTest {
         taskManager = Managers.getFileBacked(createFile());
         fileBackedTaskManager = Managers.getFileBacked(createTempFile());
     }
-
-
 
     @Test
     public void saveEmptyFileManagerHasNoTasks() throws IOException {
@@ -74,7 +100,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void createSubtaskFileWithEpicAndSubtask() throws IOException, ManagerPrioritizeException {
+    public void createSubtaskFileWithEpicAndSubtask() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
 
         String file = fileBackedTaskManager.getTaskManagerCsv().getAbsolutePath();
@@ -87,7 +113,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnTaskFromFile() throws ManagerPrioritizeException {
+    public void returnTaskFromFile() throws ManagerPrioritizeException, NotFoundException {
         createTestTask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -97,7 +123,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnEpicFromFile() {
+    public void returnEpicFromFile() throws NotFoundException {
         createTestEpic();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -107,7 +133,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void returnSubtaskAndEpicFromFile() throws ManagerPrioritizeException {
+    public void returnSubtaskAndEpicFromFile() throws ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
         File file = fileBackedTaskManager.getTaskManagerCsv();
         FileBackedTaskManager newFileBackedTaskManager = FileBackedTaskManager.loadFromFile(file);
@@ -135,7 +161,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void updateEpicUpdateInFile() throws IOException {
+    public void updateEpicUpdateInFile() throws IOException, NotFoundException {
         createTestEpic();
         Epic updateEpic = new Epic("Новое название эпика", epic.getDescription());
         fileBackedTaskManager.updateEpic(updateEpic, epic.getId());
@@ -147,7 +173,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void updateSubtaskUpdateInFile() throws IOException, ManagerPrioritizeException {
+    public void updateSubtaskUpdateInFile() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
 
         Subtask updateSubtask = new Subtask("Новое название подзадачи", subtask.getDescription(),
@@ -174,7 +200,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteEpicFileIsEmpty() throws IOException {
+    public void deleteEpicFileIsEmpty() throws IOException, NotFoundException {
         createTestEpic();
         fileBackedTaskManager.deleteEpic(epic.getId());
 
@@ -185,7 +211,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteSubtaskEpicInFile() throws IOException, ManagerPrioritizeException {
+    public void deleteSubtaskEpicInFile() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
         fileBackedTaskManager.deleteSubtask(subtask.getId());
 
@@ -227,7 +253,7 @@ class FileBackedTaskManagerTest extends ManagersTest {
     }
 
     @Test
-    public void deleteAllSubtasksEpicInFile() throws IOException, ManagerPrioritizeException {
+    public void deleteAllSubtasksEpicInFile() throws IOException, ManagerPrioritizeException, NotFoundException {
         createTestSubtask();
         Subtask subtask1 = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION,
                 LocalDateTime.of(2024, 11, 17, 11, 20));
@@ -274,38 +300,11 @@ class FileBackedTaskManagerTest extends ManagersTest {
         fileBackedTaskManager.createEpic(epic);
     }
 
-    private void createTestSubtask() throws ManagerPrioritizeException {
+    private void createTestSubtask() throws ManagerPrioritizeException, NotFoundException {
         epic = new Epic("Эпик", "Описание эпика");
         fileBackedTaskManager.createEpic(epic);
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createSubtask(subtask, epic.getId());
         fileBackedTaskManager.updateEpic(epic, epic.getId());
-    }
-
-    private static String getFirsNote(String file) throws IOException {
-        Reader reader = new FileReader(file, UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        bufferedReader.readLine(); //пропускаем шапку csv
-
-        return bufferedReader.readLine();
-    }
-
-    private static String getSecondNote(String file) throws IOException  {
-        Reader reader = new FileReader(file, UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        bufferedReader.readLine(); //пропускаем шапку csv
-        bufferedReader.readLine(); //пропускаем первую запись
-
-        return bufferedReader.readLine();
-    }
-
-    private static String getThirdNote(String file) throws IOException {
-        Reader reader = new FileReader(file, UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        bufferedReader.readLine(); //пропускаем шапку csv
-        bufferedReader.readLine(); //пропускаем первую запись
-        bufferedReader.readLine(); //пропускаем вторую запись
-
-        return bufferedReader.readLine();
     }
 }

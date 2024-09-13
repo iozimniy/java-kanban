@@ -3,6 +3,7 @@ package ru.practicum.javakanban.manager;
 import ru.practicum.javakanban.exeptions.ManagerLoadException;
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
 import ru.practicum.javakanban.exeptions.ManagerSaveException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
@@ -90,7 +91,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         } catch (ManagerPrioritizeException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Ошибка чтения из файла.");
         }
 
         return fileBackedTaskManager;
@@ -109,7 +110,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
+    public void createSubtask(Subtask subtask, Integer epicId) throws ManagerPrioritizeException {
         super.createSubtask(subtask, epicId);
         save();
     }
@@ -163,7 +164,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteEpic(int id) {
+    public void deleteEpic(int id) throws NotFoundException {
         super.deleteEpic(id);
         save();
     }

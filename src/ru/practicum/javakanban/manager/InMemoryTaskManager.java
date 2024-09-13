@@ -1,7 +1,9 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
+import ru.practicum.javakanban.model.Status;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
 
@@ -12,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Epic> epics = new HashMap<>();
     private final Map<Integer, Subtask> subtasks = new HashMap<>();
     private final HistoryManager historyManager;
-    private final Comparator<Task> comparator = Comparator.comparing(task -> task.getStartTime());
+    private final Comparator<Task> comparator = Comparator.comparing(Task::getStartTime);
     private final Set<Task> prioritizedTasks = new TreeSet<>(comparator);
     private int idCounter = 1;
 
@@ -68,6 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getStartTime() != null) {
             addPrioritizedTasks(task);
             task.setId(idCounter++);
+            task.setStatus(Status.NEW);
             tasks.put(task.getId(), task);
         } else {
             throw new IllegalArgumentException("Задача не может быть создана без даты начала");
@@ -81,10 +84,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException {
+    public void createSubtask(Subtask subtask, Integer epicId) throws ManagerPrioritizeException {
+        if (epicId == null || !(epics.containsKey(epicId))) {
+            throw new IllegalArgumentException("Эпик не указан в запросе или не существует");
+        }
+
         if (subtask.getStartTime() != null) {
             addPrioritizedTasks(subtask);
             subtask.setId(idCounter++);
+            subtask.setStatus(Status.NEW);
             Epic epic = epics.get(epicId);
 
             List<Subtask> epicSubtasks = epic.getSubtasks();
@@ -102,6 +110,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task newTask, Integer id) throws ManagerPrioritizeException {
+        if (!tasks.containsKey(id)) {
+            throw new IllegalArgumentException("Задача для изменения не найдена.");
+        }
+
         if (newTask.getStartTime() != null) {
             newTask.setId(id);
             addPrioritizedTasks(newTask);
@@ -126,6 +138,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask newSubtask, Integer id) throws ManagerPrioritizeException {
+        if (!(subtasks.containsKey(id))) {
+            throw new IllegalArgumentException("Задачи с таким id не существует");
+        }
+
         if (newSubtask.getStartTime() != null) {
             newSubtask.setId(id);
             addPrioritizedTasks(newSubtask);
@@ -155,13 +171,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Subtask> getEpicSubtasks(int id) {
+    public List<Subtask> getEpicSubtasks(int id) throws NotFoundException {
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
             return epic.getSubtasks();
+        } else {
+            throw new NotFoundException("Эпик не найден по id.");
         }
-
-        return null;
     }
 
     @Override
@@ -177,7 +193,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         List<Epic> epicsForDelete = new ArrayList<>(epics.values());
-        epicsForDelete.stream().forEach(epic -> deleteEpic(epic.getId()));
+        epicsForDelete.stream().forEach(epic -> {
+            try {
+                deleteEpic(epic.getId());
+            } catch (NotFoundException e) {
+                System.out.println("Внимание! Рак на горе свистнул!");
+            }
+        });
     }
 
     @Override
@@ -194,33 +216,33 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTask(int id) {
+    public Task getTask(int id) throws NotFoundException {
         if (tasks.containsKey(id)) {
             historyManager.add(tasks.get(id));
             return tasks.get(id);
+        } else {
+            throw new NotFoundException("Задача не найдена по id.");
         }
-
-        return null;
     }
 
     @Override
-    public Epic getEpic(int id) {
+    public Epic getEpic(int id) throws NotFoundException {
         if (epics.containsKey(id)) {
             historyManager.add(epics.get(id));
             return epics.get(id);
+        } else {
+            throw new NotFoundException("Эпик не найден по id");
         }
-
-        return null;
     }
 
     @Override
-    public Subtask getSubtask(int id) {
+    public Subtask getSubtask(int id) throws NotFoundException {
         if (subtasks.containsKey(id)) {
             historyManager.add(subtasks.get(id));
             return subtasks.get(id);
+        } else {
+            throw new NotFoundException("Подзадача не найдена по id");
         }
-
-        return null;
     }
 
     @Override
@@ -231,11 +253,13 @@ public class InMemoryTaskManager implements TaskManager {
                 prioritizedTasks.remove(tasks.get(id));
             }
             tasks.remove(id);
+        } else {
+            throw new IllegalArgumentException("Задача для удаления не найдена");
         }
     }
 
     @Override
-    public void deleteEpic(int id) {
+    public void deleteEpic(int id) throws NotFoundException {
 
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
@@ -252,6 +276,8 @@ public class InMemoryTaskManager implements TaskManager {
 
             historyManager.remove(id);
             epics.remove(id);
+        } else {
+            throw new NotFoundException("Эпик для удаления не найден");
         }
     }
 
@@ -270,6 +296,8 @@ public class InMemoryTaskManager implements TaskManager {
 
             subtasks.remove(id);
             updateEpic(epic, epic.getId());
+        } else {
+            throw new IllegalArgumentException("Подзадачи с таким id не существует");
         }
     }
 

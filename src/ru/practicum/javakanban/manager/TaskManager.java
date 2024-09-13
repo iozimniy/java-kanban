@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.manager;
 
 import ru.practicum.javakanban.exeptions.ManagerPrioritizeException;
+import ru.practicum.javakanban.exeptions.NotFoundException;
 import ru.practicum.javakanban.model.Epic;
 import ru.practicum.javakanban.model.Subtask;
 import ru.practicum.javakanban.model.Task;
@@ -14,7 +15,7 @@ public interface TaskManager {
 
     void createEpic(Epic epic);
 
-    void createSubtask(Subtask subtask, int epicId) throws ManagerPrioritizeException;
+    void createSubtask(Subtask subtask, Integer epicId) throws ManagerPrioritizeException;
 
     void updateTask(Task task, Integer id) throws ManagerPrioritizeException;
 
@@ -28,7 +29,7 @@ public interface TaskManager {
 
     List<Subtask> getAllSubtasks();
 
-    List<Subtask> getEpicSubtasks(int id);
+    List<Subtask> getEpicSubtasks(int id) throws NotFoundException;
 
     void deleteAllTasks();
 
@@ -36,15 +37,15 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    Task getTask(int id);
+    Task getTask(int id) throws NotFoundException;
 
-    Epic getEpic(int id);
+    Epic getEpic(int id) throws NotFoundException;
 
-    Subtask getSubtask(int id);
+    Subtask getSubtask(int id) throws NotFoundException;
 
     void deleteTask(int id);
 
-    void deleteEpic(int id);
+    void deleteEpic(int id) throws NotFoundException;
 
     void deleteSubtask(int id);
 
