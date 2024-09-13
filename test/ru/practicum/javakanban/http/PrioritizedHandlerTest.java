@@ -20,39 +20,30 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PrioritizedHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void getPrioritizedListReturn200AndArray() throws ManagerPrioritizeException {
+    public void getPrioritizedListReturn200AndArray() throws ManagerPrioritizeException, IOException, InterruptedException {
         createTasks();
         URI uri = createUri("/prioritized");
         HttpRequest request = getRequest(uri);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            JsonElement jsonElement = JsonParser.parseString(response.body());
+        HttpResponse<String> response = client.send(request, handler);
+        JsonElement jsonElement = JsonParser.parseString(response.body());
 
-            assertAll(
-                    () -> assertEquals(200, response.statusCode(), "При запросы списка приоритета код не 200"),
-                    () -> assertTrue(jsonElement.isJsonArray(), "Прислали что-то не то при запросе списка приоритета")
-            );
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertAll(
+                () -> assertEquals(200, response.statusCode(), "При запросы списка приоритета код не 200"),
+                () -> assertTrue(jsonElement.isJsonArray(), "Прислали что-то не то при запросе списка приоритета")
+        );
     }
 
     @Test
-    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException {
+    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException, IOException, InterruptedException {
         createTasks();
         URI uri = createUri("/prioritized");
         HttpRequest request = deleteRequest(uri);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        HttpResponse<String> response = client.send(request, handler);
+        assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
     }
 
     //вспомогательные методы

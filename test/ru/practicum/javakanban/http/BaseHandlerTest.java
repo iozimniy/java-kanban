@@ -22,14 +22,10 @@ public abstract class BaseHandlerTest {
     TaskManager taskManager = Managers.getDefault();
 
     @BeforeEach
-    public void createTaskServer() {
-        try {
+    public void createTaskServer() throws IOException {
             taskServer = new HttpTaskServer(taskManager);
             taskServer.createHandlers();
             taskServer.startServer();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @AfterEach

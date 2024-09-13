@@ -19,41 +19,32 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HistoryHandlerTest extends BaseHandlerTest {
 
     @Test
-    public void getHistoryReturn200AndArray() throws ManagerPrioritizeException {
+    public void getHistoryReturn200AndArray() throws ManagerPrioritizeException, IOException, InterruptedException {
         createAndGetTasks();
         URI uri = createUri("/history");
         HttpRequest request = getRequest(uri);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            JsonElement jsonElement = JsonParser.parseString(response.body());
+        HttpResponse<String> response = client.send(request, handler);
+        JsonElement jsonElement = JsonParser.parseString(response.body());
 
-            assertAll(
-                    () -> assertEquals(200, response.statusCode(), "Код не 200 при запросе истории"),
-                    () -> assertTrue(jsonElement.isJsonArray(), "Пришёл не список тасок")
-            );
-
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertAll(
+                () -> assertEquals(200, response.statusCode(), "Код не 200 при запросе истории"),
+                () -> assertTrue(jsonElement.isJsonArray(), "Пришёл не список тасок")
+        );
     }
 
 
     @Test
-    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException {
+    public void sendInvalidMethodReturn404() throws ManagerPrioritizeException, IOException, InterruptedException {
         createAndGetTasks();
         URI uri = createUri("/history");
         HttpRequest request = deleteRequest(uri);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
+        HttpResponse<String> response = client.send(request, handler);
+        assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
     }
 
     //вспомогательные методы
@@ -67,7 +58,8 @@ public class HistoryHandlerTest extends BaseHandlerTest {
                 LocalDateTime.of(2024, 9, 7, 10, 15));
         taskManager.createTask(task2);
 
-        taskManager.getAllTasks().forEach(task -> {
+        taskManager.getAllTasks().forEach(task ->
+        {
             try {
                 taskManager.getTask(task.getId());
             } catch (NotFoundException e) {

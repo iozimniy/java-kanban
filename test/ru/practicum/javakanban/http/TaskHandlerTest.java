@@ -23,19 +23,15 @@ public class TaskHandlerTest extends BaseHandlerTest {
     Task task1;
 
     @Test
-    public void postTaskWithoutIDReturn200() {
+    public void postTaskWithoutIDReturn200() throws IOException, InterruptedException {
         URI uri = createUri("/tasks");
 
         HttpRequest request = postRequestWithBody(uri, taskBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            assertEquals(201, response.statusCode(), "Код статуса запроса на создание задачи не 201");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertEquals(201, response.statusCode(), "Код статуса запроса на создание задачи не 201");
     }
 
     @Test
@@ -45,57 +41,48 @@ public class TaskHandlerTest extends BaseHandlerTest {
     }
 
     @Test
-    public void getTasksWithIdReturn200() {
+    public void getTasksWithIdReturn200() throws IOException, InterruptedException {
         createTask(taskBody());
         URI uriWithId = createUri("/tasks/1");
 
         HttpRequest request = getRequest(uriWithId);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            assertEquals(200, response.statusCode(), "Код статуса запроса на создание задачи не 201");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertEquals(200, response.statusCode(), "Код статуса запроса на создание задачи не 201");
     }
 
     @Test
-    public void getTaskReturnTask() {
+    public void getTaskReturnTask() throws IOException, InterruptedException {
         createTask(taskBody());
         URI uriWithId = createUri("/tasks/1");
 
         HttpRequest request = getRequest(uriWithId);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            JsonElement jsonElement = JsonParser.parseString(response.body());
+        JsonElement jsonElement = JsonParser.parseString(response.body());
 
-            if (jsonElement.isJsonObject()) {
-                JsonObject object = jsonElement.getAsJsonObject();
-                assertAll(
-                        () -> assertEquals(1, object.get("id").getAsInt()),
-                        () -> assertEquals(task.getName(), object.get("name").getAsString()),
-                        () -> assertEquals(task.getDescription(), object.get("description").getAsString()),
-                        () -> assertEquals("NEW", object.get("status").getAsString()),
-                        () -> assertEquals(20, object.get("duration").getAsInt()),
-                        () -> assertEquals("2024-11-17, 11:20", object.get("startTime").getAsString())
-                );
+        if (jsonElement.isJsonObject()) {
+            JsonObject object = jsonElement.getAsJsonObject();
+            assertAll(
+                    () -> assertEquals(1, object.get("id").getAsInt()),
+                    () -> assertEquals(task.getName(), object.get("name").getAsString()),
+                    () -> assertEquals(task.getDescription(), object.get("description").getAsString()),
+                    () -> assertEquals("NEW", object.get("status").getAsString()),
+                    () -> assertEquals(20, object.get("duration").getAsInt()),
+                    () -> assertEquals("2024-11-17, 11:20", object.get("startTime").getAsString())
+            );
 
-            } else {
-                System.out.println("Тело ответа не соответствует ожиданиям");
-            }
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } else {
+            System.out.println("Тело ответа не соответствует ожиданиям");
         }
     }
 
     @Test
-    public void getTasksReturnAllTasksAnd200() {
+    public void getTasksReturnAllTasksAnd200() throws IOException, InterruptedException {
         createTask(taskBody());
         createTask(anotherTaskBody());
 
@@ -103,145 +90,109 @@ public class TaskHandlerTest extends BaseHandlerTest {
         HttpRequest request = getRequest(uri);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            JsonElement jsonElement = JsonParser.parseString(response.body());
+        HttpResponse<String> response = client.send(request, handler);
+        JsonElement jsonElement = JsonParser.parseString(response.body());
 
-            assertAll(
-                    () -> assertEquals(200, response.statusCode(), "Код статуса на запрос " +
-                            "всего списка задач не 200"),
-                    () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
-            );
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        assertAll(
+                () -> assertEquals(200, response.statusCode(), "Код статуса на запрос " +
+                        "всего списка задач не 200"),
+                () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
+        );
 
     }
 
     @Test
-    public void postTaskWithIdUpdateTaskAnd201() {
+    public void postTaskWithIdUpdateTaskAnd201() throws IOException, InterruptedException {
         createTask(taskBody());
         URI uriWithId = createUri("/tasks/1");
         HttpRequest request = postRequestWithBody(uriWithId, anotherTaskBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            assertAll(
-                    () -> assertEquals(201, response.statusCode(), "Код апдейта не 201"),
-                    () -> assertEquals(task1.getStatus(), taskManager.getTask(1).getStatus(), "Задача " +
-                            "в таскменеджере не изменилась")
-            );
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertAll(
+                () -> assertEquals(201, response.statusCode(), "Код апдейта не 201"),
+                () -> assertEquals(task1.getStatus(), taskManager.getTask(1).getStatus(), "Задача " +
+                        "в таскменеджере не изменилась")
+        );
     }
 
     @Test
-    public void deleteTaskWithoutIdTasksDeletedAnd201() {
+    public void deleteTaskWithoutIdTasksDeletedAnd201() throws IOException, InterruptedException {
         createTask(taskBody());
         URI uriWithoutId = createUri("/tasks");
         HttpRequest request = deleteRequest(uriWithoutId);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            assertAll(
-                    () -> assertEquals(201, response.statusCode(), "При удалении всех задач статус не 201"),
-                    () -> assertTrue(taskManager.getAllTasks().isEmpty(), "Задача не удалилась")
-            );
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertAll(
+                () -> assertEquals(201, response.statusCode(), "При удалении всех задач статус не 201"),
+                () -> assertTrue(taskManager.getAllTasks().isEmpty(), "Задача не удалилась")
+        );
     }
 
     @Test
-    public void deleteTaskWithIdTaskDeletedAnd201() {
+    public void deleteTaskWithIdTaskDeletedAnd201() throws IOException, InterruptedException {
         createTask(taskBody());
         createTask(anotherTaskBody());
         URI uriWithId = createUri("/tasks/1");
         HttpRequest request = deleteRequest(uriWithId);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            assertAll(
-                    () -> assertEquals(201, response.statusCode(), "При удалении задачи код не 201"),
-                    () -> assertFalse(taskManager.getTasks().containsKey(1))
-            );
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertAll(
+                () -> assertEquals(201, response.statusCode(), "При удалении задачи код не 201"),
+                () -> assertFalse(taskManager.getTasks().containsKey(1))
+        );
     }
 
     @Test
-    public void sendInvalidMethodReturn404() {
+    public void sendInvalidMethodReturn404() throws IOException, InterruptedException {
         URI uri = createUri("/task");
         HttpRequest request = putInvalidMethod(uri, taskBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        HttpResponse<String> response = client.send(request, handler);
+        assertEquals(404, response.statusCode(), "Код не 404 при невалидном методе");
     }
 
     @Test
-    public void getTaskWithIncorrectIdReturn404() {
+    public void getTaskWithIncorrectIdReturn404() throws IOException, InterruptedException {
         createTask(taskBody());
         URI uriWithId = createUri("/tasks/" + INCORRECT_ID);
 
         HttpRequest request = getRequest(uriWithId);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
+        HttpResponse<String> response = client.send(request, handler);
 
-            assertEquals(404, response.statusCode(), "Не 404 при запросе несуществующей задачи");
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        assertEquals(404, response.statusCode(), "Не 404 при запросе несуществующей задачи");
     }
 
     @Test
-    public void postTaskWithIncorrectIdReturn404() {
+    public void postTaskWithIncorrectIdReturn404() throws IOException, InterruptedException {
         createTask(taskBody());
         URI uriWithId = createUri("/tasks/" + INCORRECT_ID);
         HttpRequest request = postRequestWithBody(uriWithId, anotherTaskBody());
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            assertEquals(404, response.statusCode(), "Не 404 при попытке апдейта несуществующей таски");
+        HttpResponse<String> response = client.send(request, handler);
+        assertEquals(404, response.statusCode(), "Не 404 при попытке апдейта несуществующей таски");
 
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
-    public void deleteTaskWithIncorrectId() {
+    public void deleteTaskWithIncorrectId() throws IOException, InterruptedException {
         createTask(taskBody());
         createTask(anotherTaskBody());
         URI uriWithId = createUri("/tasks/" + INCORRECT_ID);
         HttpRequest request = deleteRequest(uriWithId);
         HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
 
-        try {
-            HttpResponse<String> response = client.send(request, handler);
-            assertEquals(404, response.statusCode(), "Не 404 при попытке удаления несуществующей таски");
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        HttpResponse<String> response = client.send(request, handler);
+        assertEquals(404, response.statusCode(), "Не 404 при попытке удаления несуществующей таски");
     }
 
     //вспомогательные методы
