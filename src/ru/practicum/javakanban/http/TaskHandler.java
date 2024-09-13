@@ -11,10 +11,9 @@ import ru.practicum.javakanban.model.Task;
 import java.io.IOException;
 import java.util.Optional;
 
-import static ru.practicum.javakanban.http.Constans.*;
+import static ru.practicum.javakanban.http.Constans.GSON;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
-
 
 
     public TaskHandler(TaskManager taskManager) {

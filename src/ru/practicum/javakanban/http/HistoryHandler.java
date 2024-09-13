@@ -1,14 +1,10 @@
 package ru.practicum.javakanban.http;
 
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.practicum.javakanban.manager.TaskManager;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-
-import static ru.practicum.javakanban.http.Constans.*;
+import static ru.practicum.javakanban.http.Constans.GSON;
 
 public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     public HistoryHandler(TaskManager taskManager) {

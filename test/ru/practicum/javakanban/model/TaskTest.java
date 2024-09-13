@@ -9,10 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskTest {
 
+    private static final LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024, 12, 31, 12, 30);
+    private static final Duration TASKS_DURATION = Duration.ofMinutes(30);
     private final Integer commonId = 2;
-    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
-    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
-
 
     @Test
     public void equalsTasksPerId() {

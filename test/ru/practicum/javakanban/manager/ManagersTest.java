@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class ManagersTest {
+    protected static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024, 12, 31, 12, 30);
+    protected static Duration TASKS_DURATION = Duration.ofMinutes(30);
     protected final Integer incorrectId = 1001;
     protected TaskManager taskManager;
     protected Task task;
@@ -24,8 +26,6 @@ public abstract class ManagersTest {
     protected Task task2;
     protected Epic epic;
     protected Subtask subtask;
-    protected static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
-    protected static Duration TASKS_DURATION = Duration.ofMinutes(30);
 
     @BeforeEach
     public abstract void createTaskManager() throws IOException;
@@ -180,9 +180,9 @@ public abstract class ManagersTest {
         taskManager.updateSubtask(updateSubtask, subtask.getId());
 
         assertAll(
-                () -> assertTrue(updateSubtask.getDuration().equals(epic.getDuration()), "У эпика его сабтаски" +
+                () -> assertEquals(updateSubtask.getDuration(), epic.getDuration(), "У эпика его сабтаски" +
                         "разные Duration."),
-                () -> assertTrue(updateSubtask.getEndTime().equals(epic.getEndTime()), "У эпика и его сабтаски разные " +
+                () -> assertEquals(updateSubtask.getEndTime(), epic.getEndTime(), "У эпика и его сабтаски разные " +
                         "endTime")
         );
     }
@@ -196,7 +196,7 @@ public abstract class ManagersTest {
                 subtask.getDuration(), LocalDateTime.of(2024, 10, 17, 15, 20));
         taskManager.updateSubtask(updateSubtask, subtask.getId());
 
-        assertTrue(updateSubtask.getStartTime().equals(epic.getStartTime()), "У эпика и его подзадачи разные" +
+        assertEquals(updateSubtask.getStartTime(), epic.getStartTime(), "У эпика и его подзадачи разные" +
                 "startTime");
     }
 

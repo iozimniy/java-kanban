@@ -10,7 +10,7 @@ import ru.practicum.javakanban.model.Epic;
 import java.io.IOException;
 import java.util.Optional;
 
-import static ru.practicum.javakanban.http.Constans.*;
+import static ru.practicum.javakanban.http.Constans.GSON;
 
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 

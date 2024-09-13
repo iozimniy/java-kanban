@@ -14,14 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class EpicTest {
 
     static TaskManager taskManager;
+    private static final Duration SUBTASKS_DURATION = Duration.ofMinutes(30);
+    private static final LocalDateTime EARLY_DATE_TIME = LocalDateTime.of(2024, 8, 23, 14, 00);
+    private static final LocalDateTime LATE_DATE_TIME = LocalDateTime.of(2024, 9, 10, 10, 30);
     Epic epic;
     Subtask subtask1;
     Subtask subtask2;
     Subtask subtask3;
-    private static Duration SUBTASKS_DURATION = Duration.ofMinutes(30);
-
-    private static LocalDateTime EARLY_DATE_TIME = LocalDateTime.of(2024, 8, 23, 14, 00);
-    private static LocalDateTime LATE_DATE_TIME = LocalDateTime.of(2024, 9,10, 10, 30);
 
     @BeforeEach
     public void createTestEpic() throws ManagerPrioritizeException {
@@ -113,7 +112,7 @@ class EpicTest {
     public void getStartTimeEARLY() {
         LocalDateTime epicStartTime = epic.getStartTime();
 
-        assertTrue(EARLY_DATE_TIME.equals(epicStartTime), "У эпика неверное startTime!");
+        assertEquals(EARLY_DATE_TIME, epicStartTime, "У эпика неверное startTime!");
     }
 
     @Test
@@ -121,7 +120,7 @@ class EpicTest {
         LocalDateTime epicEndTime = epic.getEndTime();
         LocalDateTime expectedEndTime = LATE_DATE_TIME.plus(SUBTASKS_DURATION);
 
-        assertTrue(expectedEndTime.equals(epicEndTime), "У эпика неверное endTime!");
+        assertEquals(expectedEndTime, epicEndTime, "У эпика неверное endTime!");
     }
 
     @Test
@@ -129,7 +128,7 @@ class EpicTest {
         Duration epicDuration = epic.getDuration();
         Duration expectedDuration = subtask1.getDuration().plus(subtask2.getDuration());
 
-        assertTrue(expectedDuration.equals(epicDuration));
+        assertEquals(expectedDuration, epicDuration);
     }
 
     @Test

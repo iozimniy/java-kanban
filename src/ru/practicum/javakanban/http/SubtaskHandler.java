@@ -11,7 +11,7 @@ import ru.practicum.javakanban.model.Subtask;
 import java.io.IOException;
 import java.util.Optional;
 
-import static ru.practicum.javakanban.http.Constans.*;
+import static ru.practicum.javakanban.http.Constans.GSON;
 
 public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
 

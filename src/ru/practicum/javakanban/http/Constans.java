@@ -2,8 +2,6 @@ package ru.practicum.javakanban.http;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ru.practicum.javakanban.http.DurationAdapter;
-import ru.practicum.javakanban.http.LocalDateTimeAdapter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

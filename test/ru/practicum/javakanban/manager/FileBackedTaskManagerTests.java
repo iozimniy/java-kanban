@@ -19,13 +19,40 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest extends ManagersTest {
+    private static final LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024, 12, 31, 12, 30);
+    private static final Duration TASKS_DURATION = Duration.ofMinutes(30);
     private final String resources = ".\\src\\resources";
     protected FileBackedTaskManager fileBackedTaskManager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
-    private static LocalDateTime TASKS_DATE_TIME = LocalDateTime.of(2024,12,31,12,30);
-    private static Duration TASKS_DURATION = Duration.ofMinutes(30);
+
+    private static String getFirsNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+
+        return bufferedReader.readLine();
+    }
+
+    private static String getSecondNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+        bufferedReader.readLine(); //пропускаем первую запись
+
+        return bufferedReader.readLine();
+    }
+
+    private static String getThirdNote(String file) throws IOException {
+        Reader reader = new FileReader(file, UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        bufferedReader.readLine(); //пропускаем шапку csv
+        bufferedReader.readLine(); //пропускаем первую запись
+        bufferedReader.readLine(); //пропускаем вторую запись
+
+        return bufferedReader.readLine();
+    }
 
     @Override
     @BeforeEach
@@ -35,8 +62,6 @@ class FileBackedTaskManagerTest extends ManagersTest {
         taskManager = Managers.getFileBacked(createFile());
         fileBackedTaskManager = Managers.getFileBacked(createTempFile());
     }
-
-
 
     @Test
     public void saveEmptyFileManagerHasNoTasks() throws IOException {
@@ -281,32 +306,5 @@ class FileBackedTaskManagerTest extends ManagersTest {
         subtask = new Subtask("Подзадача", "Описание подзадачи", TASKS_DURATION, TASKS_DATE_TIME);
         fileBackedTaskManager.createSubtask(subtask, epic.getId());
         fileBackedTaskManager.updateEpic(epic, epic.getId());
-    }
-
-    private static String getFirsNote(String file) throws IOException {
-        Reader reader = new FileReader(file, UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        bufferedReader.readLine(); //пропускаем шапку csv
-
-        return bufferedReader.readLine();
-    }
-
-    private static String getSecondNote(String file) throws IOException  {
-        Reader reader = new FileReader(file, UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        bufferedReader.readLine(); //пропускаем шапку csv
-        bufferedReader.readLine(); //пропускаем первую запись
-
-        return bufferedReader.readLine();
-    }
-
-    private static String getThirdNote(String file) throws IOException {
-        Reader reader = new FileReader(file, UTF_8);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        bufferedReader.readLine(); //пропускаем шапку csv
-        bufferedReader.readLine(); //пропускаем первую запись
-        bufferedReader.readLine(); //пропускаем вторую запись
-
-        return bufferedReader.readLine();
     }
 }
