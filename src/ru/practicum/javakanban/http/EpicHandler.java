@@ -48,11 +48,11 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 String epics = gson.toJson(taskManager.getAllEpics());
                 sendText(exchange, epics);
                 break;
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
@@ -66,7 +66,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                     }
                 }
                 break;
-            case 4:
+            case REQUEST_WITH_ID_AND_RESOURCE:
                 if (!("subtasks".equals(params[3]))) {
                     sendNotFound(exchange);
                 }
@@ -95,7 +95,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 try {
                     Epic epic = parseEpic(exchange);
                     taskManager.createEpic(epic);
@@ -106,7 +106,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                     sendBadRequest(exchange, e.getMessage());
                 }
                 break;
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
@@ -131,10 +131,10 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 taskManager.deleteAllEpics();
                 sendCreated(exchange);
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {

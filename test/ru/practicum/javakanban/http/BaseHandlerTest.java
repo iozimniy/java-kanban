@@ -20,11 +20,10 @@ public abstract class BaseHandlerTest {
 
     protected final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     protected final String baseURL = "http://localhost:8080";
+    final String INCORRECT_ID = "120";
     HttpTaskServer taskServer;
     HttpClient client = HttpClient.newHttpClient();
     TaskManager taskManager = Managers.getDefault();
-    final String INCORRECT_ID = "120";
-
     Gson gson = new GsonBuilder()
             .serializeNulls()
             .registerTypeAdapter(Duration.class, new DurationAdapter())

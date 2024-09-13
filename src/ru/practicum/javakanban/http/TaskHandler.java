@@ -16,6 +16,8 @@ import java.util.Optional;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
+
+
     public TaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
         gson = new GsonBuilder()
@@ -49,11 +51,11 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 String tasks = gson.toJson(taskManager.getAllTasks());
                 sendText(exchange, tasks);
                 break;
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
@@ -78,7 +80,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 try {
                     Task task = parseTask(exchange);
                     taskManager.createTask(task);
@@ -91,7 +93,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                     sendBadRequest(exchange, e.getMessage());
                 }
                 break;
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
@@ -120,10 +122,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 taskManager.deleteAllTasks();
                 sendCreated(exchange);
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {

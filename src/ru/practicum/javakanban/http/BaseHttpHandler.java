@@ -12,6 +12,9 @@ import java.util.Optional;
 
 public abstract class BaseHttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    protected static final int REQUEST_WITHOUT_ID = 2;
+    protected static final int REQUEST_WITH_ID = 3;
+    protected static final int REQUEST_WITH_ID_AND_RESOURCE = 4;
     TaskManager taskManager;
     Gson gson;
 

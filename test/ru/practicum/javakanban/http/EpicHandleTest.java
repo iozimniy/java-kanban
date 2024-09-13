@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicHandleTest extends BaseHandlerTest {
-
     Epic epic;
     Epic anotherEpic;
 
@@ -295,7 +294,7 @@ public class EpicHandleTest extends BaseHandlerTest {
     public void createEpicAndSubtasks() throws ManagerPrioritizeException {
         createEpic(epicBody());
         Subtask subtask = new Subtask("Подзадача", "Описание подзадачи", Duration.ofMinutes(60),
-                LocalDateTime.of(2024, 11,5, 15, 20));
+                LocalDateTime.of(2024, 11, 5, 15, 20));
         taskManager.createSubtask(subtask, 1);
         Subtask subtask2 = new Subtask("Подзадача 2", "Описание подзадачи 2", Duration.ofMinutes(60),
                 LocalDateTime.of(2024, 11, 10, 16, 30));

@@ -49,11 +49,11 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 String subtasks = gson.toJson(taskManager.getAllSubtasks());
                 sendText(exchange, subtasks);
                 break;
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
@@ -77,7 +77,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 try {
                     Subtask subtask = parseSubtask(exchange);
                     taskManager.createSubtask(subtask, subtask.getEpicId());
@@ -90,7 +90,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                     sendBadRequest(exchange, e.getMessage());
                 }
                 break;
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
@@ -119,10 +119,10 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         String[] params = getParams(exchange);
 
         switch (params.length) {
-            case 2:
+            case REQUEST_WITHOUT_ID:
                 taskManager.deleteAllSubtasks();
                 sendCreated(exchange);
-            case 3:
+            case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
                 if (optId.isEmpty()) {
