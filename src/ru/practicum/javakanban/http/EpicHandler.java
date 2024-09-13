@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -49,18 +51,13 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (params.length) {
             case REQUEST_WITHOUT_ID:
-                String epics = gson.toJson(taskManager.getAllEpics());
-                sendText(exchange, epics);
+                sendText(exchange, gson.toJson(taskManager.getAllEpics()));
                 break;
             case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
-
-                if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id эпика");
-                } else {
+                if (validateId(exchange, optId)) {
                     try {
-                        String epic = gson.toJson(taskManager.getEpic(optId.get()));
-                        sendText(exchange, epic);
+                        sendText(exchange, gson.toJson(taskManager.getEpic(optId.get())));
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
                     }
@@ -73,12 +70,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
                 Optional<Integer> optEpicId = getId(exchange);
 
-                if (optEpicId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id эпика");
-                } else {
+                if (validateId(exchange, optEpicId)) {
                     try {
-                        String epic = gson.toJson(taskManager.getEpicSubtasks(optEpicId.get()));
-                        sendText(exchange, epic);
+                        sendText(exchange, gson.toJson(taskManager.getEpicSubtasks(optEpicId.get())));
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
                     }
@@ -97,8 +91,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         switch (params.length) {
             case REQUEST_WITHOUT_ID:
                 try {
-                    Epic epic = parseEpic(exchange);
-                    taskManager.createEpic(epic);
+                    taskManager.createEpic(parseEpic(exchange));
                     sendCreated(exchange);
                 } catch (IOException e) {
                     System.out.println("Во время получения запроса возникла ошибка.");
@@ -109,12 +102,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
-                if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id эпика");
-                } else {
+                if (validateId(exchange, optId)) {
                     try {
-                        Epic newEpic = parseEpic(exchange);
-                        taskManager.updateEpic(newEpic, optId.get());
+                        taskManager.updateEpic(parseEpic(exchange), optId.get());
                         sendCreated(exchange);
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
@@ -127,6 +117,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
+
     public void handleDelete(HttpExchange exchange) {
         String[] params = getParams(exchange);
 
@@ -135,11 +126,10 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 taskManager.deleteAllEpics();
                 sendCreated(exchange);
             case REQUEST_WITH_ID:
+
                 Optional<Integer> optId = getId(exchange);
 
-                if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id задачи");
-                } else {
+                if (validateId(exchange, optId)) {
                     try {
                         taskManager.deleteEpic(optId.get());
                         sendCreated(exchange);
@@ -149,6 +139,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 }
         }
     }
+
 
     public Epic parseEpic(HttpExchange exchange) throws IOException {
         try {

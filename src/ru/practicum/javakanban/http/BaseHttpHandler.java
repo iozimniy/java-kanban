@@ -38,7 +38,6 @@ public abstract class BaseHttpHandler {
         } catch (NumberFormatException e) {
             return Optional.empty();
         }
-
     }
 
     protected void sendNotFound(HttpExchange exchange) {
@@ -88,5 +87,14 @@ public abstract class BaseHttpHandler {
     protected String[] getParams(HttpExchange exchange) {
         String path = exchange.getRequestURI().getPath();
         return path.split("/");
+    }
+
+    public boolean validateId(HttpExchange exchange, Optional<Integer> optId) {
+        if (optId.isEmpty()) {
+            sendBadRequest(exchange, "Невереный id");
+            return false;
+        }
+
+        return true;
     }
 }

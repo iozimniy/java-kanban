@@ -58,9 +58,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
-                if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id задачи");
-                } else {
+                if (validateId(exchange, optId)) {
                     try {
                         String task = gson.toJson(taskManager.getTask(optId.get()));
                         sendText(exchange, task);
@@ -96,9 +94,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
-                if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id задачи");
-                } else {
+                if (validateId(exchange, optId)) {
                     try {
                         Task newTask = parseTask(exchange);
                         taskManager.updateTask(newTask, optId.get());
@@ -128,9 +124,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
 
-                if (optId.isEmpty()) {
-                    sendBadRequest(exchange, "Невереный id задачи");
-                } else {
+                if (validateId(exchange, optId)) {
                     try {
                         taskManager.deleteTask(optId.get());
                         sendCreated(exchange);

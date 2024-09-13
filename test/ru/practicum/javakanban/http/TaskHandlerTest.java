@@ -104,13 +104,13 @@ public class TaskHandlerTest extends BaseHandlerTest {
 
         try {
             HttpResponse<String> response = client.send(request, handler);
-                JsonElement jsonElement = JsonParser.parseString(response.body());
+            JsonElement jsonElement = JsonParser.parseString(response.body());
 
-                assertAll(
-                        () -> assertEquals(200, response.statusCode(), "Код статуса на запрос " +
-                                "всего списка задач не 200"),
-                        () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
-                );
+            assertAll(
+                    () -> assertEquals(200, response.statusCode(), "Код статуса на запрос " +
+                            "всего списка задач не 200"),
+                    () -> assertTrue(jsonElement.isJsonArray(), "Вернули не массив задач")
+            );
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
