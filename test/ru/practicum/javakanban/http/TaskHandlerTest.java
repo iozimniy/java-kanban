@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.practicum.javakanban.http.Constans.*;
 
 public class TaskHandlerTest extends BaseHandlerTest {
 
@@ -248,14 +249,14 @@ public class TaskHandlerTest extends BaseHandlerTest {
         task = new Task("Задача", "Описание задачи", Duration.ofMinutes(20),
                 LocalDateTime.of(2024, 11, 17, 11, 20));
 
-        return gson.toJson(task);
+        return GSON.toJson(task);
     }
 
     public String anotherTaskBody() {
         task1 = new Task("Другая задача", "Другое описание задачи", Status.IN_PROGRESS, Duration.ofMinutes(30),
                 LocalDateTime.of(2024, 11, 15, 14, 0));
 
-        return gson.toJson(task1);
+        return GSON.toJson(task1);
     }
 
     public void createTask(String body) {

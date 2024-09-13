@@ -8,15 +8,12 @@ import ru.practicum.javakanban.manager.TaskManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import static ru.practicum.javakanban.http.Constans.*;
+
 public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
 
     public PrioritizedHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
-        gson = new GsonBuilder()
-                .serializeNulls()
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
     }
 
     @Override
@@ -31,7 +28,7 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     public void handleGet(HttpExchange exchange) {
-        String prioritizedList = gson.toJson(taskManager.getPrioritizedTasks());
+        String prioritizedList = GSON.toJson(taskManager.getPrioritizedTasks());
         sendText(exchange, prioritizedList);
     }
 }

@@ -24,12 +24,6 @@ public abstract class BaseHandlerTest {
     HttpTaskServer taskServer;
     HttpClient client = HttpClient.newHttpClient();
     TaskManager taskManager = Managers.getDefault();
-    Gson gson = new GsonBuilder()
-            .serializeNulls()
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-            .create();
-
 
     @BeforeEach
     public void createTaskServer() {

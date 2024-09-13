@@ -1,6 +1,7 @@
 package ru.practicum.javakanban.http;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import ru.practicum.javakanban.manager.TaskManager;
 
@@ -8,7 +9,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
+
 
 public abstract class BaseHttpHandler {
     protected static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -16,7 +20,7 @@ public abstract class BaseHttpHandler {
     protected static final int REQUEST_WITH_ID = 3;
     protected static final int REQUEST_WITH_ID_AND_RESOURCE = 4;
     TaskManager taskManager;
-    Gson gson;
+
 
     protected void sendText(HttpExchange exchange, String answer) {
         exchange.getResponseHeaders().add("Content-type", "application/json;charset=utf-8");

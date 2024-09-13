@@ -1,6 +1,5 @@
 package ru.practicum.javakanban.http;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -10,19 +9,14 @@ import ru.practicum.javakanban.manager.TaskManager;
 import ru.practicum.javakanban.model.Subtask;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static ru.practicum.javakanban.http.Constans.*;
 
 public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
 
     SubtaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
-        gson = new GsonBuilder()
-                .serializeNulls()
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
     }
 
     @Override
@@ -50,7 +44,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (params.length) {
             case REQUEST_WITHOUT_ID:
-                String subtasks = gson.toJson(taskManager.getAllSubtasks());
+                String subtasks = GSON.toJson(taskManager.getAllSubtasks());
                 sendText(exchange, subtasks);
                 break;
             case REQUEST_WITH_ID:
@@ -58,7 +52,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
 
                 if (validateId(exchange, optId)) {
                     try {
-                        String subtask = gson.toJson(taskManager.getSubtask(optId.get()));
+                        String subtask = GSON.toJson(taskManager.getSubtask(optId.get()));
                         sendText(exchange, subtask);
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
@@ -135,7 +129,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     public Subtask parseSubtask(HttpExchange exchange) throws IOException {
         try {
             String strBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            return gson.fromJson(strBody, Subtask.class);
+            return GSON.fromJson(strBody, Subtask.class);
         } catch (IOException e) {
             System.out.println("Во время получения запроса возникла ошибка.");
         } catch (JsonSyntaxException e) {

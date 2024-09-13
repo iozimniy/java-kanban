@@ -1,6 +1,5 @@
 package ru.practicum.javakanban.http;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -10,9 +9,9 @@ import ru.practicum.javakanban.manager.TaskManager;
 import ru.practicum.javakanban.model.Task;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static ru.practicum.javakanban.http.Constans.*;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
@@ -20,11 +19,6 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     public TaskHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
-        gson = new GsonBuilder()
-                .serializeNulls()
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
     }
 
     @Override
@@ -52,7 +46,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (params.length) {
             case REQUEST_WITHOUT_ID:
-                String tasks = gson.toJson(taskManager.getAllTasks());
+                String tasks = GSON.toJson(taskManager.getAllTasks());
                 sendText(exchange, tasks);
                 break;
             case REQUEST_WITH_ID:
@@ -60,7 +54,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
                 if (validateId(exchange, optId)) {
                     try {
-                        String task = gson.toJson(taskManager.getTask(optId.get()));
+                        String task = GSON.toJson(taskManager.getTask(optId.get()));
                         sendText(exchange, task);
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
@@ -138,7 +132,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     public Task parseTask(HttpExchange exchange) throws IOException {
         try {
             String strBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            return gson.fromJson(strBody, Task.class);
+            return GSON.fromJson(strBody, Task.class);
         } catch (IOException e) {
             System.out.println("Во время получения запроса возникла ошибка.");
         } catch (JsonSyntaxException e) {

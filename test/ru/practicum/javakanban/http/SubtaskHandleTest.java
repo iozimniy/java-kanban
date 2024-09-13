@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.practicum.javakanban.http.Constans.*;
 
 public class SubtaskHandleTest extends BaseHandlerTest {
     Epic epic;
@@ -229,13 +230,13 @@ public class SubtaskHandleTest extends BaseHandlerTest {
     public String subtaskBody() {
         subtask = new Subtask("Название подзадачи", "Описание подзадачи", 1,
                 Duration.ofMinutes(15), LocalDateTime.of(2024, 10, 30, 12, 10));
-        return gson.toJson(subtask);
+        return GSON.toJson(subtask);
     }
 
     public String anotherSubtaskBody() {
         anotherSubtask = new Subtask("Другое название подзадачи", "Другое описание подзадачи", 1,
                 Duration.ofMinutes(30), LocalDateTime.of(2024, 11, 2, 15, 15));
-        return gson.toJson(anotherSubtask);
+        return GSON.toJson(anotherSubtask);
     }
 
     public void createEpicAndSubtask() {

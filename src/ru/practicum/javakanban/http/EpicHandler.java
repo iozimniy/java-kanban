@@ -1,6 +1,5 @@
 package ru.practicum.javakanban.http;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -9,21 +8,14 @@ import ru.practicum.javakanban.manager.TaskManager;
 import ru.practicum.javakanban.model.Epic;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+
+import static ru.practicum.javakanban.http.Constans.*;
 
 public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
     public EpicHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
-        gson = new GsonBuilder()
-                .serializeNulls()
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .create();
     }
 
     @Override
@@ -51,13 +43,13 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
         switch (params.length) {
             case REQUEST_WITHOUT_ID:
-                sendText(exchange, gson.toJson(taskManager.getAllEpics()));
+                sendText(exchange, GSON.toJson(taskManager.getAllEpics()));
                 break;
             case REQUEST_WITH_ID:
                 Optional<Integer> optId = getId(exchange);
                 if (validateId(exchange, optId)) {
                     try {
-                        sendText(exchange, gson.toJson(taskManager.getEpic(optId.get())));
+                        sendText(exchange, GSON.toJson(taskManager.getEpic(optId.get())));
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
                     }
@@ -72,7 +64,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
                 if (validateId(exchange, optEpicId)) {
                     try {
-                        sendText(exchange, gson.toJson(taskManager.getEpicSubtasks(optEpicId.get())));
+                        sendText(exchange, GSON.toJson(taskManager.getEpicSubtasks(optEpicId.get())));
                     } catch (NotFoundException e) {
                         sendBadRequest(exchange, e.getMessage());
                     }
@@ -144,7 +136,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     public Epic parseEpic(HttpExchange exchange) throws IOException {
         try {
             String strBody = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            return gson.fromJson(strBody, Epic.class);
+            return GSON.fromJson(strBody, Epic.class);
         } catch (IOException e) {
             System.out.println("Во время получения запроса возникла ошибка.");
         } catch (JsonSyntaxException e) {

@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static ru.practicum.javakanban.http.Constans.*;
+
 public class EpicHandleTest extends BaseHandlerTest {
     Epic epic;
     Epic anotherEpic;
@@ -271,12 +273,12 @@ public class EpicHandleTest extends BaseHandlerTest {
 
     public String epicBody() {
         epic = new Epic("Эпик", "Описание");
-        return gson.toJson(epic);
+        return GSON.toJson(epic);
     }
 
     public String anotherEpicBody() {
         anotherEpic = new Epic("Другой эпик", "Описание тоже другое");
-        return gson.toJson(anotherEpic);
+        return GSON.toJson(anotherEpic);
     }
 
     public void createEpic(String body) {
